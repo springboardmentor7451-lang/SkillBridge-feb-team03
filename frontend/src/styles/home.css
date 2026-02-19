@@ -1,0 +1,96 @@
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+.hero {
+  padding-top: 100px;
+}
+
+.tag {
+  background: #fff3e8;
+  color: #ff6a00;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.hero-title {
+  font-size: 52px;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+.highlight {
+  color: #ff6a00;
+}
+
+.hero-text {
+  color: #666;
+  font-size: 18px;
+  max-width: 500px;
+}
+
+.primary-btn {
+  display: inline-block;
+  margin-top: 20px;
+  background: #ff6a00;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.how-section {
+  background: #f9fafb;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.how-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.how-card {
+  max-width: 250px;
+}
+
+.icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.features {
+  padding: 80px 20px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.feature-card {
+  border: 1px solid #eee;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.footer {
+  border-top: 1px solid #eee;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo-box {
+  background: #ff6a00;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-right: 8px;
+}

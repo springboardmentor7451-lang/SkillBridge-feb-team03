@@ -1,0 +1,21 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid #eee;
+}
+
+.nav-center a {
+  margin: 0 15px;
+  color: #555;
+}
+
+.nav-right a {
+  margin-left: 20px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}

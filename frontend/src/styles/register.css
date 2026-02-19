@@ -1,0 +1,91 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.register-box {
+  width: 600px;
+}
+
+.back-link {
+  text-decoration: none;
+  color: gray;
+}
+
+.register-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  margin-top: 10px;
+  border: 1px solid #eee;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.logo-box {
+  background: #ff6a00;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-right: 10px;
+}
+
+.subtitle {
+  color: gray;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.role-box {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.role-card {
+  flex: 1;
+  padding: 20px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.role-card.active {
+  border-color: #ff6a00;
+  background: #fff3e8;
+}
+
+.register-btn {
+  width: 100%;
+  padding: 12px;
+  background: #ff6a00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 15px;
+}
