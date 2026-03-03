@@ -4,7 +4,6 @@
   background: #f9fafb;
 }
 
-/* SIDEBAR - IMPROVED */
 .sidebar {
   width: 240px;
   background: #f3f4f6;
@@ -15,7 +14,7 @@
   border-right: 1px solid #e5e7eb;
 }
 
-/* TITLE */
+
 .sidebar h2 {
   margin-bottom: 35px;
   font-size: 20px;
@@ -23,7 +22,7 @@
   color: #16a34a;
 }
 
-/* MENU */
+
 .sidebar ul {
   list-style: none;
   padding: 0;
@@ -42,19 +41,19 @@
   color: #374151;
 }
 
-/* Hover */
+
 .sidebar li:hover {
   background: #e5e7eb;
 }
 
-/* Active */
+
 .sidebar li.active {
   background: #dcfce7;
   color: #16a34a;
   font-weight: 600;
 }
 
-/* LOGOUT SECTION */
+
 .logout-btn {
   margin-top: 30px;
   padding: 10px;
@@ -70,7 +69,7 @@
   color: #b91c1c;
 }
 
-/* LOGOUT BUTTON */
+
 .logout-btn {
   padding: 12px;
   border-radius: 10px;
@@ -85,7 +84,6 @@
   background: #15803d;
 }
 
-/* LOGOUT */
 .logout-btn {
   padding: 12px;
   border-radius: 10px;
@@ -115,7 +113,7 @@
   color: #16a34a;
 }
 
-/* PROFILE */
+
 .profile-section {
   background: white;
   padding: 30px;
@@ -140,13 +138,12 @@
   color: #16a34a;
 }
 
-/* SECTION TITLE */
 .section-title {
   margin-bottom: 20px;
   color: #16a34a;
 }
 
-/* OPPORTUNITY CARDS */
+
 .opportunity-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
