@@ -1,0 +1,161 @@
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;   /* Pure white */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.login-card {
+  background: white;
+  padding: 40px;
+  width: 350px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);  /* Softer shadow */
+  text-align: center;
+  color: #1f2937;
+}
+
+/* Title */
+.login-card h2 {
+  margin-bottom: 5px;
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+/* Role Toggle */
+.role-toggle {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 25px;
+  margin-bottom: 20px;
+}
+
+.role-toggle button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #374151;
+  cursor: pointer;
+  border-radius: 25px;
+  transition: 0.3s;
+}
+
+.role-toggle .active {
+  background: #16a34a;   /* Green */
+  color: white;
+}
+
+/* Inputs */
+.input-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;   /* Always white */
+  color: #111827;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+input:hover {
+  background: #ffffff;   /* Prevent dark hover */
+}
+
+input:focus {
+  outline: none;
+  background: #ffffff;   /* Keep white */
+  border: 1px solid #16a34a;
+  box-shadow: 0 0 6px rgba(22, 163, 74, 0.3);
+}
+
+
+
+.password-field {
+  position: relative;
+}
+
+.toggle {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Error styling */
+.error {
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-top: 6px;
+  border-left: 3px solid #ff4d4d;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.input-error {
+  border: 1px solid #ff4d4d !important;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  background: #16a34a;   /* Green */
+  color: white;
+  margin-top: 10px;
+  transition: 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #15803d;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
+}
+
+/* Links */
+.extra-links {
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+.extra-links a {
+  color: #16a34a;
+  text-decoration: none;
+}
+
+.extra-links a:hover {
+  text-decoration: underline;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

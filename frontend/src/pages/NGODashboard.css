@@ -1,0 +1,168 @@
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+/* SIDEBAR - IMPROVED */
+.sidebar {
+  width: 240px;
+  background: #f3f4f6;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* TITLE */
+.sidebar h2 {
+  margin-bottom: 35px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* MENU */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Hover */
+.sidebar li:hover {
+  background: #e5e7eb;
+}
+
+/* Active */
+.sidebar li.active {
+  background: #dcfce7;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* LOGOUT SECTION */
+.logout-btn {
+  margin-top: 30px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.logout-btn:hover {
+  color: #b91c1c;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #16a34a;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #15803d;
+}
+
+/* LOGOUT */
+.logout-btn {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  color: #16a34a;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #dcfce7;
+}
+
+/* MAIN CONTENT */
+.dashboard-content {
+  flex: 1;
+  padding: 50px;
+}
+
+.dashboard-content h1 {
+  margin-bottom: 30px;
+}
+
+.dashboard-content span {
+  color: #16a34a;
+}
+
+/* PROFILE */
+.profile-section {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  margin-bottom: 40px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.profile-row:last-child {
+  border-bottom: none;
+}
+
+.profile-row label {
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* SECTION TITLE */
+.section-title {
+  margin-bottom: 20px;
+  color: #16a34a;
+}
+
+/* OPPORTUNITY CARDS */
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.opportunity-card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  border-left: 4px solid #16a34a;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.opportunity-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}

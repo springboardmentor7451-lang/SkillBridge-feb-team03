@@ -1,0 +1,134 @@
+.vd-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f7f6;  /* soft light background */
+  color: #111827;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Sidebar */
+.vd-sidebar {
+  width: 240px;
+  background: #ffffff;
+  padding: 30px 20px;
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.03);
+}
+
+.vd-sidebar h2 {
+  margin-bottom: 30px;
+  color: #16a34a;
+}
+
+.vd-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.vd-sidebar li {
+  margin: 18px 0;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #374151;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.vd-sidebar li:hover {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.vd-sidebar li.active {
+  background: #16a34a;
+  color: white;
+  font-weight: 500;
+}
+
+/* Main Content */
+.vd-main {
+  flex: 1;
+  padding: 60px 70px;
+}
+
+.vd-main h1 {
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Cards */
+.vd-card {
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 16px;
+  margin-bottom: 35px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+  border-left: 5px solid #16a34a;
+}
+
+.vd-card:hover {
+  transform: translateY(-6px);
+}
+
+/* Skills */
+.vd-skills {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.vd-skill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.vd-skill-chip {
+  padding: 8px 18px;
+  border-radius: 30px;
+  background: #e6f9ef;
+  color: #16a34a;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Section Titles */
+.vd-main h2 {
+  margin-top: 50px;
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* Apply Button */
+.vd-apply-btn {
+  margin-top: 12px;
+  padding: 8px 18px;
+  border-radius: 25px;
+  border: 1px solid #16a34a;
+  background: #ffffff;
+  color: #16a34a;
+  cursor: not-allowed;
+}
+
+/* Status */
+.status-pending {
+  margin-top: 10px;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.status-accepted {
+  margin-top: 10px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.status-completed {
+  margin-top: 10px;
+  color: #15803d;
+  font-weight: 600;
+}
