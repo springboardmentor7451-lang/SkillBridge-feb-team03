@@ -1,12 +1,12 @@
 .vd-wrapper {
   display: flex;
   min-height: 100vh;
-  background: #f4f7f6;  /* soft light background */
+  background: #f4f7f6; 
   color: #111827;
   font-family: "Segoe UI", sans-serif;
 }
 
-/* Sidebar */
+
 .vd-sidebar {
   width: 240px;
   background: #ffffff;
@@ -45,7 +45,7 @@
   font-weight: 500;
 }
 
-/* Main Content */
+
 .vd-main {
   flex: 1;
   padding: 60px 70px;
@@ -57,7 +57,7 @@
   font-weight: 600;
 }
 
-/* Cards */
+
 .vd-card {
   background: #ffffff;
   padding: 32px;
@@ -72,7 +72,7 @@
   transform: translateY(-6px);
 }
 
-/* Skills */
+
 .vd-skills {
   margin-top: 20px;
   margin-bottom: 30px;
@@ -94,7 +94,7 @@
   font-size: 14px;
 }
 
-/* Section Titles */
+
 .vd-main h2 {
   margin-top: 50px;
   margin-bottom: 20px;
@@ -103,7 +103,7 @@
   font-weight: 600;
 }
 
-/* Apply Button */
+
 .vd-apply-btn {
   margin-top: 12px;
   padding: 8px 18px;
@@ -114,7 +114,7 @@
   cursor: not-allowed;
 }
 
-/* Status */
+
 .status-pending {
   margin-top: 10px;
   color: #f59e0b;
