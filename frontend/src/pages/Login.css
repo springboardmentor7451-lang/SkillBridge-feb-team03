@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;   /* Pure white */
+  background: white;  
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -12,12 +12,12 @@
   padding: 40px;
   width: 350px;
   border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);  /* Softer shadow */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);  
   text-align: center;
   color: #1f2937;
 }
 
-/* Title */
+
 .login-card h2 {
   margin-bottom: 5px;
   color: #111827;
@@ -29,7 +29,6 @@
   margin-bottom: 25px;
 }
 
-/* Role Toggle */
 .role-toggle {
   display: flex;
   background: #f3f4f6;
@@ -49,11 +48,11 @@
 }
 
 .role-toggle .active {
-  background: #16a34a;   /* Green */
+  background: #16a34a;   
   color: white;
 }
 
-/* Inputs */
+
 .input-group {
   margin-bottom: 18px;
   text-align: left;
@@ -64,19 +63,19 @@ input {
   padding: 12px 15px;
   border-radius: 12px;
   border: 1px solid #d1d5db;
-  background: #ffffff;   /* Always white */
+  background: #ffffff;   
   color: #111827;
   font-size: 14px;
   transition: 0.3s ease;
 }
 
 input:hover {
-  background: #ffffff;   /* Prevent dark hover */
+  background: #ffffff; 
 }
 
 input:focus {
   outline: none;
-  background: #ffffff;   /* Keep white */
+  background: #ffffff;  
   border: 1px solid #16a34a;
   box-shadow: 0 0 6px rgba(22, 163, 74, 0.3);
 }
@@ -96,7 +95,6 @@ input:focus {
   color: #6b7280;
 }
 
-/* Error styling */
 .error {
   background: rgba(255, 77, 77, 0.1);
   color: #ff4d4d;
@@ -113,7 +111,7 @@ input:focus {
   box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
 }
 
-/* Button */
+
 .login-btn {
   width: 100%;
   padding: 12px;
@@ -122,7 +120,7 @@ input:focus {
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  background: #16a34a;   /* Green */
+  background: #16a34a;   
   color: white;
   margin-top: 10px;
   transition: 0.3s ease;
@@ -133,7 +131,7 @@ input:focus {
   box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
 }
 
-/* Links */
+
 .extra-links {
   margin-top: 20px;
   font-size: 13px;
@@ -148,7 +146,7 @@ input:focus {
   text-decoration: underline;
 }
 
-/* Animation */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
