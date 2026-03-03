@@ -36,18 +36,18 @@ const VolunteerDashboard = () => {
             className={activeSection === "dashboard" ? "active" : ""}
             onClick={() => setActiveSection("dashboard")}
           >
-            🏠 Dashboard
+             Dashboard
           </li>
 
           <li
             className={activeSection === "profile" ? "active" : ""}
             onClick={() => setActiveSection("profile")}
           >
-            👤 My Profile
+            My Profile
           </li>
 
 
-          <li onClick={handleLogout}>🚪 Logout</li>
+          <li onClick={handleLogout}>Logout</li>
         </ul>
       </div>
 
@@ -57,7 +57,7 @@ const VolunteerDashboard = () => {
         {/* DASHBOARD SECTION */}
         {activeSection === "dashboard" && (
           <>
-            <h1>Welcome, {user.fullName} 👋</h1>
+            <h1>Welcome, {user.fullName} </h1>
 
             <div className="vd-card">
               <p><strong>Email:</strong> {user.emailAddress}</p>
@@ -85,14 +85,14 @@ const VolunteerDashboard = () => {
             </div>
 
             {/* ACTIVE PROJECTS */}
-            <h2>🚀 Active Projects</h2>
+            <h2>Active Projects</h2>
             <div className="vd-card">
               <h3>Teaching Coding to Students</h3>
               <p className="status-accepted">In Progress</p>
             </div>
 
             {/* COMPLETED PROJECTS */}
-            <h2>✅ Completed Projects</h2>
+            <h2> Completed Projects</h2>
             <div className="vd-card">
               <h3>Community Clean-up Drive</h3>
               <p className="status-completed">Completed Successfully</p>
