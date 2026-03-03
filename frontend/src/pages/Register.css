@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #ffffff;   /* changed from dark gradient */
+  background: #ffffff;   
   font-family: "Segoe UI", sans-serif;
 }
 
@@ -11,10 +11,10 @@
   width: 480px;            
   padding: 28px 35px;
   border-radius: 20px;
-  background: #ffffff;   /* removed glass dark */
+  background: #ffffff; 
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
   text-align: center;
-  color: #111827;   /* dark text */
+  color: #111827;   
   border: 1px solid #e5e7eb;
 }
 
@@ -41,7 +41,7 @@ input {
   padding: 8px 14px;         
   border-radius: 12px;
   border: 1px solid #d1d5db;
-  background: #ffffff;   /* white input */
+  background: #ffffff;   
   color: #111827;
   font-size: 13px;
   transition: 0.3s ease;
@@ -53,11 +53,11 @@ input::placeholder {
 
 input:focus {
   outline: none;
-  border: 1px solid #16a34a;   /* green focus */
+  border: 1px solid #16a34a;  
   box-shadow: 0 0 6px rgba(22,163,74,0.3);
 }
 
-/* Prevent dark autofill */
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
@@ -94,7 +94,7 @@ input:-webkit-autofill:focus {
   flex: 1;
   padding: 8px;
   border-radius: 20px;
-  background: #f3f4f6;   /* light grey */
+  background: #f3f4f6;   
   cursor: pointer;
   font-size: 13px;
   transition: 0.3s ease;
@@ -103,7 +103,7 @@ input:-webkit-autofill:focus {
 }
 
 .role-card.active {
-  background: #16a34a;   /* green active */
+  background: #16a34a;   
   color: white;
   border: none;
   box-shadow: 0 6px 15px rgba(22,163,74,0.25);
@@ -116,7 +116,7 @@ input:-webkit-autofill:focus {
   border: none;
   font-size: 15px;
   font-weight: 600;
-  background: #16a34a;   /* green button */
+  background: #16a34a;   
   color: white;
   cursor: pointer;
   transition: 0.3s ease;
