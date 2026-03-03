@@ -1,6 +1,6 @@
 .volunteer-container {
   min-height: 100vh;
-  background: #ffffff;   /* changed from dark gradient */
+  background: #ffffff;   
   display: flex;
   justify-content: center;
   padding: 60px 20px;
@@ -9,7 +9,7 @@
 .volunteer-card {
   width: 100%;
   max-width: 1100px;
-  color: #111827;   /* changed from white */
+  color: #111827;   
 }
 
 h1 {
@@ -19,27 +19,27 @@ h1 {
 }
 
 h1 span {
-  color: #16a34a;   /* green highlight */
+  color: #16a34a;  
 }
 
 .section-card {
-  background: #ffffff;   /* removed dark gradient */
+  background: #ffffff;   
   padding: 25px;
   border-radius: 18px;
   margin-bottom: 30px;
-  border-left: 4px solid #16a34a;   /* green instead of blue */
+  border-left: 4px solid #16a34a;  
   transition: 0.3s ease;
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
 .section-card:hover {
   transform: translateY(-4px);
-  background: #ffffff;   /* no dark hover */
+  background: #ffffff;   
 }
 
 .section-card h3 {
   margin-bottom: 20px;
-  color: #16a34a;   /* green */
+  color: #16a34a;  
 }
 
 .row {
@@ -62,14 +62,14 @@ input, select, textarea {
   padding: 14px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
-  background: #ffffff;   /* white input */
+  background: #ffffff;  
   color: #111827;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border: 1px solid #16a34a;   /* green focus */
-  background: #ffffff;   /* prevent black */
+  border: 1px solid #16a34a;   
+  background: #ffffff;  
   box-shadow: 0 0 6px rgba(22,163,74,0.3);
 }
 
@@ -82,14 +82,14 @@ input:focus, select:focus, textarea:focus {
 .skill-chip {
   padding: 10px 18px;
   border-radius: 25px;
-  background: #f3f4f6;   /* light grey */
+  background: #f3f4f6;  
   cursor: pointer;
   transition: 0.3s;
   color: #374151;
 }
 
 .skill-chip.active {
-  background: #16a34a;   /* green active */
+  background: #16a34a;   
   color: white;
   box-shadow: 0 0 10px rgba(22,163,74,0.3);
 }
@@ -111,8 +111,8 @@ textarea {
 }
 
 .upload-box:hover {
-  border-color: #16a34a;   /* green hover */
-  background: #f0fdf4;   /* light green */
+  border-color: #16a34a;
+  background: #f0fdf4;   
 }
 
 .upload-box span {
@@ -131,7 +131,7 @@ textarea {
   padding: 16px;
   border-radius: 40px;
   border: none;
-  background: #16a34a;   /* green button */
+  background: #16a34a;   
   color: white;
   font-size: 16px;
   font-weight: 600;
