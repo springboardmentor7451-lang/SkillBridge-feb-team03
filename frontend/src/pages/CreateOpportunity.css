@@ -24,7 +24,6 @@
   text-align: center;
 }
 
-/* INPUTS */
 .create-card input,
 .create-card textarea {
   width: 100%;
@@ -49,8 +48,6 @@
   border-color: #16a34a;
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
 }
-
-/* BUTTON */
 .create-card button {
   width: 100%;
   padding: 14px;
@@ -73,8 +70,6 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-
-/* ERROR */
 .error {
   color: #dc2626;
   margin-bottom: 10px;
