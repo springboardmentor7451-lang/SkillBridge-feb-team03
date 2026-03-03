@@ -30,28 +30,28 @@ const NgoDashboard = () => {
           <h2>NGO Panel</h2>
 
           <ul>
-            <li className="active">🏠 Dashboard</li>
+            <li className="active"> Dashboard</li>
             <li onClick={() => navigate("/ngo-profile")}>
-              👤 Profile
+               Profile
             </li>
             <li onClick={() => navigate("/create-opportunity")}>
-              ➕ Create Opportunity
+               Create Opportunity
             </li>
           </ul>
         </div>
 
         <button className="logout-btn" onClick={handleLogout}>
-          🚪 Logout
+           Logout
         </button>
       </div>
 
-      {/* Main Content */}
+     
       <div className="dashboard-content">
         <h1>
           Welcome, <span>{ngoData.ngoName}</span>
         </h1>
 
-        {/* Profile Info */}
+      
         <div className="profile-section">
           <div className="profile-row">
             <label>Email</label>
@@ -84,7 +84,6 @@ const NgoDashboard = () => {
           </div>
         </div>
 
-        {/* Opportunities */}
         <h2 className="section-title">Your Opportunities</h2>
 
         <div className="opportunity-grid">
