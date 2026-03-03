@@ -31,7 +31,7 @@ const CreateOpportunity = () => {
       id: Date.now(),
     };
 
-    // Ensure opportunities array exists
+
     if (!user.opportunities) {
       user.opportunities = [];
     }
