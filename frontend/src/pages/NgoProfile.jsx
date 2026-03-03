@@ -178,7 +178,7 @@ const NgoProfile = () => {
             </div>
           </div>
 
-          {/* Location */}
+         
           <div className="section-card">
             <h3>Location & Establishment</h3>
 
@@ -215,7 +215,7 @@ const NgoProfile = () => {
             </div>
           </div>
 
-          {/* Focus Areas */}
+         
           <div className="section-card">
             <h3>Focus Areas</h3>
             <div className="focus-areas">
@@ -232,7 +232,7 @@ const NgoProfile = () => {
             {errors.focus && <p className="error">{errors.focus}</p>}
           </div>
 
-          {/* Mission & Vision */}
+       
           <div className="section-card">
             <h3>Mission & Vision</h3>
 
@@ -251,7 +251,7 @@ const NgoProfile = () => {
             </div>
           </div>
 
-          {/* File Upload */}
+          
           <div className="section-card">
             <h3>Verification Documents</h3>
             <label className="upload-box">
