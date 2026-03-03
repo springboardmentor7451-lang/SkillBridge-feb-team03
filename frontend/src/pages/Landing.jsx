@@ -7,7 +7,7 @@ const Landing = () => {
   return (
     <div className="landing">
 
-      {/* Navbar */}
+     
       <nav className="navbar">
         <h2 className="logo">
           Skill<span>Build</span>
@@ -21,7 +21,7 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      
       <div className="hero">
         <h1>Learn. Volunteer. Grow.</h1>
 
