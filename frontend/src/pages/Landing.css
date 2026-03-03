@@ -1,12 +1,12 @@
-/* Main Layout */
+
 .landing {
   min-height: 100vh;
-  background: #ffffff;   /* White background */
+  background: #ffffff;   
   font-family: Arial, sans-serif;
   color: #1f2937;
 }
 
-/* Navbar */
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -20,10 +20,9 @@
 }
 
 .logo span {
-  color: #16a34a;   /* Green highlight */
+  color: #16a34a;   
 }
 
-/* Nav Links */
 .nav-links a {
   margin-left: 30px;
   text-decoration: none;
@@ -36,7 +35,7 @@
   color: #16a34a;
 }
 
-/* Hero Section */
+
 .hero {
   text-align: center;
   margin-top: 150px;
@@ -58,14 +57,12 @@
   line-height: 1.6;
 }
 
-/* Buttons */
 .hero-buttons {
   display: flex;
   justify-content: center;
   gap: 20px;
 }
 
-/* Green Filled Button */
 .primary-btn {
   background: #16a34a;
   color: white;
@@ -82,7 +79,7 @@
   box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
 }
 
-/* Outline Button */
+
 .outline-btn {
   background: white;
   color: #16a34a;
