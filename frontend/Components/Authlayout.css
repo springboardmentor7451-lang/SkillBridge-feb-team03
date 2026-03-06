@@ -1,0 +1,124 @@
+.auth-layout {
+  min-height: 100vh;
+  background: linear-gradient(120deg,#071028,#0b1120,#111827);
+  color: white;
+}
+
+/* wrapper pushes the card below the navbar */
+
+.auth-wrapper{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  min-height:calc(100vh - 70px);
+
+  padding-top:100px;   /* important fix */
+}
+
+/* card */
+
+.auth-card{
+  width:420px;
+  padding:40px;
+
+  border-radius:20px;
+
+  background:rgba(255,255,255,0.07);
+
+  -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(20px);
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  box-shadow:0 15px 40px rgba(0,0,0,0.5);
+}
+
+/* title */
+
+.auth-title{
+  text-align:center;
+  margin-bottom:25px;
+  font-size:28px;
+
+  background:linear-gradient(90deg,#3b82f6,#06b6d4);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* form */
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-form label{
+  font-size:14px;
+  color:#ccc;
+}
+
+.auth-form input,
+.auth-form textarea{
+  padding:10px;
+  border-radius:6px;
+  border:none;
+  outline:none;
+}
+
+.auth-form textarea{
+  resize:none;
+  height:70px;
+}
+
+.auth-btn{
+  margin-top:10px;
+  padding:12px;
+
+  border:none;
+  border-radius:6px;
+
+  background:linear-gradient(90deg,#2563eb,#06b6d4);
+
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.auth-switch{
+  text-align:center;
+  font-size:14px;
+}
+/* ROLE TOGGLE BUTTONS */
+
+.role-toggle{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:15px 0 20px;
+}
+
+.role-toggle button{
+  padding:6px 14px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  font-size:14px;
+
+  background:#1f2937;
+  color:white;
+
+  transition:0.3s;
+}
+
+.role-toggle button:hover{
+  background:#374151;
+}
+
+.role-toggle .active{
+  background:linear-gradient(90deg,#3b82f6,#06b6d4);
+  color:white;
+}
