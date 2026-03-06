@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import opportunityService from "../services/opportunityService";
 import Navbar from "../components/Navbar";
 import "../styles/dashboard.css";
@@ -8,13 +8,14 @@ import "../styles/dashboard.css";
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [opportunities, setOpportunities] = useState([]);
 
   useEffect(() => {
     if (!loading && user?.role === "ngo") {
       fetchOpportunities();
     }
-  }, [user, loading]);
+  }, [user, loading, location]);
 
   const fetchOpportunities = async () => {
     try {
@@ -30,6 +31,11 @@ export default function Dashboard() {
   if (user.role !== "ngo") return (<><Navbar /><div className="dashboard-container"><h2>Volunteer Dashboard</h2><p>Coming soon</p></div></>);
 
   const activeOpps = opportunities.filter((o) => o.status === "open").length;
+  const totalApplications = opportunities.reduce((sum, opp) => sum + (opp.applicants?.length || 0), 0);
+  const pendingApplications = opportunities.reduce((sum, opp) => {
+    const pending = opp.applicants?.filter((a) => a.status === "pending").length || 0;
+    return sum + pending;
+  }, 0);
 
   return (
     <>
@@ -40,9 +46,9 @@ export default function Dashboard() {
 
         <div className="stats-grid">
           <div className="stat-card"><p className="stat-label">Active Opportunities</p><h2 className="stat-value blue">{activeOpps}</h2></div>
-          <div className="stat-card"><p className="stat-label">Applications</p><h2 className="stat-value green">1</h2></div>
+          <div className="stat-card"><p className="stat-label">Applications</p><h2 className="stat-value green">{totalApplications}</h2></div>
           <div className="stat-card"><p className="stat-label">Active Volunteers</p><h2 className="stat-value purple">0</h2></div>
-          <div className="stat-card"><p className="stat-label">Pending Applications</p><h2 className="stat-value orange">1</h2></div>
+          <div className="stat-card"><p className="stat-label">Pending Applications</p><h2 className="stat-value orange">{pendingApplications}</h2></div>
         </div>
 
         <div className="dashboard-grid">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import opportunityService from "../services/opportunityService";
 import Navbar from "../components/Navbar";
 import "../styles/dashboard.css";
@@ -8,6 +8,7 @@ import "../styles/dashboard.css";
 export default function MyOpportunities() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [opportunities, setOpportunities] = useState([]);
   const [loadingOpps, setLoadingOpps] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
@@ -16,7 +17,7 @@ export default function MyOpportunities() {
     if (!loading && user?.role === "ngo") {
       fetchOpportunities();
     }
-  }, [user, loading]);
+  }, [user, loading, location]);
 
   const fetchOpportunities = async () => {
     try {
@@ -49,24 +50,24 @@ export default function MyOpportunities() {
       <Navbar />
       <div className="dashboard-wrapper">
         <div className="dashboard-header">
-          <div><h1>Manage Opportunities</h1><p className="breadcrumb">SkillBridge / Manage Opportunities</p></div>
+          <div><h1>Manage Opportunities</h1><p className="breadcrumb">SkillBridge / Opportunity</p></div>
         </div>
 
         <div className="stats-container">
           <div className="stat-card-new">
-            <div className="stat-icon">??</div>
+            <div className="stat-icon">📋</div>
             <div className="stat-content"><p className="stat-value-big">{opportunities.length}</p><p className="stat-label-small">Total Opportunities</p></div>
           </div>
           <div className="stat-card-new">
-            <div className="stat-icon">?</div>
+            <div className="stat-icon">🟢</div>
             <div className="stat-content"><p className="stat-value-big">{opportunities.filter((o) => o.status === "open").length}</p><p className="stat-label-small">Open Opportunities</p></div>
           </div>
           <div className="stat-card-new">
-            <div className="stat-icon">?</div>
+            <div className="stat-icon">🔴</div>
             <div className="stat-content"><p className="stat-value-big">{opportunities.filter((o) => o.status === "closed").length}</p><p className="stat-label-small">Closed</p></div>
           </div>
           <div className="stat-card-new">
-            <div className="stat-icon">??</div>
+            <div className="stat-icon">👥</div>
             <div className="stat-content"><p className="stat-value-big">0</p><p className="stat-label-small">Total Applicants</p></div>
           </div>
         </div>
@@ -92,7 +93,7 @@ export default function MyOpportunities() {
                       <td>
                         <div className="opp-title-cell">
                           <p className="opp-title">{opp.title}</p>
-                          <p className="opp-location">?? {opp.location} � ?? {opp.duration}</p>
+                          <p className="opp-location">📍 {opp.location} • ⏱️ {opp.duration}</p>
                         </div>
                       </td>
                       <td>
@@ -101,12 +102,12 @@ export default function MyOpportunities() {
                           {opp.required_skills?.length > 3 && <span className="skill-tag">+{opp.required_skills.length - 3}</span>}
                         </div>
                       </td>
-                      <td><span className={`status-badge ${opp.status}`}>{opp.status === "open" ? "? Open" : "? Closed"}</span></td>
-                      <td><span className="applicants">?? 0 applicants</span></td>
+                      <td><span className={`status-badge ${opp.status}`}>{opp.status === "open" ? "🟢 Open" : "🔴 Closed"}</span></td>
+                      <td><span className="applicants">👥 0 applicants</span></td>
                       <td>
                         <div className="action-buttons">
-                          <button className="btn-edit" onClick={() => navigate(`/opportunities/edit/${opp._id}`)}>?? Edit</button>
-                          <button className="btn-delete" onClick={() => setConfirmDelete(opp._id)}>??? Delete</button>
+                          <button className="btn-edit" onClick={() => navigate(`/opportunities/edit/${opp._id}`)}>✏️ Edit</button>
+                          <button className="btn-delete" onClick={() => setConfirmDelete(opp._id)}>🗑️ Delete</button>
                         </div>
                       </td>
                     </tr>

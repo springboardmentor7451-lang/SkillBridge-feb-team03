@@ -19,6 +19,13 @@ export default function Profile() {
 
   return (
     <div className="profile-container">
+      <button 
+        className="back-to-dashboard"
+        onClick={() => navigate("/dashboard")}
+      >
+        ← Back to Dashboard
+      </button>
+
       <div className="profile-header">
         <h2>My Profile</h2>
         <button

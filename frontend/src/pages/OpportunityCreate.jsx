@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import opportunityService from "../services/opportunityService";
 import { useNavigate, useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import "../styles/opportunityCreate.css";
 
 // This component is used for both creating and editing opportunities.
@@ -56,8 +57,8 @@ export default function OpportunityCreate() {
       }
 
       setTimeout(() => {
-        navigate("/dashboard");
-      }, 1000);
+        navigate("/opportunities");
+      }, 500);
     } catch (err) {
       setError(err.response?.data?.message || (id ? "Failed to update opportunity" : "Failed to create opportunity"));
     } finally {
@@ -99,7 +100,17 @@ export default function OpportunityCreate() {
   }, [id]);
 
   return (
-    <div className="opportunity-create-container">
+    <>
+      <Navbar />
+      <div className="opportunity-create-container">
+      <button 
+        className="back-btn"
+        onClick={() => navigate("/opportunities")}
+        type="button"
+      >
+        ← Back to Opportunities
+      </button>
+
       <h2>{id ? "Edit Opportunity" : "Create New Opportunity"}</h2>
 
       {error && <div className="error-message">{error}</div>}
@@ -172,13 +183,14 @@ export default function OpportunityCreate() {
           </button>
           <button
             type="button"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/opportunities")}
             className="cancel-btn"
           >
             Cancel
           </button>
         </div>
       </form>
-    </div>
+      </div>
+    </>
   );
 }

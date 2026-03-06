@@ -16,11 +16,11 @@ router.post("/", protect, authorizeRole("ngo"), createOpportunity);
 // Get all opportunities (public)
 router.get("/", getAllOpportunities);
 
+// Get logged-in NGO's opportunities (MUST be before /:id route)
+router.get("/my", protect, getMyOpportunities);
+
 // Get single opportunity
 router.get("/:id", getOpportunityById);
-
-// Get logged-in NGO's opportunities
-router.get("/my", protect, getMyOpportunities);
 
 // Update opportunity (NGO owner only)
 router.put("/:id", protect, authorizeRole("ngo"), updateOpportunity);

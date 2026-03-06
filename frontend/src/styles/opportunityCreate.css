@@ -9,6 +9,21 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.back-btn {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  transition: color 0.3s;
+  padding: 0;
+}
+
+.back-btn:hover {
+  color: #ff6a00;
+}
+
 .opportunity-create-container h2 {
   margin-bottom: 1.5rem;
   color: #333;
