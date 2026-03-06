@@ -1,0 +1,134 @@
+.landing-container{
+min-height:100vh;
+background:linear-gradient(120deg,#071028,#0b1120,#111827);
+color:white;
+}
+
+
+/* HERO SECTION */
+
+.hero{
+text-align:center;
+padding:150px 20px;
+}
+
+.hero h1{
+font-size:48px;
+margin-bottom:20px;
+}
+
+/* REAL IMPACT GLOW */
+
+.hero span{
+color:#3b82f6;
+
+text-shadow:
+0 0 8px #3b82f6,
+0 0 20px #3b82f6,
+0 0 35px #06b6d4;
+}
+
+.hero p{
+max-width:600px;
+margin:auto;
+opacity:0.8;
+}
+
+
+/* HERO BUTTONS */
+
+.hero-buttons{
+margin-top:30px;
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+
+/* BECOME VOLUNTEER BUTTON */
+
+.btn-primary{
+padding:12px 26px;
+border-radius:30px;
+
+background:linear-gradient(90deg,#3b82f6,#06b6d4);
+
+color:white;
+text-decoration:none;
+
+box-shadow:
+0 0 10px #3b82f6,
+0 0 20px #3b82f6;
+
+transition:0.3s;
+}
+
+.btn-primary:hover{
+
+transform:scale(1.05);
+
+box-shadow:
+0 0 15px #3b82f6,
+0 0 30px #3b82f6,
+0 0 45px #06b6d4;
+
+}
+
+
+/* REGISTER NGO BUTTON */
+
+.btn-secondary{
+padding:12px 26px;
+border-radius:30px;
+
+border:1px solid rgba(255,255,255,0.3);
+
+color:white;
+text-decoration:none;
+
+transition:0.3s;
+}
+
+.btn-secondary:hover{
+border:1px solid #3b82f6;
+color:#3b82f6;
+
+box-shadow:
+0 0 10px #3b82f6;
+}
+
+
+/* FEATURES */
+
+.features{
+display:flex;
+justify-content:center;
+gap:30px;
+padding:80px 20px;
+flex-wrap:wrap;
+}
+
+.feature-card{
+padding:25px;
+width:260px;
+
+border-radius:20px;
+
+background:rgba(255,255,255,0.06);
+
+-webkit-backdrop-filter:blur(15px);
+backdrop-filter:blur(15px);
+
+border:1px solid rgba(255,255,255,0.1);
+
+text-align:center;
+
+transition:0.3s;
+}
+
+.feature-card:hover{
+transform:translateY(-5px);
+
+box-shadow:
+0 0 15px rgba(59,130,246,0.6);
+}

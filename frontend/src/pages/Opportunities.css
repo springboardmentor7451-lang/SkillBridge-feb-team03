@@ -1,0 +1,62 @@
+.opp-page{
+padding:80px 40px;
+min-height:100vh;
+background:linear-gradient(120deg,#071028,#0b1120,#111827);
+color:white;
+}
+
+.opp-title{
+text-align:center;
+font-size:36px;
+margin-bottom:40px;
+}
+
+.opp-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+.opp-card{
+background:rgba(255,255,255,0.06);
+padding:20px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.1);
+transition:0.3s;
+}
+
+.opp-card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+.opp-meta{
+opacity:0.7;
+margin:6px 0;
+}
+
+.skills{
+margin:10px 0;
+}
+
+.skill-tag{
+background:#3b82f6;
+padding:4px 10px;
+border-radius:20px;
+margin-right:6px;
+font-size:12px;
+}
+
+.opp-desc{
+opacity:0.8;
+margin-bottom:10px;
+}
+
+.apply-btn{
+padding:8px 16px;
+border:none;
+border-radius:6px;
+background:linear-gradient(90deg,#2563eb,#06b6d4);
+color:white;
+cursor:pointer;
+}

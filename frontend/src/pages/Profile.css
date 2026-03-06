@@ -1,0 +1,32 @@
+.profile-page{
+padding:80px 40px;
+min-height:100vh;
+background:linear-gradient(120deg,#071028,#0b1120,#111827);
+color:white;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.profile-title{
+font-size:36px;
+margin-bottom:40px;
+}
+
+.profile-card{
+background:rgba(255,255,255,0.06);
+padding:30px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.1);
+width:320px;
+text-align:center;
+}
+
+.profile-card h2{
+margin-bottom:10px;
+}
+
+.profile-card p{
+margin:6px 0;
+opacity:0.85;
+}

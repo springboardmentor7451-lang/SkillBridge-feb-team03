@@ -1,0 +1,56 @@
+.org-page{
+padding:80px 40px;
+min-height:100vh;
+background:linear-gradient(120deg,#071028,#0b1120,#111827);
+color:white;
+}
+
+.org-title{
+text-align:center;
+font-size:36px;
+margin-bottom:40px;
+}
+
+.org-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+.org-card{
+background:rgba(255,255,255,0.06);
+padding:20px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.1);
+transition:0.3s;
+}
+
+.org-card:hover{
+transform:translateY(-6px);
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+.org-location{
+opacity:0.8;
+margin-top:5px;
+}
+
+.org-focus{
+margin:8px 0;
+font-weight:bold;
+color:#3b82f6;
+}
+
+.org-desc{
+opacity:0.8;
+margin-bottom:12px;
+}
+
+.visit-btn{
+display:inline-block;
+padding:8px 14px;
+border-radius:6px;
+background:linear-gradient(90deg,#2563eb,#06b6d4);
+color:white;
+text-decoration:none;
+}
