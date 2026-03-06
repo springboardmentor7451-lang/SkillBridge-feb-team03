@@ -2,6 +2,8 @@
   display: flex;
   justify-content: center;
   padding: 40px;
+  background: linear-gradient(135deg, #fff9f5 0%, #f0f9ff 100%);
+  min-height: 100vh;
 }
 
 .register-box {
@@ -10,34 +12,59 @@
 
 .back-link {
   text-decoration: none;
-  color: gray;
+  color: #999;
+  transition: color 0.3s;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.back-link:hover {
+  color: #ff6a00;
 }
 
 .register-card {
   background: white;
-  padding: 30px;
-  border-radius: 12px;
+  padding: 40px;
+  border-radius: 15px;
   margin-top: 10px;
   border: 1px solid #eee;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .logo {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  gap: 10px;
 }
 
 .logo-box {
-  background: #ff6a00;
+  background: linear-gradient(45deg, #ff6a00, #ff823b);
   color: white;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
-  margin-right: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);
+}
+
+.register-card h2 {
+  color: #333;
+  margin: 15px 0 5px 0;
 }
 
 .subtitle {
-  color: gray;
-  margin-bottom: 20px;
+  color: #999;
+  margin-bottom: 25px;
+  font-size: 0.95rem;
+}
+
+form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
 }
 
 .grid {
@@ -49,43 +76,142 @@
 input,
 textarea {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
+  padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #ff6a00;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
 }
 
 .role-box {
   display: flex;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  margin-top: 10px;
 }
 
 .role-card {
   flex: 1;
   padding: 20px;
-  border: 2px solid #ddd;
-  border-radius: 10px;
+  border: 2.5px solid #ddd;
+  border-radius: 12px;
   cursor: pointer;
   text-align: center;
+  transition: all 0.3s;
+  font-weight: 600;
+  background: white;
 }
 
-.role-card.active {
-  border-color: #ff6a00;
-  background: #fff3e8;
+.role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.volunteer-card {
+  color: #1976d2;
+}
+
+.volunteer-card:hover:not(.active) {
+  background: #f5f7ff;
+  border-color: #1976d2;
+}
+
+.volunteer-card.active {
+  border-color: #1976d2;
+  background: #e3f2fd;
+}
+
+.ngo-card {
+  color: #7b1fa2;
+}
+
+.ngo-card:hover:not(.active) {
+  background: #faf5ff;
+  border-color: #7b1fa2;
+}
+
+.ngo-card.active {
+  border-color: #7b1fa2;
+  background: #f3e5f5;
+}
+
+.ngo-fields {
+  background: #faf5ff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border-left: 4px solid #7b1fa2;
 }
 
 .register-btn {
   width: 100%;
-  padding: 12px;
-  background: #ff6a00;
+  padding: 14px;
+  background: linear-gradient(45deg, #ff6a00, #ff823b);
   color: white;
   border: none;
   border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
+}
+
+.register-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 106, 0, 0.5);
+}
+
+.register-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .login-link {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 20px;
+  color: #666;
 }
+
+.login-link a {
+  color: #ff6a00;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.login-link a:hover {
+  color: #ff823b;
+}
+
+@media (max-width: 600px) {
+  .register-container {
+    padding: 20px;
+  }
+
+  .register-box {
+    width: 100%;
+  }
+
+  .register-card {
+    padding: 25px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-box {
+    flex-direction: column;
+  }
+}
+

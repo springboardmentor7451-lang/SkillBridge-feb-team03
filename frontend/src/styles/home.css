@@ -2,6 +2,7 @@
   max-width: 1100px;
   margin: auto;
   padding: 60px 20px;
+  scroll-behavior: smooth;
 }
 
 .hero {
@@ -35,17 +36,78 @@
 .primary-btn {
   display: inline-block;
   margin-top: 20px;
-  background: #ff6a00;
-  color: white;
+  background: #ffffff;
+  color: #ff6a00;
   padding: 14px 24px;
   border-radius: 8px;
   text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(255,106,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+.primary-btn:hover {
+  background: #ff6a00;
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(255,106,0,0.5);
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(255,106,0,0.5);
 }
 
 .how-section {
   background: #f9fafb;
   padding: 80px 20px;
   text-align: center;
+  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+}
+
+.how-section h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
+  color: #333;
+  position: relative;
+}
+
+.how-section h2::after {
+  content: "";
+  width: 60px;
+  height: 4px;
+  background: #ff6a00;
+  display: block;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+.how-card {
+  max-width: 250px;
+  background: #fff6f0;
+  padding: 30px 20px;
+  border-radius: 12px;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.how-card:hover {
+  background: #fff3e8;
+}
+
+.how-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  transition: transform 0.3s;
+}
+
+.how-card:hover .icon {
+  transform: rotate(15deg) scale(1.1);
 }
 
 .how-grid {
@@ -64,20 +126,125 @@
   margin-bottom: 10px;
 }
 
+/* reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .features {
   padding: 80px 20px;
+  background: #fff;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
+  color: #333;
+  position: relative;
+}
+
+.features h2::after {
+  content: "";
+  width: 60px;
+  height: 4px;
+  background: #ff6a00;
+  display: block;
+  margin: 8px auto 0;
+  border-radius: 2px;
 }
 
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
+  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .feature-card {
   border: 1px solid #eee;
   padding: 20px;
   border-radius: 10px;
+  background: #f0f9ff;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+}
+
+.feature-card:hover {
+  background: #e0f2ff;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.impact,
+.for-ngos {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.impact h2,
+.for-ngos h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
+  color: #333;
+  position: relative;
+}
+
+.impact p,
+.for-ngos p {
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hero {
+  position: relative;
+  padding-top: 100px;
+  background: linear-gradient(135deg, #ff6a00 0%, #ffb347 100%);
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  background: #fff;
+  clip-path: polygon(0 40%, 25% 60%, 50% 40%, 75% 60%, 100% 40%, 100% 100%,0 100%);
+}
+
+.tag {
+  background: rgba(255,255,255,0.8);
+  color: #ff6a00;
+  font-weight: 600;
+}
+
+.hero-title {
+  font-size: 52px;
+  font-weight: bold;
+  margin: 20px 0;
+  line-height: 1.2;
+}
+
+.hero-text {
+  color: #f0f0f0;
+  margin: 0 auto;
+  max-width: 600px;
 }
 
 .footer {
@@ -85,6 +252,17 @@
   padding: 30px;
   display: flex;
   justify-content: space-between;
+  background: #fff;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+}
+
+.footer p {
+  color: #777;
+  margin: 0;
 }
 
 .logo-box {
@@ -93,4 +271,5 @@
   padding: 6px 10px;
   border-radius: 6px;
   margin-right: 8px;
+  font-weight: bold;
 }

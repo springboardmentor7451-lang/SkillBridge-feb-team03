@@ -1,0 +1,133 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #fff9f5 0%, #f0f9ff 100%);
+  position: relative;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 420px;
+}
+
+.back-link {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  text-decoration: none;
+  color: #888;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: #ff6a00;
+}
+
+.auth-card {
+  background: white;
+  padding: 35px;
+  border-radius: 16px;
+  border: 1px solid #eee;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.logo-box {
+  background: linear-gradient(45deg, #ff6a00, #ff823b);
+  color: white;
+  padding: 7px 11px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.auth-card h2 {
+  color: #333;
+  margin: 15px 0 5px 0;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  color: #888;
+  margin-bottom: 25px;
+  font-size: 0.95rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.25s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #ff6a00;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.12);
+}
+
+.btn-primary {
+  padding: 14px;
+  background: linear-gradient(45deg, #ff6a00, #ff823b);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
+  margin-top: 5px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 106, 0, 0.45);
+}
+
+.login-link {
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+  margin-top: 18px;
+}
+
+.login-link a {
+  color: #ff6a00;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  color: #ff823b;
+}
+
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 25px;
+  }
+
+  .auth-card h2 {
+    font-size: 1.5rem;
+  }
+}

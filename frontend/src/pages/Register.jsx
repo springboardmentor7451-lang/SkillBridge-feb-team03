@@ -14,6 +14,7 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
+    location: "",
     skills: "",
     bio: "",
     organization_name: "",
@@ -46,6 +47,7 @@ export default function Register() {
           email: form.email,
           password: form.password,
           role: role,
+          location: form.location,
           skills: form.skills.split(","),
           bio: form.bio,
           organization_name: form.organization_name,
@@ -59,13 +61,10 @@ export default function Register() {
       navigate("/login");
 
     } catch (err) {
-
-      alert("Registration failed");
-
+      const msg = err.response?.data?.message || "Registration failed";
+      alert(msg);
     } finally {
-
       setLoading(false);
-
     }
 
   };
@@ -160,8 +159,8 @@ export default function Register() {
               <div
                 className={
                   role === "volunteer"
-                    ? "role-card active"
-                    : "role-card"
+                    ? "role-card volunteer-card active"
+                    : "role-card volunteer-card"
                 }
                 onClick={() => setRole("volunteer")}
               >
@@ -171,8 +170,8 @@ export default function Register() {
               <div
                 className={
                   role === "ngo"
-                    ? "role-card active"
-                    : "role-card"
+                    ? "role-card ngo-card active"
+                    : "role-card ngo-card"
                 }
                 onClick={() => setRole("ngo")}
               >
@@ -181,15 +180,25 @@ export default function Register() {
 
             </div>
 
+            <div>
+              <label>Location</label>
+              <input
+                name="location"
+                placeholder="e.g., New York, Remote"
+                onChange={handleChange}
+                required
+              />
+            </div>
 
             {role === "ngo" && (
 
-              <div>
+              <div className="ngo-fields">
 
                 <label>Organization Name</label>
 
                 <input
                   name="organization_name"
+                  placeholder="Your organization name"
                   onChange={handleChange}
                 />
 
@@ -197,6 +206,7 @@ export default function Register() {
 
                 <textarea
                   name="organization_description"
+                  placeholder="Tell us about your organization"
                   onChange={handleChange}
                 />
 
@@ -204,6 +214,7 @@ export default function Register() {
 
                 <input
                   name="website_url"
+                  placeholder="https://example.com"
                   onChange={handleChange}
                 />
 
@@ -212,14 +223,16 @@ export default function Register() {
             )}
 
 
-            <label>Skills</label>
-
-            <input
-              name="skills"
-              placeholder="Design, React, Writing"
-              onChange={handleChange}
-            />
-
+            {role === "volunteer" && (
+              <div>
+                <label>Skills</label>
+                <input
+                  name="skills"
+                  placeholder="Design, React, Writing"
+                  onChange={handleChange}
+                />
+              </div>
+            )}
 
             <label>Bio</label>
 

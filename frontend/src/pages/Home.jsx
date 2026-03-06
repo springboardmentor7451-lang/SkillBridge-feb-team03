@@ -1,8 +1,38 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
 import "../styles/home.css";
 
 export default function Home() {
+  const { isAuthenticated, logout } = useAuth();
+
+  // If a token exists when landing on home, clear it so user starts logged out
+  useEffect(() => {
+    if (isAuthenticated) logout();
+  }, [isAuthenticated, logout]);
+
+  // add scroll reveal
+  useEffect(() => {
+    const revealElements = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      revealElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+
   return (
     <div className="home">
 
@@ -33,13 +63,13 @@ export default function Home() {
 
 
       {/* How it Works */}
-      <section className="how-section">
+      <section className="how-section" id="how">
 
         <h2>How It Works</h2>
 
         <div className="how-grid">
 
-          <div className="how-card">
+          <div className="how-card reveal">
             <div className="icon">👤</div>
             <h3>Create Your Profile</h3>
             <p>
@@ -47,7 +77,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="how-card">
+          <div className="how-card reveal">
             <div className="icon">🔍</div>
             <h3>Find Opportunities</h3>
             <p>
@@ -55,7 +85,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="how-card">
+          <div className="how-card reveal">
             <div className="icon">💬</div>
             <h3>Connect & Collaborate</h3>
             <p>
@@ -69,28 +99,28 @@ export default function Home() {
 
 
       {/* Features */}
-      <section className="features container">
+      <section id="features" className="features container">
 
         <h2>Platform Features</h2>
 
         <div className="feature-grid">
 
-          <div className="feature-card">
+          <div className="feature-card reveal">
             <h3>Role-Based Profiles</h3>
             <p>Separate dashboards for volunteers and NGOs.</p>
           </div>
 
-          <div className="feature-card">
+          <div className="feature-card reveal">
             <h3>NGO Opportunities</h3>
             <p>Post and manage volunteer opportunities easily.</p>
           </div>
 
-          <div className="feature-card">
+          <div className="feature-card reveal">
             <h3>Smart Filtering</h3>
             <p>Find perfect match using skill and location filters.</p>
           </div>
 
-          <div className="feature-card">
+          <div className="feature-card reveal">
             <h3>Built-in Messaging</h3>
             <p>Communicate directly with matched users.</p>
           </div>
@@ -99,6 +129,18 @@ export default function Home() {
 
       </section>
 
+
+      {/* Impact (placeholder) */}
+      <section id="impact" className="impact container">
+        <h2>Impact</h2>
+        <p>Discover the change our volunteers have made.</p>
+      </section>
+
+      {/* For NGOs (placeholder) */}
+      <section id="for-ngos" className="for-ngos container">
+        <h2>For NGOs</h2>
+        <p>Learn how NGOs can post opportunities and collaborate.</p>
+      </section>
 
       {/* Footer */}
       <footer className="footer">

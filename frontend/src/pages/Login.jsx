@@ -1,9 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import "../styles/login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -22,51 +25,59 @@ export default function Login() {
         form
       );
 
-      localStorage.setItem("token", res.data.token);
-
+      const { token, user } = res.data;
+      login(token, user);
       navigate("/dashboard");
-    } catch {
-      alert("Login failed");
+    } catch (err) {
+      console.error("Login error", err.response || err);
+      const msg = err.response?.data?.message || "Login failed";
+      alert(msg);
     }
   };
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-box">
+        <Link to="/" className="back-link">
+          ← Back to home
+        </Link>
 
-        <div className="logo">
-          <span className="logo-box">SB</span>
-          SkillBridge
+        <div className="auth-card">
+          <div className="logo">
+            <span className="logo-box">SB</span>
+            SkillBridge
+          </div>
+
+          <h2>Welcome back</h2>
+
+          <p className="subtitle">Sign in to connect with NGOs</p>
+
+          <form onSubmit={handleSubmit}>
+            <input
+              name="email"
+              placeholder="Email"
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              onChange={handleChange}
+              required
+            />
+
+            <button type="submit" className="btn-primary">
+              Sign In
+            </button>
+          </form>
+
+          <p className="login-link">
+            Don't have an account?
+            <Link to="/register"> Sign up</Link>
+          </p>
         </div>
-
-        <h2>Welcome back</h2>
-
-        <p>Sign in to connect with NGOs</p>
-
-        <form onSubmit={handleSubmit}>
-          <input
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-          />
-
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            onChange={handleChange}
-          />
-
-          <button className="btn-primary">
-            Sign In
-          </button>
-        </form>
-
-        <p>
-          Don't have an account?
-          <Link to="/register"> Sign up</Link>
-        </p>
-
       </div>
     </div>
   );
