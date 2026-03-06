@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const opportunityRoutes = require("./routes/opportunityRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
 
 
 dotenv.config();
@@ -20,6 +21,9 @@ app.use("/api/users", userRoutes);
 
 // Opportunity routes
 app.use("/api/opportunities", opportunityRoutes);
+
+// Application routes
+app.use("/api/applications", applicationRoutes);
 
 // Auth routes
 app.use("/api/auth", authRoutes);

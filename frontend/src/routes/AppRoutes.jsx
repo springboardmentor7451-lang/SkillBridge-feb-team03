@@ -8,6 +8,7 @@ import ProfileEdit from "../pages/ProfileEdit";
 import OpportunityCreate from "../pages/OpportunityCreate";
 import MyOpportunities from "../pages/MyOpportunities";
 import BrowseOpportunities from "../pages/BrowseOpportunities";
+import Applications from "../pages/Applications";
 
 export default function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ export default function AppRoutes() {
         <Route path="/opportunities" element={<MyOpportunities />} />
         <Route path="/opportunities/edit/:id" element={<OpportunityCreate />} />
         <Route path="/browse-opportunities" element={<BrowseOpportunities />} />
+        <Route path="/applications" element={<Applications />} />
       </Routes>
     </BrowserRouter>
   );
