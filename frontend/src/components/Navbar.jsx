@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationBell from "./NotificationBell";
 import "../styles/navbar.css";
 
 export default function Navbar() {
@@ -73,15 +74,18 @@ export default function Navbar() {
             </Link>
           </>
         ) : (
-          <div className="user-menu">
-            <div className="user-info">
-              <span className="user-name">{user?.name}</span>
-              <span className="user-role">{user?.role === "ngo" ? "NGO" : "Volunteer"}</span>
+          <>
+            <NotificationBell />
+            <div className="user-menu">
+              <div className="user-info">
+                <span className="user-name">{user?.name}</span>
+                <span className="user-role">{user?.role === "ngo" ? "NGO" : "Volunteer"}</span>
+              </div>
+              <button onClick={handleLogout} className="sign-out-btn">
+                Sign Out
+              </button>
             </div>
-            <button onClick={handleLogout} className="sign-out-btn">
-              Sign Out
-            </button>
-          </div>
+          </>
         )}
       </div>
     </nav>

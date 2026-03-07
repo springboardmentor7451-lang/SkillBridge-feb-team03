@@ -17,6 +17,11 @@ const applicationService = {
     return api.get("/applications/my");
   },
 
+  // Get NGO's applications
+  getNGOApplications: async () => {
+    return api.get("/applications/ngo");
+  },
+
   // Get opportunity's applications (NGO only)
   getOpportunityApplications: async (opportunityId) => {
     return api.get(`/applications/opportunity/${opportunityId}`);

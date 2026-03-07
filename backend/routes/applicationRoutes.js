@@ -4,6 +4,7 @@ const {
   applyToOpportunity,
   getMyApplications,
   getOpportunityApplications,
+  getNGOApplications,
   updateApplicationStatus,
 } = require("../controllers/applicationController");
 const { protect, authorizeRole } = require("../middleware/authMiddleware");
@@ -13,6 +14,12 @@ router.post("/", protect, authorizeRole("volunteer"), applyToOpportunity);
 router.get("/my", protect, getMyApplications);
 
 // NGO routes
+router.get(
+  "/ngo",
+  protect,
+  authorizeRole("ngo"),
+  getNGOApplications
+);
 router.get(
   "/opportunity/:opportunityId",
   protect,

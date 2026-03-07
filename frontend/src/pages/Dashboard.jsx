@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import opportunityService from "../services/opportunityService";
 import applicationService from "../services/applicationService";
 import Navbar from "../components/Navbar";
+import MatchSuggestions from "../components/MatchSuggestions";
 import "../styles/dashboard.css";
 
 export default function Dashboard() {
@@ -16,19 +17,23 @@ export default function Dashboard() {
   useEffect(() => {
     if (!loading && user) {
       if (user.role === "ngo") {
-        fetchNGOOpportunities();
+        fetchNGOData();
       } else if (user.role === "volunteer") {
         fetchVolunteerApplications();
       }
     }
   }, [user, loading, location]);
 
-  const fetchNGOOpportunities = async () => {
+  const fetchNGOData = async () => {
     try {
-      const res = await opportunityService.getMyOpportunities();
-      setOpportunities(res.data.opportunities);
+      const [oppsRes, appsRes] = await Promise.all([
+        opportunityService.getMyOpportunities(),
+        applicationService.getNGOApplications()
+      ]);
+      setOpportunities(oppsRes.data.opportunities);
+      setApplications(appsRes.data.applications);
     } catch (error) {
-      console.error("Failed to fetch opportunities:", error);
+      console.error("Failed to fetch NGO data:", error);
     }
   };
 
@@ -47,11 +52,9 @@ export default function Dashboard() {
   // NGO Dashboard
   if (user.role === "ngo") {
     const activeOpps = opportunities.filter((o) => o.status === "open").length;
-    const totalApplications = opportunities.reduce((sum, opp) => sum + (opp.applicants?.length || 0), 0);
-    const pendingApplications = opportunities.reduce((sum, opp) => {
-      const pending = opp.applicants?.filter((a) => a.status === "pending").length || 0;
-      return sum + pending;
-    }, 0);
+    const totalApplications = applications.length;
+    const pendingApplications = applications.filter((a) => a.status === "pending").length;
+    const activeVolunteers = applications.filter((a) => a.status === "accepted").length;
 
     return (
       <>
@@ -63,13 +66,13 @@ export default function Dashboard() {
           <div className="stats-grid">
             <div className="stat-card"><p className="stat-label">Active Opportunities</p><h2 className="stat-value blue">{activeOpps}</h2></div>
             <div className="stat-card"><p className="stat-label">Applications</p><h2 className="stat-value green">{totalApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Active Volunteers</p><h2 className="stat-value purple">0</h2></div>
+            <div className="stat-card"><p className="stat-label">Active Volunteers</p><h2 className="stat-value purple">{activeVolunteers}</h2></div>
             <div className="stat-card"><p className="stat-label">Pending Applications</p><h2 className="stat-value orange">{pendingApplications}</h2></div>
           </div>
 
           <div className="dashboard-grid">
             <div className="recent">
-              <div className="recent-header"><h3>Recent Applications</h3><a href="#">View All</a></div>
+              <div className="recent-header"><h3>Recent Applications</h3><a href="#" onClick={() => navigate("/applications")}>View All</a></div>
               <div className="recent-box">No recent applications to show.</div>
             </div>
             <div className="quick-actions">
@@ -105,6 +108,8 @@ export default function Dashboard() {
             <div className="stat-card"><p className="stat-label">Pending</p><h2 className="stat-value orange">{pendingApplications}</h2></div>
             <div className="stat-card"><p className="stat-label">Skills</p><h2 className="stat-value purple">{userSkills}</h2></div>
           </div>
+
+          <MatchSuggestions />
 
           <div className="dashboard-grid">
             <div className="recent">

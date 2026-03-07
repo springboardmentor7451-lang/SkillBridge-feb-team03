@@ -7,8 +7,18 @@ const opportunityService = {
   },
 
   // Get all opportunities
-  getAllOpportunities: async () => {
-    return api.get("/opportunities");
+  getAllOpportunities: async (filters = {}) => {
+    const params = new URLSearchParams();
+
+    if (filters.skills) params.append('skills', filters.skills);
+    if (filters.location) params.append('location', filters.location);
+    if (filters.duration) params.append('duration', filters.duration);
+    if (filters.status) params.append('status', filters.status);
+
+    const queryString = params.toString();
+    const url = queryString ? `/opportunities?${queryString}` : '/opportunities';
+
+    return api.get(url);
   },
 
   // Get single opportunity by ID

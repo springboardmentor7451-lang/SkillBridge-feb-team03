@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import opportunityService from "../services/opportunityService";
 import applicationService from "../services/applicationService";
 import Navbar from "../components/Navbar";
+import ApplicationForm from "../components/ApplicationForm";
 import "../styles/dashboard.css";
 
 export default function BrowseOpportunities() {
@@ -13,7 +14,14 @@ export default function BrowseOpportunities() {
   const [opportunities, setOpportunities] = useState([]);
   const [userApplications, setUserApplications] = useState([]);
   const [loadingOpps, setLoadingOpps] = useState(false);
-  const [filter, setFilter] = useState("all");
+  const [filters, setFilters] = useState({
+    skills: '',
+    location: '',
+    duration: '',
+    status: 'open'
+  });
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
 
   useEffect(() => {
     if (!loading && user?.role === "volunteer") {
@@ -25,13 +33,34 @@ export default function BrowseOpportunities() {
   const fetchOpportunities = async () => {
     try {
       setLoadingOpps(true);
-      const res = await opportunityService.getAllOpportunities();
+      const res = await opportunityService.getAllOpportunities(filters);
       setOpportunities(res.data.opportunities);
     } catch (error) {
       console.error("Failed to fetch opportunities:", error);
     } finally {
       setLoadingOpps(false);
     }
+  };
+
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const applyFilters = () => {
+    fetchOpportunities();
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      skills: '',
+      location: '',
+      duration: '',
+      status: 'open'
+    });
+    fetchOpportunities();
   };
 
   const fetchUserApplications = async () => {
@@ -43,21 +72,15 @@ export default function BrowseOpportunities() {
     }
   };
 
-  const handleApply = async (oppId) => {
-    console.log("Applying to opportunity:", oppId);
-    try {
-      console.log("Calling applicationService.applyToOpportunity");
-      const response = await applicationService.applyToOpportunity(oppId);
-      console.log("Application response:", response);
-      // Refresh applications list
-      fetchUserApplications();
-      alert("Application submitted! We'll notify you soon.");
-    } catch (error) {
-      console.error("Failed to apply:", error);
-      console.error("Error response:", error.response);
-      console.error("Error data:", error.response?.data);
-      alert(error.response?.data?.message || "Failed to apply to opportunity");
-    }
+  const handleApply = (opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setShowApplicationForm(true);
+  };
+
+  const handleApplicationSuccess = () => {
+    // Refresh applications list
+    fetchUserApplications();
+    alert("Application submitted successfully! We'll notify you soon.");
   };
 
   const isAlreadyApplied = (oppId) => {
@@ -68,10 +91,6 @@ export default function BrowseOpportunities() {
     const app = userApplications.find((app) => app.opportunity_id._id === oppId);
     return app?.status || null;
   };
-
-  const filteredOpportunities = filter === "all" 
-    ? opportunities 
-    : opportunities.filter((o) => o.status === filter);
 
   if (loading) return (<><Navbar /><div className="dashboard-wrapper"><p>Loading...</p></div></>);
   if (!user) return (<><Navbar /><div className="dashboard-wrapper"><p>Please login first</p></div></>);
@@ -107,25 +126,76 @@ export default function BrowseOpportunities() {
         <div className="opportunities-section">
           <div className="section-header">
             <div><h2>Available Opportunities</h2><p>Find and apply to volunteering opportunities</p></div>
-            <div className="filter-group">
-              <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-select">
-                <option value="all">All Statuses</option>
-                <option value="open">Open</option>
-                <option value="closed">Closed</option>
-              </select>
+          </div>
+
+          {/* Filter Section */}
+          <div className="filters-section">
+            <div className="filter-row">
+              <div className="filter-group">
+                <label>Skills (comma-separated)</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Teaching, Programming, Healthcare"
+                  value={filters.skills}
+                  onChange={(e) => handleFilterChange('skills', e.target.value)}
+                  className="filter-input"
+                />
+              </div>
+              <div className="filter-group">
+                <label>Location</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Mumbai, Delhi, Remote"
+                  value={filters.location}
+                  onChange={(e) => handleFilterChange('location', e.target.value)}
+                  className="filter-input"
+                />
+              </div>
+              <div className="filter-group">
+                <label>Duration</label>
+                <select
+                  value={filters.duration}
+                  onChange={(e) => handleFilterChange('duration', e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">All Durations</option>
+                  <option value="1-3 months">1-3 months</option>
+                  <option value="3-6 months">3-6 months</option>
+                  <option value="6-12 months">6-12 months</option>
+                  <option value="1+ year">1+ year</option>
+                  <option value="Short-term">Short-term</option>
+                  <option value="Long-term">Long-term</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label>Status</label>
+                <select
+                  value={filters.status}
+                  onChange={(e) => handleFilterChange('status', e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="open">Open Only</option>
+                  <option value="all">All Statuses</option>
+                  <option value="closed">Closed Only</option>
+                </select>
+              </div>
+            </div>
+            <div className="filter-actions">
+              <button onClick={applyFilters} className="btn-primary">Apply Filters</button>
+              <button onClick={clearFilters} className="btn-secondary">Clear Filters</button>
             </div>
           </div>
 
-          {loadingOpps ? <p>Loading opportunities...</p> : filteredOpportunities.length === 0 ? (
+          {loadingOpps ? <p>Loading opportunities...</p> : opportunities.length === 0 ? (
             <div className="empty-state">
-              <p>No opportunities available at the moment. Check back soon!</p>
+              <p>No opportunities match your filters. Try adjusting your search criteria.</p>
             </div>
           ) : (
             <div className="table-responsive">
               <table className="opps-table">
                 <thead><tr><th>OPPORTUNITY</th><th>SKILLS</th><th>STATUS</th><th>ACTIONS</th></tr></thead>
                 <tbody>
-                  {filteredOpportunities.map((opp) => {
+                  {opportunities.map((opp) => {
                     const isApplied = isAlreadyApplied(opp._id);
                     const appStatus = getApplicationStatus(opp._id);
                     return (
@@ -150,7 +220,7 @@ export default function BrowseOpportunities() {
                               ✓ {appStatus === "pending" ? "Pending" : appStatus === "accepted" ? "Accepted" : "Applied"}
                             </button>
                           ) : (
-                            <button className="btn-apply" onClick={() => handleApply(opp._id)} disabled={opp.status !== "open"}>
+                            <button className="btn-apply" onClick={() => handleApply(opp)} disabled={opp.status !== "open"}>
                               {opp.status === "open" ? "✉️ Apply" : "Closed"}
                             </button>
                           )}
@@ -165,6 +235,17 @@ export default function BrowseOpportunities() {
           )}
         </div>
       </div>
+
+      {showApplicationForm && selectedOpportunity && (
+        <ApplicationForm
+          opportunity={selectedOpportunity}
+          onClose={() => {
+            setShowApplicationForm(false);
+            setSelectedOpportunity(null);
+          }}
+          onSuccess={handleApplicationSuccess}
+        />
+      )}
     </>
   );
 }

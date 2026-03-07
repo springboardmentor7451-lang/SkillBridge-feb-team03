@@ -9,10 +9,14 @@ import OpportunityCreate from "../pages/OpportunityCreate";
 import MyOpportunities from "../pages/MyOpportunities";
 import BrowseOpportunities from "../pages/BrowseOpportunities";
 import Applications from "../pages/Applications";
+import Messages from "../pages/Messages";
+import Notifications from "../pages/Notifications";
+import NotificationSystem from "../components/NotificationSystem";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+      <NotificationSystem />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -25,6 +29,8 @@ export default function AppRoutes() {
         <Route path="/opportunities/edit/:id" element={<OpportunityCreate />} />
         <Route path="/browse-opportunities" element={<BrowseOpportunities />} />
         <Route path="/applications" element={<Applications />} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </BrowserRouter>
   );

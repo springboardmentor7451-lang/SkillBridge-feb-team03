@@ -72,6 +72,35 @@ exports.applyToOpportunity = async (req, res) => {
     await opportunity.save();
     console.log("Opportunity updated with applicant");
 
+    // Create notification for NGO
+    try {
+      const { createNotification } = require("./notificationController");
+      const ngo = await User.findById(opportunity.ngo_id);
+      const ngoId = ngo?._id;
+      
+      await createNotification({
+        user_id: ngoId,
+        type: "application_received",
+        title: "New Application Received 📋",
+        message: `${volunteer.name} applied for "${opportunity.title}"`,
+        related_user_id: volunteer_id,
+        opportunity_id: opportunity._id,
+        application_id: application._id,
+        action_url: `/applications`,
+      });
+
+      // Emit notification via socket
+      const { io } = require("../server");
+      io.to(ngoId.toString()).emit('notification', {
+        type: 'application_received',
+        title: 'New Application Received 📋',
+        message: `${volunteer.name} applied for "${opportunity.title}"`,
+        timestamp: new Date()
+      });
+    } catch (notifError) {
+      console.error("Failed to create notification:", notifError);
+    }
+
     res.status(201).json({
       message: "Application submitted successfully",
       application,
@@ -85,9 +114,10 @@ exports.applyToOpportunity = async (req, res) => {
 // Get volunteer's applications
 exports.getMyApplications = async (req, res) => {
   try {
-    const volunteer_id = req.user.id;
+    const volunteer_id = req.user;
     const applications = await Application.find({ volunteer_id })
       .populate("opportunity_id")
+      .populate("volunteer_id", "name email")
       .sort({ applied_date: -1 });
 
     res.json({
@@ -158,15 +188,72 @@ exports.updateApplicationStatus = async (req, res) => {
       applicationId,
       { status },
       { new: true }
-    );
+    ).populate("opportunity_id");
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
     }
 
+    console.log("Updating application", applicationId, "to status", status);
+
+    // Create notification for volunteer
+    try {
+      const { createNotification } = require("./notificationController");
+      const ngo = await User.findById(req.user);
+      const ngoName = ngo?.organization_name || ngo?.name || "An NGO";
+      const opportunityTitle = application.opportunity_id?.title || "an opportunity";
+
+      let notificationTitle, notificationMessage;
+      if (status === "accepted") {
+        notificationTitle = "Application Accepted! 🎉";
+        notificationMessage = `${ngoName} accepted your application for "${opportunityTitle}"`;
+      } else if (status === "rejected") {
+        notificationTitle = "Application Rejected";
+        notificationMessage = `${ngoName} rejected your application for "${opportunityTitle}"`;
+      }
+
+      if (notificationTitle) {
+        await createNotification({
+          user_id: application.volunteer_id,
+          type: status === "accepted" ? "application_accepted" : "application_rejected",
+          title: notificationTitle,
+          message: notificationMessage,
+          related_user_id: req.user,
+          opportunity_id: application.opportunity_id._id,
+          application_id: application._id,
+          action_url: `/applications`,
+        });
+
+        // Emit notification via socket
+        const { io } = require("../server");
+        io.to(application.volunteer_id.toString()).emit('notification', {
+          type: status === "accepted" ? "application_accepted" : "application_rejected",
+          title: notificationTitle,
+          message: notificationMessage,
+          timestamp: new Date()
+        });
+      }
+    } catch (notifError) {
+      console.error("Failed to create notification:", notifError);
+    }
+
+    // If application is accepted, create a conversation
+    let conversation = null;
+    if (status === "accepted") {
+      try {
+        const { createConversation } = require("./conversationController");
+        conversation = await createConversation(applicationId);
+        console.log("Conversation created/retrieved:", conversation?._id);
+      } catch (convError) {
+        console.error("Failed to create conversation:", convError);
+        // Don't fail the entire request if conversation creation fails
+      }
+    }
+
     res.json({
       message: "Application status updated",
       application,
+      conversation: conversation ? { _id: conversation._id } : null,
     });
   } catch (error) {
     console.error("Update application error:", error);

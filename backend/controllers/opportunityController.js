@@ -49,14 +49,53 @@ exports.getMyOpportunities = async (req, res) => {
 // Get all opportunities
 exports.getAllOpportunities = async (req, res) => {
   try {
-    const opportunities = await Opportunity.find().populate(
+    const { skills, location, duration, status } = req.query;
+
+    let filter = {};
+
+    // Filter by status (default to open opportunities)
+    if (status === 'all') {
+      // No status filter
+    } else if (status === 'open' || !status) {
+      filter.status = 'open';
+    } else {
+      filter.status = status;
+    }
+
+    // Filter by location (case-insensitive partial match)
+    if (location && location.trim()) {
+      filter.location = { $regex: location.trim(), $options: 'i' };
+    }
+
+    // Filter by duration (exact match)
+    if (duration && duration.trim()) {
+      filter.duration = duration.trim();
+    }
+
+    // Filter by skills (opportunities that have at least one of the specified skills)
+    if (skills && skills.trim()) {
+      const skillArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+      if (skillArray.length > 0) {
+        filter.required_skills = { $in: skillArray };
+      }
+    }
+
+    console.log('Opportunity filter:', filter);
+
+    const opportunities = await Opportunity.find(filter).populate(
       "ngo_id",
       "organization_name location"
     );
 
     res.json({
-      message: "All opportunities retrieved",
+      message: "Opportunities retrieved successfully",
       opportunities,
+      filter: {
+        skills: skills || '',
+        location: location || '',
+        duration: duration || '',
+        status: status || 'open'
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
