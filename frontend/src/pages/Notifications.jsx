@@ -167,7 +167,7 @@ export default function Notifications() {
         <div className="dashboard-header">
           <div>
             <h1>Notifications</h1>
-            <p className="breadcrumb">SkillBridge / Notifications</p>
+            <p className="breadcrumb">SevaSetu / Notifications</p>
           </div>
         </div>
 

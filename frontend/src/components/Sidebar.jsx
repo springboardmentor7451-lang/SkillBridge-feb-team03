@@ -12,8 +12,8 @@ export default function Sidebar() {
   return (
     <div className="sidebar">
       <div className="logo">
-        <div className="logo-box">SB</div>
-        SkillBridge
+        <div className="logo-box">SS</div>
+        SevaSetu
       </div>
 
       {user && (

@@ -193,7 +193,7 @@ export default function Messages() {
       <Navbar />
       <div className="dashboard-wrapper">
         <div className="dashboard-header">
-          <div><h1>Messages</h1><p className="breadcrumb">SkillBridge / Messages</p></div>
+          <div><h1>Messages</h1><p className="breadcrumb">SevaSetu / Messages</p></div>
         </div>
 
         <div className="messages-container">

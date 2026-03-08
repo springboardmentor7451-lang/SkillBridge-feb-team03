@@ -50,7 +50,7 @@ export default function MyOpportunities() {
       <Navbar />
       <div className="dashboard-wrapper">
         <div className="dashboard-header">
-          <div><h1>Manage Opportunities</h1><p className="breadcrumb">SkillBridge / Opportunity</p></div>
+          <div><h1>Manage Opportunities</h1><p className="breadcrumb">SevaSetu / Opportunity</p></div>
         </div>
 
         <div className="stats-container">

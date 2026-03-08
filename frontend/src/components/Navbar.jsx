@@ -1,93 +1,117 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import NotificationBell from "./NotificationBell";
-import "../styles/navbar.css";
+import "./Navbar.css";
 
 export default function Navbar() {
+  const [activeSection, setActiveSection] = useState("home");
   const { user, isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["home", "how", "features", "impact", "for-ngos"];
+      const scrollPosition = window.scrollY + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetBottom = offsetTop + element.offsetHeight;
+          
+          if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (e, sectionId) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(sectionId);
+    }
+  };
+
+  const scrollToTop = (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setActiveSection("home");
+  };
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    window.location.href = "/";
   };
 
-  const isActive = (path) => location.pathname === path;
-
   return (
-    <nav className="navbar">
-      {/* Left: Logo */}
-      <div className="nav-left">
-        <div className="logo-box">SB</div>
-        <Link to="/" className="navbar-logo-text">
-          SkillBridge
+    <header className="navbar">
+      <div className="brand">
+        <Link to="/" className="brand-link" onClick={scrollToTop}>
+          <h2 className="brand-name">SevaSetu</h2>
         </Link>
       </div>
 
-      {/* Middle: Navigation Links (only when authenticated) */}
-      {/* center links vary based on auth state */}
-      {isAuthenticated ? (
-        <div className="nav-center">
-          <Link to="/dashboard" className={`nav-link ${isActive("/dashboard") ? "active" : ""}`}>
-            Dashboard
-          </Link>
-          <Link to={user?.role === "ngo" ? "/opportunities" : "/browse-opportunities"} className={`nav-link ${isActive("/opportunities") || isActive("/browse-opportunities") ? "active" : ""}`}>
-            Opportunity
-          </Link>
-          <Link to="/applications" className={`nav-link ${isActive("/applications") ? "active" : ""}`}>
-            Applications
-          </Link>
-          <Link to="/messages" className={`nav-link ${isActive("/messages") ? "active" : ""}`}>
-            Message
-          </Link>
-          <Link to="/profile" className={`nav-link ${isActive("/profile") ? "active" : ""}`}>
-            Profile
-          </Link>
-        </div>
-      ) : (
-        <div className="nav-center">
-          <a href="#how" className="nav-link">
-            How it Works
-          </a>
-          <a href="#features" className="nav-link">
-            Features
-          </a>
-          <a href="#impact" className="nav-link">
-            Impact
-          </a>
-          <a href="#for-ngos" className="nav-link">
-            For NGOs
-          </a>
-        </div>
-      )}
+      <nav className="nav-links">
+        <a 
+          href="#" 
+          className={activeSection === "home" ? "active" : ""} 
+          onClick={scrollToTop}
+        >
+          Home
+        </a>
+        <a 
+          href="#features" 
+          className={activeSection === "features" ? "active" : ""} 
+          onClick={(e) => scrollToSection(e, 'features')}
+        >
+          Features
+        </a>
+        <a 
+          href="#impact" 
+          className={activeSection === "impact" ? "active" : ""} 
+          onClick={(e) => scrollToSection(e, 'impact')}
+        >
+          Impact
+        </a>
+        <a 
+          href="#for-ngos" 
+          className={activeSection === "for-ngos" ? "active" : ""} 
+          onClick={(e) => scrollToSection(e, 'for-ngos')}
+        >
+          For NGOs
+        </a>
+      </nav>
 
-      {/* Right: User Info & Action */}
-      <div className="nav-right">
-        {!isAuthenticated ? (
+      <div className="nav-buttons">
+        {isAuthenticated ? (
+          <div className="user-menu">
+            <Link to="/dashboard" className="user-name">
+              {user?.name || "My Account"}
+            </Link>
+            <button onClick={handleLogout} className="btn-outline logout-btn">
+              Logout
+            </button>
+          </div>
+        ) : (
           <>
-            <Link to="/login" className="login-btn">
+            <Link to="/login" className="btn-outline">
               Log In
             </Link>
-            <Link to="/register" className="primary-btn">
+            <Link to="/register" className="btn-primary">
               Get Started
             </Link>
           </>
-        ) : (
-          <>
-            <NotificationBell />
-            <div className="user-menu">
-              <div className="user-info">
-                <span className="user-name">{user?.name}</span>
-                <span className="user-role">{user?.role === "ngo" ? "NGO" : "Volunteer"}</span>
-              </div>
-              <button onClick={handleLogout} className="sign-out-btn">
-                Sign Out
-              </button>
-            </div>
-          </>
         )}
       </div>
-    </nav>
+    </header>
   );
 }
+

@@ -12,14 +12,28 @@
 
 .back-link {
   text-decoration: none;
-  color: #999;
-  transition: color 0.3s;
-  display: inline-block;
+  color: #555;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
   margin-bottom: 15px;
 }
 
 .back-link:hover {
   color: #ff6a00;
+  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.15);
+  transform: translateX(-2px);
+}
+
+.back-link::before {
+  content: "←";
+  font-size: 1.1rem;
 }
 
 .register-card {
@@ -155,20 +169,20 @@ textarea:focus {
 .register-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(45deg, #ff6a00, #ff823b);
-  color: white;
-  border: none;
+  background: white;
+  color: #ff6a00;
+  border: 2px solid #ff6a00;
   border-radius: 8px;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
 }
 
 .register-btn:hover:not(:disabled) {
+  background: #ff6a00;
+  color: white;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(255, 106, 0, 0.5);
 }
 
 .register-btn:disabled {

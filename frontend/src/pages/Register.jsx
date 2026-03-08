@@ -76,14 +76,14 @@ export default function Register() {
       <div className="register-box">
 
         <Link to="/" className="back-link">
-          ← Back to home
+          Back to home
         </Link>
 
         <div className="register-card">
 
           <div className="logo">
-            <div className="logo-box">SB</div>
-            SkillBridge
+            <div className="logo-box">SS</div>
+            SevaSetu
           </div>
 
           <h2>Create your account</h2>

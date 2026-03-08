@@ -79,7 +79,7 @@ export default function Applications() {
       <Navbar />
       <div className="dashboard-wrapper">
         <div className="dashboard-header">
-          <div><h1>{user.role === "volunteer" ? "My Applications" : "Manage Applications"}</h1><p className="breadcrumb">SkillBridge / Applications</p></div>
+          <div><h1>{user.role === "volunteer" ? "My Applications" : "Manage Applications"}</h1><p className="breadcrumb">SevaSetu / Applications</p></div>
         </div>
 
         <div className="stats-container">

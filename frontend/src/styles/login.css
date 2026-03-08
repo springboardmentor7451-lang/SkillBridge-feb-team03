@@ -18,13 +18,28 @@
   top: 25px;
   left: 25px;
   text-decoration: none;
-  color: #888;
-  font-size: 0.9rem;
-  transition: color 0.3s;
+  color: #555;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
 }
 
 .back-link:hover {
   color: #ff6a00;
+  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.15);
+  transform: translateX(-2px);
+}
+
+.back-link::before {
+  content: "←";
+  font-size: 1.1rem;
 }
 
 .auth-card {
@@ -88,21 +103,21 @@ input:focus {
 
 .btn-primary {
   padding: 14px;
-  background: linear-gradient(45deg, #ff6a00, #ff823b);
-  color: white;
-  border: none;
+  background: white;
+  color: #ff6a00;
+  border: 2px solid #ff6a00;
   border-radius: 8px;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.25s;
-  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
   margin-top: 5px;
 }
 
 .btn-primary:hover {
+  background: #ff6a00;
+  color: white;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(255, 106, 0, 0.45);
 }
 
 .login-link {

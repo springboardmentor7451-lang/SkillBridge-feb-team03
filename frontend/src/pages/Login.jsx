@@ -39,18 +39,18 @@ export default function Login() {
     <div className="auth-container">
       <div className="auth-box">
         <Link to="/" className="back-link">
-          ← Back to home
+          Back to home
         </Link>
 
         <div className="auth-card">
           <div className="logo">
-            <span className="logo-box">SB</span>
-            SkillBridge
+            <span className="logo-box">SS</span>
+            SevaSetu
           </div>
 
           <h2>Welcome back</h2>
 
-          <p className="subtitle">Sign in to connect with NGOs</p>
+          <p className="subtitle">Sign in to continue to your dashboard</p>
 
           <form onSubmit={handleSubmit}>
             <input

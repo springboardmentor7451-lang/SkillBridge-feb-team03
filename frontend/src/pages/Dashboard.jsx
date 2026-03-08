@@ -46,8 +46,33 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) return (<><Navbar /><div className="dashboard-container"><p>Loading...</p></div></>);
-  if (!user) return (<><Navbar /><div className="dashboard-container"><p>Please login first</p></div></>);
+  if (loading) return (
+    <>
+      <Navbar />
+      <div className="dashboard-wrapper">
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    </>
+  );
+  
+  if (!user) return (
+    <>
+      <Navbar />
+      <div className="dashboard-wrapper">
+        <div className="auth-required">
+          <div className="auth-icon">🔐</div>
+          <h2>Authentication Required</h2>
+          <p>Please login first</p>
+          <button onClick={() => navigate("/login")} className="btn-primary-dashboard">
+            Sign In
+          </button>
+        </div>
+      </div>
+    </>
+  );
 
   // NGO Dashboard
   if (user.role === "ngo") {
@@ -59,21 +84,66 @@ export default function Dashboard() {
     return (
       <>
         <Navbar />
-        <div className="dashboard-container">
-          <h1>Overview</h1>
-          <p className="welcome">Welcome back, {user.name}!</p>
+        <div className="dashboard-wrapper">
+          <div className="dashboard-header-enhanced">
+            <div>
+              <h1>Welcome back, {user.name}!</h1>
+              <p className="breadcrumb">Dashboard / Overview</p>
+            </div>
+            <button onClick={() => navigate("/opportunities/create")} className="btn-create-enhanced">
+              <span>+</span> Create Opportunity
+            </button>
+          </div>
 
-          <div className="stats-grid">
-            <div className="stat-card"><p className="stat-label">Active Opportunities</p><h2 className="stat-value blue">{activeOpps}</h2></div>
-            <div className="stat-card"><p className="stat-label">Applications</p><h2 className="stat-value green">{totalApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Active Volunteers</p><h2 className="stat-value purple">{activeVolunteers}</h2></div>
-            <div className="stat-card"><p className="stat-label">Pending Applications</p><h2 className="stat-value orange">{pendingApplications}</h2></div>
+          <div className="stats-grid-enhanced">
+            <div className="stat-card-new stat-card-blue">
+              <div className="stat-icon">📋</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{activeOpps}</span>
+                <span className="stat-label-small">Active Opportunities</span>
+              </div>
+            </div>
+            <div className="stat-card-new stat-card-green">
+              <div className="stat-icon">📨</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{totalApplications}</span>
+                <span className="stat-label-small">Total Applications</span>
+              </div>
+            </div>
+            <div className="stat-card-new stat-card-orange">
+              <div className="stat-icon">⏳</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{pendingApplications}</span>
+                <span className="stat-label-small">Pending</span>
+              </div>
+            </div>
+            <div className="stat-card-new stat-card-purple">
+              <div className="stat-icon">🤝</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{activeVolunteers}</span>
+                <span className="stat-label-small">Active Volunteers</span>
+              </div>
+            </div>
           </div>
 
           <div className="dashboard-grid">
             <div className="recent">
-              <div className="recent-header"><h3>Recent Applications</h3><a href="#" onClick={() => navigate("/applications")}>View All</a></div>
-              <div className="recent-box">No recent applications to show.</div>
+              <div className="recent-header">
+                <h3>Recent Applications</h3>
+                <a href="#" onClick={() => navigate("/applications")}>View All</a>
+              </div>
+              <div className="recent-box">
+                {applications.length > 0 ? (
+                  applications.slice(0, 3).map(app => (
+                    <div key={app._id} className="app-item-simple">
+                      <span>{app.volunteer?.name || "Unknown"}</span>
+                      <span className={`status-badge ${app.status}`}>{app.status}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data">No recent applications to show.</p>
+                )}
+              </div>
             </div>
             <div className="quick-actions">
               <h3>Quick Actions</h3>
@@ -98,29 +168,71 @@ export default function Dashboard() {
     return (
       <>
         <Navbar />
-        <div className="dashboard-container">
-          <h1>Overview</h1>
-          <p className="welcome">Welcome back, {user.name}!</p>
+        <div className="dashboard-wrapper">
+          <div className="dashboard-header-enhanced">
+            <div>
+              <h1>Welcome back, {user.name}!</h1>
+              <p className="breadcrumb">Dashboard / Overview</p>
+            </div>
+          </div>
 
-          <div className="stats-grid">
-            <div className="stat-card"><p className="stat-label">Applications</p><h2 className="stat-value blue">{totalApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Accepted</p><h2 className="stat-value green">{acceptedApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Pending</p><h2 className="stat-value orange">{pendingApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Skills</p><h2 className="stat-value purple">{userSkills}</h2></div>
+          <div className="stats-grid-enhanced">
+            <div className="stat-card-new stat-card-blue">
+              <div className="stat-icon">📨</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{totalApplications}</span>
+                <span className="stat-label-small">Applications</span>
+              </div>
+            </div>
+            <div className="stat-card-new stat-card-green">
+              <div className="stat-icon">✓</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{acceptedApplications}</span>
+                <span className="stat-label-small">Accepted</span>
+              </div>
+            </div>
+            <div className="stat-card-new stat-card-orange">
+              <div className="stat-icon">⏳</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{pendingApplications}</span>
+                <span className="stat-label-small">Pending</span>
+              </div>
+            </div>
+            <div className="stat-card-new stat-card-purple">
+              <div className="stat-icon">💡</div>
+              <div className="stat-content">
+                <span className="stat-value-big">{userSkills}</span>
+                <span className="stat-label-small">Skills</span>
+              </div>
+            </div>
           </div>
 
           <MatchSuggestions />
 
           <div className="dashboard-grid">
             <div className="recent">
-              <div className="recent-header"><h3>Recent Applications</h3><a href="#" onClick={() => navigate("/applications")}>View All</a></div>
-              <div className="recent-box">No recent applications to show.</div>
+              <div className="recent-header">
+                <h3>Recent Applications</h3>
+                <a href="#" onClick={() => navigate("/applications")}>View All</a>
+              </div>
+              <div className="recent-box">
+                {applications.length > 0 ? (
+                  applications.slice(0, 3).map(app => (
+                    <div key={app._id} className="app-item-simple">
+                      <span>{app.opportunity?.title || "Opportunity"}</span>
+                      <span className={`status-badge ${app.status}`}>{app.status}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data">No recent applications to show.</p>
+                )}
+              </div>
             </div>
             <div className="quick-actions">
               <h3>Find Opportunities</h3>
               <button className="action-btn" onClick={() => navigate("/browse-opportunities")}>
                 <span className="plus-icon">🔍</span>
-                <div><strong>Browse All Opportunities</strong><p>Discover volunteering opportunities that match your skills and interests.</p></div>
+                <div><strong>Browse All Opportunities</strong><p>Discover volunteering opportunities that match your skills.</p></div>
               </button>
             </div>
           </div>
@@ -128,4 +240,6 @@ export default function Dashboard() {
       </>
     );
   }
+
+  return null;
 }
