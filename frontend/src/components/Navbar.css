@@ -1,0 +1,154 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 15px 40px;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: #ff6a00;
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  position: relative;
+  transition: 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #ff6a00;
+  left: 0;
+  bottom: -5px;
+  transition: 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  width: 100%;
+}
+
+.nav-links a.active {
+  color: #ff6a00;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.btn-outline {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: transparent;
+  text-decoration: none;
+  color: #333;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+.btn-outline:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.btn-primary {
+  padding: 8px 18px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff6a00, #ff9f43);
+  color: white;
+  text-decoration: none;
+  transition: 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 106, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .navbar {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+  }
+  
+  .nav-links {
+    gap: 15px;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .btn-outline, .btn-primary {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+/* User menu styles */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-name {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+.user-name:hover {
+  background: #f5f5f5;
+  color: #ff6a00;
+}
+
+.logout-btn {
+  cursor: pointer;
+  font-size: 14px;
+}
