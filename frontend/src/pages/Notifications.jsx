@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import notificationService from "../services/notificationService";
 import socketService from "../services/socketService";
 import Navbar from "../components/Navbar";
-import "../styles/dashboard.css";
+import { Button } from "../components/ui/button";
+import { toast } from "sonner";
 
 export default function Notifications() {
   const { user, loading } = useAuth();
@@ -12,25 +13,28 @@ export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
-  const [filter, setFilter] = useState("all"); // all, unread, message, application
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     if (!loading && user) {
       fetchNotifications();
       fetchUnreadCount();
-
-      // Listen for real-time notifications
       socketService.onNotification(handleNewNotification);
     }
+
+    return () => {
+      socketService.off("notification", handleNewNotification);
+    };
   }, [user, loading]);
 
   const fetchNotifications = async () => {
     try {
       setLoadingNotifications(true);
       const res = await notificationService.getNotifications();
-      setNotifications(res.data.notifications);
+      setNotifications(res.data.notifications || []);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
+      toast.error("Failed to load notifications");
     } finally {
       setLoadingNotifications(false);
     }
@@ -39,14 +43,13 @@ export default function Notifications() {
   const fetchUnreadCount = async () => {
     try {
       const res = await notificationService.getUnreadCount();
-      setUnreadCount(res.data.unread);
+      setUnreadCount(res.data.unread || 0);
     } catch (error) {
       console.error("Failed to fetch unread count:", error);
     }
   };
 
-  const handleNewNotification = (data) => {
-    console.log("New notification received:", data);
+  const handleNewNotification = () => {
     fetchNotifications();
     fetchUnreadCount();
   };
@@ -55,24 +58,25 @@ export default function Notifications() {
     e.stopPropagation();
     try {
       await notificationService.markAsRead(notificationId);
-      setNotifications(prev =>
-        prev.map(n => n._id === notificationId ? { ...n, is_read: true } : n)
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === notificationId ? { ...n, is_read: true } : n))
       );
-      setUnreadCount(Math.max(0, unreadCount - 1));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
+      toast.error("Failed to mark as read");
     }
   };
 
   const handleMarkAllAsRead = async () => {
     try {
       await notificationService.markAllAsRead();
-      setNotifications(prev =>
-        prev.map(n => ({ ...n, is_read: true }))
-      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
       setUnreadCount(0);
+      toast.success("All notifications marked as read");
     } catch (error) {
       console.error("Failed to mark all as read:", error);
+      toast.error("Failed to mark all as read");
     }
   };
 
@@ -80,64 +84,64 @@ export default function Notifications() {
     e.stopPropagation();
     try {
       await notificationService.deleteNotification(notificationId);
-      setNotifications(prev =>
-        prev.filter(n => n._id !== notificationId)
-      );
+      setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+      toast.success("Notification deleted");
     } catch (error) {
       console.error("Failed to delete notification:", error);
+      toast.error("Failed to delete notification");
     }
   };
 
   const handleNotificationClick = (notification) => {
-    // Mark as read
     if (!notification.is_read) {
       handleMarkAsRead(notification._id, { stopPropagation: () => {} });
     }
 
-    // Navigate to the relevant page
     if (notification.action_url) {
       navigate(notification.action_url);
     }
   };
 
-  const filteredNotifications = notifications.filter(notif => {
+  const filteredNotifications = notifications.filter((notif) => {
     if (filter === "unread") return !notif.is_read;
     if (filter === "message") return notif.type === "message";
-    if (filter === "application") return ["application_accepted", "application_rejected", "application_received"].includes(notif.type);
+    if (filter === "application") {
+      return ["application_accepted", "application_rejected", "application_received"].includes(notif.type);
+    }
     return true;
   });
 
   const getNotificationIcon = (type) => {
     switch (type) {
       case "message":
-        return "💬";
+        return "Message";
       case "application_accepted":
-        return "✅";
+        return "Accepted";
       case "application_rejected":
-        return "❌";
+        return "Rejected";
       case "application_received":
-        return "📋";
+        return "Application";
       case "opportunity_match":
-        return "🎯";
+        return "Match";
       default:
-        return "🔔";
+        return "Notice";
     }
   };
 
-  const getNotificationColor = (type) => {
+  const getNotificationTone = (type) => {
     switch (type) {
       case "message":
-        return "#007bff";
+        return "border-sky-200 bg-sky-50/70";
       case "application_accepted":
-        return "#28a745";
+        return "border-emerald-200 bg-emerald-50/70";
       case "application_rejected":
-        return "#dc3545";
+        return "border-rose-200 bg-rose-50/70";
       case "application_received":
-        return "#ff9800";
+        return "border-amber-200 bg-amber-50/70";
       case "opportunity_match":
-        return "#6f42c1";
+        return "border-violet-200 bg-violet-50/70";
       default:
-        return "#6c757d";
+        return "border-slate-200 bg-white";
     }
   };
 
@@ -153,141 +157,148 @@ export default function Notifications() {
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
-
     return date.toLocaleDateString();
   };
 
-  if (loading) return (<><Navbar /><div className="dashboard-wrapper"><p>Loading...</p></div></>);
-  if (!user) return (<><Navbar /><div className="dashboard-wrapper"><p>Please login first</p></div></>);
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main className="mx-auto max-w-5xl px-4 py-10 md:px-6">
+          <p className="text-slate-600">Loading notifications...</p>
+        </main>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <main className="mx-auto max-w-5xl px-4 py-10 md:px-6">
+          <p className="text-slate-600">Please login first.</p>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
       <Navbar />
-      <div className="dashboard-wrapper">
-        <div className="dashboard-header">
-          <div>
-            <h1>Notifications</h1>
-            <p className="breadcrumb">SkillBridge / Notifications</p>
-          </div>
+      <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-6 md:py-10">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Notifications</h1>
+          <p className="mt-1 text-slate-600">Track new messages, application updates, and opportunity matches.</p>
         </div>
 
-        <div className="notifications-container">
-          {/* Header with actions */}
-          <div className="notifications-header">
-            <div className="notifications-title">
-              <h2>All Notifications</h2>
-              {unreadCount > 0 && (
-                <span className="unread-badge">{unreadCount} new</span>
-              )}
+        <section className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-slate-500">Total</p>
+            <p className="mt-1 text-3xl font-bold text-slate-900">{notifications.length}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-slate-500">Unread</p>
+            <p className="mt-1 text-3xl font-bold text-amber-600">{unreadCount}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-slate-500">Read</p>
+            <p className="mt-1 text-3xl font-bold text-emerald-600">{notifications.length - unreadCount}</p>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex rounded-xl bg-slate-100 p-1">
+              <button
+                onClick={() => setFilter("all")}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${filter === "all" ? "bg-white text-slate-900 shadow" : "text-slate-600"}`}
+              >
+                All ({notifications.length})
+              </button>
+              <button
+                onClick={() => setFilter("unread")}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${filter === "unread" ? "bg-white text-slate-900 shadow" : "text-slate-600"}`}
+              >
+                Unread ({unreadCount})
+              </button>
+              <button
+                onClick={() => setFilter("message")}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${filter === "message" ? "bg-white text-slate-900 shadow" : "text-slate-600"}`}
+              >
+                Messages
+              </button>
+              <button
+                onClick={() => setFilter("application")}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${filter === "application" ? "bg-white text-slate-900 shadow" : "text-slate-600"}`}
+              >
+                Applications
+              </button>
             </div>
 
-            {unreadCount > 0 && (
-              <button onClick={handleMarkAllAsRead} className="btn-mark-all">
-                Mark all as read
-              </button>
-            )}
+            {unreadCount > 0 && <Button onClick={handleMarkAllAsRead}>Mark All as Read</Button>}
           </div>
 
-          {/* Filter Tabs */}
-          <div className="notification-filters">
-            <button
-              className={`filter-btn ${filter === "all" ? "active" : ""}`}
-              onClick={() => setFilter("all")}
-            >
-              All ({notifications.length})
-            </button>
-            <button
-              className={`filter-btn ${filter === "unread" ? "active" : ""}`}
-              onClick={() => setFilter("unread")}
-            >
-              Unread ({unreadCount})
-            </button>
-            <button
-              className={`filter-btn ${filter === "message" ? "active" : ""}`}
-              onClick={() => setFilter("message")}
-            >
-              Messages
-            </button>
-            <button
-              className={`filter-btn ${filter === "application" ? "active" : ""}`}
-              onClick={() => setFilter("application")}
-            >
-              Applications
-            </button>
-          </div>
-
-          {/* Notifications List */}
           {loadingNotifications ? (
-            <p>Loading notifications...</p>
+            <p className="text-sm text-slate-600">Loading notifications...</p>
           ) : filteredNotifications.length === 0 ? (
-            <div className="empty-notifications">
-              <div className="empty-icon">🔔</div>
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-600">
               <p>
                 {filter === "unread"
                   ? "No unread notifications"
                   : filter === "message"
-                    ? "No messages"
+                    ? "No message notifications"
                     : filter === "application"
-                      ? "No applications"
+                      ? "No application notifications"
                       : "No notifications yet"}
               </p>
             </div>
           ) : (
-            <div className="notifications-list">
+            <div className="space-y-3">
               {filteredNotifications.map((notification) => (
                 <div
                   key={notification._id}
-                  className={`notification-card ${!notification.is_read ? "unread" : "read"}`}
+                  className={`cursor-pointer rounded-xl border p-4 transition hover:shadow-sm ${notification.is_read ? "border-slate-200 bg-white" : `${getNotificationTone(notification.type)}`}`}
                   onClick={() => handleNotificationClick(notification)}
-                  style={{
-                    borderLeftColor: getNotificationColor(notification.type),
-                  }}
                 >
-                  <div className="notification-icon">
-                    {getNotificationIcon(notification.type)}
-                  </div>
-
-                  <div className="notification-content">
-                    <div className="notification-header">
-                      <h3>{notification.title}</h3>
-                      <span className="notification-time">
-                        {formatTime(notification.createdAt)}
-                      </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded bg-slate-900/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600">
+                          {getNotificationIcon(notification.type)}
+                        </span>
+                        {!notification.is_read && (
+                          <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-800">
+                            New
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="mt-2 text-sm font-semibold text-slate-900">{notification.title}</h3>
+                      <p className="mt-1 text-sm text-slate-700">{notification.message}</p>
+                      {notification.related_user_id?.name && (
+                        <p className="mt-1 text-xs text-slate-500">
+                          From: {notification.related_user_id.organization_name || notification.related_user_id.name}
+                        </p>
+                      )}
                     </div>
-                    <p className="notification-message">
-                      {notification.message}
-                    </p>
-                    {notification.related_user_id?.name && (
-                      <p className="notification-related">
-                        From: {notification.related_user_id.organization_name || notification.related_user_id.name}
-                      </p>
-                    )}
+                    <span className="text-xs text-slate-500">{formatTime(notification.createdAt)}</span>
                   </div>
 
-                  <div className="notification-actions">
+                  <div className="mt-3 flex flex-wrap gap-2">
                     {!notification.is_read && (
-                      <button
-                        className="action-btn"
-                        onClick={(e) => handleMarkAsRead(notification._id, e)}
-                        title="Mark as read"
-                      >
-                        ✓
-                      </button>
+                      <Button size="sm" variant="secondary" onClick={(e) => handleMarkAsRead(notification._id, e)}>
+                        Mark as Read
+                      </Button>
                     )}
-                    <button
-                      className="action-btn delete"
-                      onClick={(e) => handleDeleteNotification(notification._id, e)}
-                      title="Delete"
-                    >
-                      ×
-                    </button>
+                    <Button size="sm" variant="ghost" onClick={(e) => handleDeleteNotification(notification._id, e)}>
+                      Delete
+                    </Button>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </section>
+      </main>
     </>
   );
 }

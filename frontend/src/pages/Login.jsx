@@ -1,83 +1,110 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "../styles/login.css";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { ArrowLeft, LogIn } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+
+const loginSchema = z.object({
+  email: z.email("Enter a valid email"),
+  password: z.string().min(6, "Password must have at least 6 characters"),
+});
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (values) => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        form
-      );
+      const res = await axios.post("http://localhost:5000/api/auth/login", values);
 
       const { token, user } = res.data;
       login(token, user);
+      toast.success(`Welcome back, ${user?.name || "there"}!`);
       navigate("/dashboard");
     } catch (err) {
       console.error("Login error", err.response || err);
       const msg = err.response?.data?.message || "Login failed";
-      alert(msg);
+      toast.error(msg);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <Link to="/" className="back-link">
-          ← Back to home
-        </Link>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-sky-50 px-4 py-8 sm:px-6">
+      <div className="absolute -left-10 top-20 h-40 w-40 rounded-full bg-orange-300/30 blur-3xl" />
+      <div className="absolute right-0 top-8 h-52 w-52 rounded-full bg-sky-300/30 blur-3xl" />
 
-        <div className="auth-card">
-          <div className="logo">
-            <span className="logo-box">SB</span>
-            SkillBridge
-          </div>
+      <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-md"
+        >
+          <Link
+            to="/"
+            className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-orange-700"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to home
+          </Link>
 
-          <h2>Welcome back</h2>
+          <Card>
+            <CardContent>
+              <div className="mb-6">
+                <div className="mb-4 inline-flex rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold tracking-wider text-white">
+                  SB
+                </div>
+                <h1 className="text-3xl font-bold text-slate-900">Welcome back</h1>
+                <p className="mt-2 text-sm text-slate-600">Sign in to continue your impact journey.</p>
+              </div>
 
-          <p className="subtitle">Sign in to connect with NGOs</p>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" placeholder="you@example.com" {...register("email")} />
+                  {errors.email && <p className="text-xs text-rose-600">{errors.email.message}</p>}
+                </div>
 
-          <form onSubmit={handleSubmit}>
-            <input
-              name="email"
-              placeholder="Email"
-              onChange={handleChange}
-              required
-            />
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input id="password" type="password" placeholder="Enter your password" {...register("password")} />
+                  {errors.password && <p className="text-xs text-rose-600">{errors.password.message}</p>}
+                </div>
 
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              onChange={handleChange}
-              required
-            />
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  <LogIn className="h-4 w-4" />
+                  {isSubmitting ? "Signing in..." : "Sign In"}
+                </Button>
+              </form>
 
-            <button type="submit" className="btn-primary">
-              Sign In
-            </button>
-          </form>
-
-          <p className="login-link">
-            Don't have an account?
-            <Link to="/register"> Sign up</Link>
-          </p>
-        </div>
+              <p className="mt-5 text-center text-sm text-slate-600">
+                New here?{" "}
+                <Link to="/register" className="font-semibold text-orange-700 hover:text-orange-800">
+                  Create account
+                </Link>
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );

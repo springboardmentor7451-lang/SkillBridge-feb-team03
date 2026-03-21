@@ -1,5 +1,6 @@
 import { useState } from "react";
 import applicationService from "../services/applicationService";
+import { Button } from "./ui/button";
 
 export default function ApplicationForm({ opportunity, onClose, onSuccess }) {
   const [coverLetter, setCoverLetter] = useState("");
@@ -23,59 +24,51 @@ export default function ApplicationForm({ opportunity, onClose, onSuccess }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>Apply for Opportunity</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" onClick={onClose}>
+      <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h3 className="text-lg font-semibold text-slate-900">Apply for Opportunity</h3>
+          <button className="text-2xl leading-none text-slate-400 transition hover:text-slate-600" onClick={onClose}>
+            ×
+          </button>
         </div>
 
-        <div className="modal-body">
-          <div className="opportunity-summary">
-            <h4>{opportunity.title}</h4>
-            <p className="opportunity-meta">
-              📍 {opportunity.location} • ⏱️ {opportunity.duration}
-            </p>
-            <p className="opportunity-description">{opportunity.description}</p>
+        <div className="space-y-5 px-5 py-5">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h4 className="text-base font-semibold text-slate-900">{opportunity.title}</h4>
+            <p className="mt-1 text-xs text-slate-500">{opportunity.location} • {opportunity.duration}</p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-700">{opportunity.description}</p>
             {opportunity.required_skills?.length > 0 && (
-              <div className="skills-section">
-                <strong>Required Skills:</strong>
-                <div className="skills-list">
+              <div className="mt-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Required Skills</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
                   {opportunity.required_skills.map((skill, i) => (
-                    <span key={i} className="skill-tag">{skill}</span>
+                    <span key={i} className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200">{skill}</span>
                   ))}
                 </div>
               </div>
             )}
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="coverLetter">
-                Cover Letter <span className="optional">(Optional)</span>
-              </label>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="coverLetter" className="mb-1 block text-sm font-medium text-slate-700">Cover Letter (Optional)</label>
               <textarea
                 id="coverLetter"
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 placeholder="Tell us why you're interested in this opportunity and how your skills match..."
                 rows={6}
-                className="form-textarea"
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
               />
-              <small className="form-help">
-                Share your motivation, relevant experience, and why you'd be a great fit for this role.
-              </small>
+              <p className="mt-1 text-xs text-slate-500">Share your motivation, relevant experience, and why you would be a great fit.</p>
             </div>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
 
-            <div className="form-actions">
-              <button type="button" onClick={onClose} className="btn-secondary">
-                Cancel
-              </button>
-              <button type="submit" disabled={loading} className="btn-primary">
-                {loading ? "Submitting..." : "Submit Application"}
-              </button>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
+              <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit Application"}</Button>
             </div>
           </form>
         </div>

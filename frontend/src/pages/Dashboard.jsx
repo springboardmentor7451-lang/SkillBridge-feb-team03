@@ -5,7 +5,8 @@ import opportunityService from "../services/opportunityService";
 import applicationService from "../services/applicationService";
 import Navbar from "../components/Navbar";
 import MatchSuggestions from "../components/MatchSuggestions";
-import "../styles/dashboard.css";
+import { motion } from "framer-motion";
+import { Button } from "../components/ui/button";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -13,6 +14,8 @@ export default function Dashboard() {
   const location = useLocation();
   const [opportunities, setOpportunities] = useState([]);
   const [applications, setApplications] = useState([]);
+
+  const statCardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
 
   useEffect(() => {
     if (!loading && user) {
@@ -46,8 +49,27 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) return (<><Navbar /><div className="dashboard-container"><p>Loading...</p></div></>);
-  if (!user) return (<><Navbar /><div className="dashboard-container"><p>Please login first</p></div></>);
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+          <p className="text-slate-600">Loading dashboard...</p>
+        </div>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+          <p className="text-slate-600">Please login first.</p>
+        </div>
+      </>
+    );
+  }
 
   // NGO Dashboard
   if (user.role === "ngo") {
@@ -59,31 +81,41 @@ export default function Dashboard() {
     return (
       <>
         <Navbar />
-        <div className="dashboard-container">
-          <h1>Overview</h1>
-          <p className="welcome">Welcome back, {user.name}!</p>
+        <main className="mx-auto max-w-6xl space-y-6 px-4 py-8 md:px-6 md:py-10">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+            <h1 className="text-3xl font-bold text-slate-900">Overview</h1>
+            <p className="mt-1 text-slate-600">Welcome back, {user.name}.</p>
+          </motion.div>
 
-          <div className="stats-grid">
-            <div className="stat-card"><p className="stat-label">Active Opportunities</p><h2 className="stat-value blue">{activeOpps}</h2></div>
-            <div className="stat-card"><p className="stat-label">Applications</p><h2 className="stat-value green">{totalApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Active Volunteers</p><h2 className="stat-value purple">{activeVolunteers}</h2></div>
-            <div className="stat-card"><p className="stat-label">Pending Applications</p><h2 className="stat-value orange">{pendingApplications}</h2></div>
-          </div>
+          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={statCardClass}><p className="text-sm text-slate-500">Active Opportunities</p><h2 className="mt-1 text-3xl font-bold text-sky-600">{activeOpps}</h2></div>
+            <div className={statCardClass}><p className="text-sm text-slate-500">Applications</p><h2 className="mt-1 text-3xl font-bold text-emerald-600">{totalApplications}</h2></div>
+            <div className={statCardClass}><p className="text-sm text-slate-500">Active Volunteers</p><h2 className="mt-1 text-3xl font-bold text-violet-600">{activeVolunteers}</h2></div>
+            <div className={statCardClass}><p className="text-sm text-slate-500">Pending Applications</p><h2 className="mt-1 text-3xl font-bold text-orange-600">{pendingApplications}</h2></div>
+          </section>
 
-          <div className="dashboard-grid">
-            <div className="recent">
-              <div className="recent-header"><h3>Recent Applications</h3><a href="#" onClick={() => navigate("/applications")}>View All</a></div>
-              <div className="recent-box">No recent applications to show.</div>
+          <section className="grid gap-4 lg:grid-cols-3">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900">Recent Applications</h3>
+                <button className="text-sm font-semibold text-orange-700 hover:text-orange-800" onClick={() => navigate("/applications")}>
+                  View All
+                </button>
+              </div>
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                No recent applications to show.
+              </div>
             </div>
-            <div className="quick-actions">
-              <h3>Quick Actions</h3>
-              <button className="action-btn" onClick={() => navigate("/opportunities/create")}>
-                <span className="plus-icon">+</span>
-                <div><strong>Create New Opportunity</strong><p>Post a new role for volunteers</p></div>
-              </button>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 className="mb-4 text-lg font-semibold text-slate-900">Quick Actions</h3>
+              <Button className="w-full justify-start" onClick={() => navigate("/opportunities/create")}>
+                Create New Opportunity
+              </Button>
+              <p className="mt-2 text-xs text-slate-500">Post a new role for volunteers in your network.</p>
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
       </>
     );
   }
@@ -98,34 +130,46 @@ export default function Dashboard() {
     return (
       <>
         <Navbar />
-        <div className="dashboard-container">
-          <h1>Overview</h1>
-          <p className="welcome">Welcome back, {user.name}!</p>
+        <main className="mx-auto max-w-6xl space-y-6 px-4 py-8 md:px-6 md:py-10">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+            <h1 className="text-3xl font-bold text-slate-900">Overview</h1>
+            <p className="mt-1 text-slate-600">Welcome back, {user.name}.</p>
+          </motion.div>
 
-          <div className="stats-grid">
-            <div className="stat-card"><p className="stat-label">Applications</p><h2 className="stat-value blue">{totalApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Accepted</p><h2 className="stat-value green">{acceptedApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Pending</p><h2 className="stat-value orange">{pendingApplications}</h2></div>
-            <div className="stat-card"><p className="stat-label">Skills</p><h2 className="stat-value purple">{userSkills}</h2></div>
-          </div>
+          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={statCardClass}><p className="text-sm text-slate-500">Applications</p><h2 className="mt-1 text-3xl font-bold text-sky-600">{totalApplications}</h2></div>
+            <div className={statCardClass}><p className="text-sm text-slate-500">Accepted</p><h2 className="mt-1 text-3xl font-bold text-emerald-600">{acceptedApplications}</h2></div>
+            <div className={statCardClass}><p className="text-sm text-slate-500">Pending</p><h2 className="mt-1 text-3xl font-bold text-orange-600">{pendingApplications}</h2></div>
+            <div className={statCardClass}><p className="text-sm text-slate-500">Skills</p><h2 className="mt-1 text-3xl font-bold text-violet-600">{userSkills}</h2></div>
+          </section>
 
           <MatchSuggestions />
 
-          <div className="dashboard-grid">
-            <div className="recent">
-              <div className="recent-header"><h3>Recent Applications</h3><a href="#" onClick={() => navigate("/applications")}>View All</a></div>
-              <div className="recent-box">No recent applications to show.</div>
+          <section className="grid gap-4 lg:grid-cols-3">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900">Recent Applications</h3>
+                <button className="text-sm font-semibold text-orange-700 hover:text-orange-800" onClick={() => navigate("/applications")}>
+                  View All
+                </button>
+              </div>
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                No recent applications to show.
+              </div>
             </div>
-            <div className="quick-actions">
-              <h3>Find Opportunities</h3>
-              <button className="action-btn" onClick={() => navigate("/browse-opportunities")}>
-                <span className="plus-icon">🔍</span>
-                <div><strong>Browse All Opportunities</strong><p>Discover volunteering opportunities that match your skills and interests.</p></div>
-              </button>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 className="mb-4 text-lg font-semibold text-slate-900">Find Opportunities</h3>
+              <Button className="w-full justify-start" onClick={() => navigate("/browse-opportunities")}>
+                Browse Opportunities
+              </Button>
+              <p className="mt-2 text-xs text-slate-500">Find roles matching your skills and mission interests.</p>
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
       </>
     );
   }
+
+  return null;
 }

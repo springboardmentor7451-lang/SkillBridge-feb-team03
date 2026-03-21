@@ -3,12 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import notificationService from "../services/notificationService";
 import socketService from "../services/socketService";
+import { Bell } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export default function NotificationBell() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
   const [recentNotifications, setRecentNotifications] = useState([]);
 
   useEffect(() => {
@@ -17,10 +26,16 @@ export default function NotificationBell() {
       fetchRecentNotifications();
 
       // Listen for real-time notifications
-      socketService.onNotification(() => {
+      const handleNotification = () => {
         fetchUnreadCount();
         fetchRecentNotifications();
-      });
+      };
+
+      socketService.onNotification(handleNotification);
+
+      return () => {
+        socketService.off("notification", handleNotification);
+      };
     }
   }, [user]);
 
@@ -44,7 +59,6 @@ export default function NotificationBell() {
 
   const handleViewAll = () => {
     navigate("/notifications");
-    setIsOpen(false);
   };
 
   const handleNotificationClick = (notification) => {
@@ -56,7 +70,6 @@ export default function NotificationBell() {
     if (notification.action_url) {
       navigate(notification.action_url);
     }
-    setIsOpen(false);
   };
 
   const getNotificationIcon = (type) => {
@@ -77,52 +90,54 @@ export default function NotificationBell() {
   };
 
   return (
-    <div className="notification-bell-container">
-      <button
-        className="notification-bell"
-        onClick={() => setIsOpen(!isOpen)}
-        title="Notifications"
-      >
-        🔔
-        {unreadCount > 0 && <span className="unread-badge-small">{unreadCount}</span>}
-      </button>
+    <DropdownMenu>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <button className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-50">
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Notifications</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
-      {isOpen && (
-        <div className="notification-dropdown">
-          <div className="dropdown-header">
-            <h3>Notifications</h3>
-            {unreadCount > 0 && <span className="unread-count">{unreadCount} new</span>}
-          </div>
-
-          <div className="notifications-preview">
-            {recentNotifications.length === 0 ? (
-              <div className="empty-preview">
-                <p>No notifications</p>
+      <DropdownMenuContent align="end" className="w-80">
+        <DropdownMenuLabel className="flex items-center justify-between">
+          <span>Notifications</span>
+          {unreadCount > 0 && <span className="text-xs font-semibold text-orange-700">{unreadCount} new</span>}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {recentNotifications.length === 0 ? (
+          <div className="px-2 py-4 text-center text-sm text-slate-500">No notifications yet.</div>
+        ) : (
+          recentNotifications.map((notif) => (
+            <DropdownMenuItem
+              key={notif._id}
+              onClick={() => handleNotificationClick(notif)}
+              className="flex items-start gap-3 py-2"
+            >
+              <span className="mt-0.5 text-base">{getNotificationIcon(notif.type)}</span>
+              <div className="flex-1 space-y-0.5">
+                <p className="line-clamp-1 text-sm font-semibold text-slate-800">{notif.title}</p>
+                <p className="line-clamp-2 text-xs text-slate-600">{notif.message}</p>
               </div>
-            ) : (
-              recentNotifications.map((notif) => (
-                <div
-                  key={notif._id}
-                  className={`preview-item ${!notif.is_read ? "unread" : ""}`}
-                  onClick={() => handleNotificationClick(notif)}
-                >
-                  <span className="preview-icon">{getNotificationIcon(notif.type)}</span>
-                  <div className="preview-content">
-                    <p className="preview-title">{notif.title}</p>
-                    <p className="preview-message">{notif.message.substring(0, 50)}...</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className="dropdown-footer">
-            <button onClick={handleViewAll} className="view-all-btn">
-              View All Notifications
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+              {!notif.is_read && <span className="mt-1 h-2 w-2 rounded-full bg-orange-500" />}
+            </DropdownMenuItem>
+          ))
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleViewAll} className="justify-center font-semibold text-slate-700">
+          View All Notifications
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

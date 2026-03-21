@@ -5,7 +5,11 @@ import conversationService from "../services/conversationService";
 import messageService from "../services/messageService";
 import socketService from "../services/socketService";
 import Navbar from "../components/Navbar";
-import "../styles/dashboard.css";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { motion } from "framer-motion";
+import { RefreshCw, SendHorizontal } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Messages() {
   const { user, loading } = useAuth();
@@ -22,6 +26,11 @@ export default function Messages() {
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
+  const resolveSenderId = (message) => {
+    if (!message?.sender_id) return null;
+    return typeof message.sender_id === "object" ? message.sender_id._id : message.sender_id;
+  };
+
   useEffect(() => {
     if (!loading && user) {
       fetchConversations();
@@ -33,12 +42,14 @@ export default function Messages() {
       socketService.onNewMessage(handleNewMessage);
       socketService.onMessageSent(handleMessageSent);
       socketService.onUserTyping(handleUserTyping);
-    }
 
-    // Cleanup on unmount
-    return () => {
-      socketService.disconnect();
-    };
+      return () => {
+        socketService.off("newMessage", handleNewMessage);
+        socketService.off("messageSent", handleMessageSent);
+        socketService.off("userTyping", handleUserTyping);
+        socketService.disconnect();
+      };
+    }
   }, [user, loading, location]);
 
   const fetchConversations = async () => {
@@ -147,7 +158,7 @@ export default function Messages() {
       await fetchConversations();
     } catch (error) {
       console.error("Failed to send message:", error);
-      alert("Failed to send message");
+      toast.error("Failed to send message");
     } finally {
       setSendingMessage(false);
     }
@@ -185,36 +196,54 @@ export default function Messages() {
     setIsTyping(false);
   }, [selectedConversation]);
 
-  if (loading) return (<><Navbar /><div className="dashboard-wrapper"><p>Loading...</p></div></>);
-  if (!user) return (<><Navbar /><div className="dashboard-wrapper"><p>Please login first</p></div></>);
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+          <p className="text-slate-600">Loading messages...</p>
+        </div>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+          <p className="text-slate-600">Please login first.</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Navbar />
-      <div className="dashboard-wrapper">
-        <div className="dashboard-header">
-          <div><h1>Messages</h1><p className="breadcrumb">SkillBridge / Messages</p></div>
-        </div>
+      <main className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-900">Messages</h1>
+          <p className="mt-1 text-slate-600">Connect with volunteers and NGOs in real time.</p>
+        </motion.div>
 
-        <div className="messages-container">
-          {/* Conversations List */}
-          <div className="conversations-sidebar">
-            <div className="conversations-header">
-              <h3>Conversations ({conversations.length})</h3>
-              <button className="btn-refresh" onClick={fetchConversations} title="Refresh conversations">
-                🔄
-              </button>
+        <section className="grid min-h-[70vh] gap-4 lg:grid-cols-12">
+          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-900">Conversations ({conversations.length})</h3>
+              <Button size="icon" variant="ghost" onClick={fetchConversations} title="Refresh conversations">
+                <RefreshCw className="h-4 w-4" />
+              </Button>
             </div>
 
             {loadingConversations ? (
-              <p>Loading conversations...</p>
+              <p className="text-sm text-slate-500">Loading conversations...</p>
             ) : conversations.length === 0 ? (
-              <div className="empty-state">
-                <p>No conversations yet.</p>
-                <p>Accepted applications will appear here for messaging.</p>
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-600">
+                No conversations yet. Accepted applications will appear here.
               </div>
             ) : (
-              <div className="conversations-list">
+              <div className="space-y-2 overflow-y-auto pr-1">
                 {conversations.map((conv) => {
                   const otherUser = user.role === "ngo" ? conv.volunteer_id : conv.ngo_id;
                   const isSelected = selectedConversation?._id === conv._id;
@@ -222,50 +251,48 @@ export default function Messages() {
                   return (
                     <div
                       key={conv._id}
-                      className={`conversation-item ${isSelected ? "active" : ""}`}
+                      className={`cursor-pointer rounded-xl border p-3 transition ${
+                        isSelected
+                          ? "border-orange-300 bg-orange-50"
+                          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                      }`}
                       onClick={() => handleSelectConversation(conv)}
                     >
-                      <div className="conversation-avatar">
-                        {otherUser?.name?.charAt(0).toUpperCase() || "?"}
-                      </div>
-                      <div className="conversation-info">
-                        <div className="conversation-name">
-                          {otherUser?.name || "Unknown User"}
-                          {user.role === "ngo" && otherUser?.organization_name && (
-                            <span className="org-name"> ({otherUser.organization_name})</span>
+                      <div className="flex gap-3">
+                        <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-bold text-slate-700">
+                          {otherUser?.name?.charAt(0).toUpperCase() || "?"}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-semibold text-slate-900">
+                            {otherUser?.name || "Unknown User"}
+                            {user.role === "ngo" && otherUser?.organization_name && (
+                              <span className="font-normal text-slate-500"> ({otherUser.organization_name})</span>
+                            )}
+                          </div>
+                          <p className="truncate text-xs text-slate-500">{conv.opportunity_id?.title}</p>
+                          {conv.last_message?.content && (
+                            <p className="truncate text-xs text-slate-600">
+                              {resolveSenderId(conv.last_message) === user._id ? "You: " : ""}
+                              {conv.last_message.content}
+                            </p>
                           )}
                         </div>
-                        <div className="conversation-opportunity">
-                          {conv.opportunity_id?.title}
-                        </div>
-                        {conv.last_message?.content && (
-                          <div className="conversation-last-message">
-                            {conv.last_message.sender_id?._id === user._id ? "You: " : ""}
-                            {conv.last_message.content.length > 30
-                              ? conv.last_message.content.substring(0, 30) + "..."
-                              : conv.last_message.content}
-                          </div>
+                        {conv.last_message?.timestamp && (
+                          <div className="shrink-0 text-[11px] text-slate-400">{formatTime(conv.last_message.timestamp)}</div>
                         )}
                       </div>
-                      {conv.last_message?.timestamp && (
-                        <div className="conversation-time">
-                          {formatTime(conv.last_message.timestamp)}
-                        </div>
-                      )}
                     </div>
                   );
                 })}
               </div>
             )}
-          </div>
+          </aside>
 
-          {/* Messages Area */}
-          <div className="messages-area">
+          <section className="flex min-h-[70vh] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-8">
             {selectedConversation ? (
               <>
-                <div className="messages-header">
-                  <div className="chat-info">
-                    <h3>
+                <div className="border-b border-slate-200 px-5 py-4">
+                  <h3 className="text-lg font-semibold text-slate-900">
                       {user.role === "ngo"
                         ? selectedConversation.volunteer_id?.name
                         : selectedConversation.ngo_id?.name}
@@ -273,29 +300,34 @@ export default function Messages() {
                         <span> ({selectedConversation.ngo_id.organization_name})</span>
                       )}
                     </h3>
-                    <p>{selectedConversation.opportunity_id?.title}</p>
-                  </div>
+                  <p className="text-sm text-slate-600">{selectedConversation.opportunity_id?.title}</p>
                 </div>
 
-                <div className="messages-list">
+                <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 px-5 py-4">
                   {loadingMessages ? (
-                    <p>Loading messages...</p>
+                    <p className="text-sm text-slate-500">Loading messages...</p>
                   ) : messages.length === 0 ? (
-                    <div className="empty-messages">
-                      <p>No messages yet. Start the conversation!</p>
+                    <div className="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-600">
+                      No messages yet. Start the conversation.
                     </div>
                   ) : (
                     <>
                       {messages.map((msg) => {
-                        const isOwnMessage = msg.sender_id._id === user._id;
+                        const isOwnMessage = resolveSenderId(msg) === user._id;
                         return (
                           <div
                             key={msg._id}
-                            className={`message ${isOwnMessage ? "own" : "other"}`}
+                            className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
                           >
-                            <div className="message-content">
-                              <p>{msg.content}</p>
-                              <span className="message-time">
+                            <div
+                              className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm ${
+                                isOwnMessage
+                                  ? "bg-slate-900 text-white"
+                                  : "border border-slate-200 bg-white text-slate-900"
+                              }`}
+                            >
+                              <p className="text-sm leading-relaxed">{msg.content}</p>
+                              <span className={`mt-1 block text-[11px] ${isOwnMessage ? "text-slate-300" : "text-slate-500"}`}>
                                 {formatTime(msg.createdAt)}
                               </span>
                             </div>
@@ -306,47 +338,37 @@ export default function Messages() {
                     </>
                   )}
 
-                  {/* Typing indicator */}
                   {otherUserTyping && (
-                    <div className="typing-indicator">
-                      <div className="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
-                      <span className="typing-text">Typing...</span>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs text-slate-500 shadow-sm">
+                      <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-orange-500" /> Typing...
                     </div>
                   )}
                 </div>
 
-                <form className="message-form" onSubmit={handleSendMessage}>
-                  <input
-                    type="text"
+                <form className="flex gap-2 border-t border-slate-200 p-4" onSubmit={handleSendMessage}>
+                  <Input
                     value={newMessage}
                     onChange={handleInputChange}
                     placeholder="Type your message..."
                     disabled={sendingMessage}
                     required
                   />
-                  <button
-                    type="submit"
-                    disabled={sendingMessage || !newMessage.trim()}
-                    className="btn-send"
-                  >
+                  <Button type="submit" disabled={sendingMessage || !newMessage.trim()}>
+                    <SendHorizontal className="h-4 w-4" />
                     {sendingMessage ? "Sending..." : "Send"}
-                  </button>
+                  </Button>
                 </form>
               </>
             ) : (
-              <div className="no-conversation">
-                <div className="empty-state">
-                  <p>Select a conversation to start messaging</p>
+              <div className="flex flex-1 items-center justify-center p-6">
+                <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-sm text-slate-600">
+                  Select a conversation to start messaging.
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      </div>
+          </section>
+        </section>
+      </main>
     </>
   );
 }

@@ -32,14 +32,20 @@ exports.updateMe = async (req, res) => {
       return res.status(400).json({ message: "You cannot change your role" });
     }
 
-    // Update allowed fields
-    if (name) user.name = name;
-    if (location) user.location = location;
-    if (bio) user.bio = bio;
+    // Update allowed fields. Use undefined checks so users can clear values.
+    if (name !== undefined) user.name = name;
+    if (location !== undefined) user.location = location;
+    if (bio !== undefined) user.bio = bio;
 
     // Volunteer fields
-    if (req.user.role === "volunteer" && skills) {
-      user.skills = skills;
+    if (user.role === "volunteer" && skills !== undefined) {
+      const normalizedSkills = Array.isArray(skills)
+        ? skills
+        : String(skills)
+            .split(",")
+            .map((skill) => skill.trim());
+
+      user.skills = normalizedSkills.filter((skill) => skill.length > 0);
     }
 
     // NGO fields
