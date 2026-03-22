@@ -99,20 +99,48 @@ export default function Dashboard() {
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-slate-900">Recent Applications</h3>
                 <button className="text-sm font-semibold text-orange-700 hover:text-orange-800" onClick={() => navigate("/applications")}>
-                  View All
+                  View All ({applications.length} applications)
                 </button>
               </div>
-              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
-                No recent applications to show.
-              </div>
+              {applications.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                  No applications yet.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {applications.slice(0, 2).map((app) => (
+                    <div key={app._id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-900">{app.opportunity_id?.title || "Opportunity"}</p>
+                          <p className="text-xs text-slate-600 mt-1">From: {app.volunteer_id?.name || "Volunteer"}</p>
+                          <p className="text-xs text-slate-500 mt-1">{new Date(app.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          app.status === "accepted" ? "bg-emerald-100 text-emerald-700" :
+                          app.status === "rejected" ? "bg-rose-100 text-rose-700" :
+                          "bg-orange-100 text-orange-700"
+                        }`}>
+                          {app.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <h3 className="mb-4 text-lg font-semibold text-slate-900">Quick Actions</h3>
-              <Button className="w-full justify-start" onClick={() => navigate("/opportunities/create")}>
-                Create New Opportunity
-              </Button>
-              <p className="mt-2 text-xs text-slate-500">Post a new role for volunteers in your network.</p>
+              <div className="space-y-2">
+                <Button className="w-full justify-start" onClick={() => navigate("/opportunities/create")}>
+                  Create New Opportunity
+                </Button>
+                <Button className="w-full justify-start" variant="secondary" onClick={() => navigate("/messages")}>
+                  View Messages
+                </Button>
+              </div>
+              <p className="mt-3 text-xs text-slate-500">Manage your opportunities and conversations from one place.</p>
             </div>
           </section>
         </main>
@@ -150,20 +178,48 @@ export default function Dashboard() {
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-slate-900">Recent Applications</h3>
                 <button className="text-sm font-semibold text-orange-700 hover:text-orange-800" onClick={() => navigate("/applications")}>
-                  View All
+                  View All ({applications.length} applications)
                 </button>
               </div>
-              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
-                No recent applications to show.
-              </div>
+              {applications.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                  No applications yet.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {applications.slice(0, 2).map((app) => (
+                    <div key={app._id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-900">{app.opportunity_id?.title || "Opportunity"}</p>
+                          <p className="text-xs text-slate-600 mt-1">Status: {app.status}</p>
+                          <p className="text-xs text-slate-500 mt-1">{new Date(app.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          app.status === "accepted" ? "bg-emerald-100 text-emerald-700" :
+                          app.status === "rejected" ? "bg-rose-100 text-rose-700" :
+                          "bg-orange-100 text-orange-700"
+                        }`}>
+                          {app.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h3 className="mb-4 text-lg font-semibold text-slate-900">Find Opportunities</h3>
-              <Button className="w-full justify-start" onClick={() => navigate("/browse-opportunities")}>
-                Browse Opportunities
-              </Button>
-              <p className="mt-2 text-xs text-slate-500">Find roles matching your skills and mission interests.</p>
+              <h3 className="mb-4 text-lg font-semibold text-slate-900">Quick Actions</h3>
+              <div className="space-y-2">
+                <Button className="w-full justify-start" onClick={() => navigate("/browse-opportunities")}>
+                  Browse Opportunities
+                </Button>
+                <Button className="w-full justify-start" variant="secondary" onClick={() => navigate("/messages")}>
+                  View Messages
+                </Button>
+              </div>
+              <p className="mt-3 text-xs text-slate-500">Explore opportunities and continue your chats with NGOs.</p>
             </div>
           </section>
         </main>

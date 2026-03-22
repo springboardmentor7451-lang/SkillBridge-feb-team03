@@ -21,7 +21,7 @@ export default function BrowseOpportunities() {
     skills: '',
     location: '',
     duration: '',
-    status: 'open'
+    status: 'all'
   });
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
@@ -54,7 +54,7 @@ export default function BrowseOpportunities() {
   };
 
   const applyFilters = () => {
-    fetchOpportunities();
+    fetchOpportunities({ ...filters });
   };
 
   const clearFilters = () => {
@@ -62,7 +62,7 @@ export default function BrowseOpportunities() {
       skills: '',
       location: '',
       duration: '',
-      status: 'open'
+      status: 'all'
     };
     setFilters(nextFilters);
     fetchOpportunities(nextFilters);
@@ -183,12 +183,11 @@ export default function BrowseOpportunities() {
                 className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
               >
                 <option value="">All Durations</option>
-                <option value="1-3 months">1-3 months</option>
-                <option value="3-6 months">3-6 months</option>
-                <option value="6-12 months">6-12 months</option>
-                <option value="1+ year">1+ year</option>
-                <option value="Short-term">Short-term</option>
-                <option value="Long-term">Long-term</option>
+                <option value="1 week">1 week</option>
+                <option value="1 month">1 month</option>
+                <option value="3 month">3 month</option>
+                <option value="6 month">6 month</option>
+                <option value="1 year">1 year</option>
               </select>
             </div>
             <div>
@@ -199,7 +198,7 @@ export default function BrowseOpportunities() {
                 className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
               >
                 <option value="open">Open Only</option>
-                <option value="all">All Statuses</option>
+                <option value="all">All Status</option>
                 <option value="closed">Closed Only</option>
               </select>
             </div>

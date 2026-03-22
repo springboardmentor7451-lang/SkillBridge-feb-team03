@@ -43,10 +43,10 @@ exports.getMatchSuggestions = async (req, res) => {
 
     // Calculate match scores
     const suggestions = opportunities.map(opp => {
-      let score = 0;
+      let matchPercentage = 0;
       let reasons = [];
 
-      // Skills match score
+      // Skills match percentage based on required skills
       if (skills && skills.length > 0 && opp.required_skills && opp.required_skills.length > 0) {
         const matchingSkills = skills.filter(skill =>
           opp.required_skills.some(reqSkill =>
@@ -55,33 +55,25 @@ exports.getMatchSuggestions = async (req, res) => {
           )
         );
         if (matchingSkills.length > 0) {
-          score += matchingSkills.length * 20; // 20 points per matching skill
-          reasons.push(`${matchingSkills.length} skill match(es)`);
+          // Calculate percentage based on required skills
+          matchPercentage = Math.round((matchingSkills.length / opp.required_skills.length) * 100);
+          reasons.push(`${matchingSkills.length}/${opp.required_skills.length} skills match`);
         }
       }
 
-      // Location match score
+      // Location match reason (doesn't affect percentage)
       if (location && opp.location) {
         if (opp.location.toLowerCase().includes(location.toLowerCase()) ||
             location.toLowerCase().includes(opp.location.toLowerCase())) {
-          score += 30; // 30 points for location match
           reasons.push('Location match');
         } else if (opp.location.toLowerCase().includes('remote')) {
-          score += 15; // 15 points for remote opportunities
           reasons.push('Remote opportunity');
         }
       }
 
-      // Recency bonus
-      const daysSincePosted = Math.floor((Date.now() - new Date(opp.createdAt)) / (1000 * 60 * 60 * 24));
-      if (daysSincePosted <= 7) {
-        score += 10; // 10 points for recent postings
-        reasons.push('Recently posted');
-      }
-
       return {
         ...opp.toObject(),
-        matchScore: score,
+        matchScore: matchPercentage,
         matchReasons: reasons
       };
     });

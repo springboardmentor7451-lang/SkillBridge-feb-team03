@@ -26,6 +26,7 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   const guestLinks = [
+    { label: "Home", href: "/" },
     { label: "How it Works", href: "#how" },
     { label: "Features", href: "#features" },
     { label: "Impact", href: "#impact" },
@@ -46,7 +47,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="" className="flex items-center gap-3">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-white">
             SB
           </span>

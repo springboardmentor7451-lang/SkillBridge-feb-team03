@@ -1,9 +1,10 @@
 const Opportunity = require("../models/opportunity");
+const Application = require("../models/application");
 
 // Create Opportunity (NGO only)
 exports.createOpportunity = async (req, res) => {
   try {
-    const { title, description, required_skills, duration, location } = req.body;
+    const { title, description, required_skills, duration, location, status } = req.body;
 
     // Validate required fields
     if (!title || !description || !duration || !location) {
@@ -19,6 +20,7 @@ exports.createOpportunity = async (req, res) => {
       required_skills: required_skills || [],
       duration,
       location,
+      status: status === "closed" ? "closed" : "open",
     });
 
     await opportunity.save();
@@ -37,9 +39,32 @@ exports.getMyOpportunities = async (req, res) => {
   try {
     const opportunities = await Opportunity.find({ ngo_id: req.user });
 
+    const opportunityIds = opportunities.map((opp) => opp._id);
+    let applicationCounts = [];
+
+    if (opportunityIds.length > 0) {
+      applicationCounts = await Application.aggregate([
+        { $match: { opportunity_id: { $in: opportunityIds } } },
+        { $group: { _id: "$opportunity_id", count: { $sum: 1 } } }
+      ]);
+    }
+
+    const countsMap = new Map(
+      applicationCounts.map((item) => [item._id.toString(), item.count])
+    );
+
+    const opportunitiesWithCounts = opportunities.map((opp) => {
+      const countFromApplications = countsMap.get(opp._id.toString()) || 0;
+      const countFromEmbedded = Array.isArray(opp.applicants) ? opp.applicants.length : 0;
+      return {
+        ...opp.toObject(),
+        applicant_count: Math.max(countFromApplications, countFromEmbedded),
+      };
+    });
+
     res.json({
       message: "Opportunities retrieved successfully",
-      opportunities,
+      opportunities: opportunitiesWithCounts,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -52,14 +77,11 @@ exports.getAllOpportunities = async (req, res) => {
     const { skills, location, duration, status } = req.query;
 
     let filter = {};
+    const parsedStatus = (status || "all").toString().trim().toLowerCase();
 
-    // Filter by status (default to open opportunities)
-    if (status === 'all') {
-      // No status filter
-    } else if (status === 'open' || !status) {
-      filter.status = 'open';
-    } else {
-      filter.status = status;
+    // Filter by status
+    if (parsedStatus === "open" || parsedStatus === "closed") {
+      filter.status = parsedStatus;
     }
 
     // Filter by location (case-insensitive partial match)
@@ -67,9 +89,20 @@ exports.getAllOpportunities = async (req, res) => {
       filter.location = { $regex: location.trim(), $options: 'i' };
     }
 
-    // Filter by duration (exact match)
+    // Filter by duration (accepts both singular/plural wording)
     if (duration && duration.trim()) {
-      filter.duration = duration.trim();
+      const durationKey = duration.trim().toLowerCase();
+      const durationPatternMap = {
+        "1 week": /^\s*1\s*week(s)?\s*$/i,
+        "1 month": /^\s*1\s*month(s)?\s*$/i,
+        "3 month": /^\s*3\s*month(s)?\s*$/i,
+        "6 month": /^\s*6\s*month(s)?\s*$/i,
+        "1 year": /^\s*1\s*year(s)?\s*$/i,
+      };
+
+      filter.duration = durationPatternMap[durationKey]
+        ? { $regex: durationPatternMap[durationKey] }
+        : { $regex: `^${duration.trim()}$`, $options: "i" };
     }
 
     // Filter by skills (opportunities that have at least one of the specified skills)
@@ -94,7 +127,7 @@ exports.getAllOpportunities = async (req, res) => {
         skills: skills || '',
         location: location || '',
         duration: duration || '',
-        status: status || 'open'
+        status: parsedStatus
       }
     });
   } catch (error) {

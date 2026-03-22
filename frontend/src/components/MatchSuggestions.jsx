@@ -20,7 +20,7 @@ export default function MatchSuggestions() {
     try {
       setLoadingSuggestions(true);
       const res = await matchingService.getMatchSuggestions();
-      setSuggestions(res.data.suggestions.slice(0, 5)); // Show top 5
+      setSuggestions(res.data.suggestions || []);
     } catch (error) {
       console.error("Failed to fetch match suggestions:", error);
     } finally {
@@ -33,6 +33,8 @@ export default function MatchSuggestions() {
   };
 
   if (loading || user?.role !== "volunteer") return null;
+
+  const previewSuggestions = suggestions.slice(0, 2);
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -51,7 +53,7 @@ export default function MatchSuggestions() {
         </div>
       ) : (
         <div className="space-y-4">
-          {suggestions.map((suggestion) => (
+          {previewSuggestions.map((suggestion) => (
             <article key={suggestion._id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <h4 className="text-base font-semibold text-slate-900">{suggestion.title}</h4>
@@ -81,15 +83,15 @@ export default function MatchSuggestions() {
                 ))}
               </div>
 
-              <Button size="sm" onClick={() => handleViewOpportunity(suggestion._id)}>
+              {/* <Button size="sm" onClick={() => handleViewOpportunity(suggestion._id)}>
                 View Opportunity
-              </Button>
+              </Button> */}
             </article>
           ))}
         </div>
       )}
 
-      {suggestions.length > 0 && (
+      {suggestions.length > 2 && (
         <div className="mt-4">
           <Button variant="secondary" onClick={() => navigate('/browse-opportunities?tab=matches')}>
             View All Matches

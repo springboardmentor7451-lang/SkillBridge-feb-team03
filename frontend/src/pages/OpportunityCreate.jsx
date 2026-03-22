@@ -21,6 +21,7 @@ export default function OpportunityCreate() {
     required_skills: [],
     duration: "",
     location: "",
+    status: "open",
   });
 
   const handleChange = (e) => {
@@ -97,6 +98,7 @@ export default function OpportunityCreate() {
             required_skills: opp.required_skills || [],
             duration: opp.duration || "",
             location: opp.location || "",
+            status: opp.status || "open",
           });
         } catch (err) {
           console.error("Failed to load opportunity", err);
@@ -156,14 +158,20 @@ export default function OpportunityCreate() {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Duration *</label>
-              <Input
-                type="text"
+              <select
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
-                placeholder="e.g., 3 months, 6 weeks"
+                className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
                 required
-              />
+              >
+                <option value="">Select duration</option>
+                <option value="1 week">1 week</option>
+                <option value="1 month">1 month</option>
+                <option value="3 month">3 month</option>
+                <option value="6 month">6 month</option>
+                <option value="1 year">1 year</option>
+              </select>
             </div>
 
             <div>
@@ -177,6 +185,20 @@ export default function OpportunityCreate() {
                 required
               />
             </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Status *</label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              required
+            >
+              <option value="open">Open</option>
+              <option value="closed">Closed</option>
+            </select>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

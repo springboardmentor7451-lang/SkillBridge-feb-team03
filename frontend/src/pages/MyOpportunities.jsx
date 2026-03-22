@@ -80,6 +80,7 @@ export default function MyOpportunities() {
 
   const openOpportunities = opportunities.filter((o) => o.status === "open").length;
   const closedOpportunities = opportunities.filter((o) => o.status === "closed").length;
+  const totalApplicants = opportunities.reduce((sum, opp) => sum + (opp.applicant_count || 0), 0);
 
   return (
     <>
@@ -97,7 +98,7 @@ export default function MyOpportunities() {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Total</p><p className="mt-1 text-3xl font-bold text-slate-900">{opportunities.length}</p></div>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Open</p><p className="mt-1 text-3xl font-bold text-emerald-600">{openOpportunities}</p></div>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Closed</p><p className="mt-1 text-3xl font-bold text-rose-600">{closedOpportunities}</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Applicants</p><p className="mt-1 text-3xl font-bold text-sky-600">0</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Applicants</p><p className="mt-1 text-3xl font-bold text-sky-600">{totalApplicants}</p></div>
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -142,7 +143,7 @@ export default function MyOpportunities() {
                           {opp.status}
                         </span>
                       </td>
-                      <td className="px-3 py-4 text-slate-700">0 applicants</td>
+                      <td className="px-3 py-4 text-slate-700">{opp.applicant_count || 0} applicants</td>
                       <td className="px-3 py-4">
                         <div className="flex flex-wrap gap-2">
                           <Button size="sm" variant="secondary" onClick={() => navigate(`/opportunities/edit/${opp._id}`)}>Edit</Button>
