@@ -50,7 +50,9 @@ export default function Profile() {
           <h2 className="text-2xl font-bold text-slate-900">My Profile</h2>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Name</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {user.role === "ngo" ? "Organization Name" : "Full Name"}
+              </p>
               <p className="mt-1 text-sm text-slate-800">{user.name}</p>
             </div>
             <div>
@@ -65,10 +67,12 @@ export default function Profile() {
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Location</p>
               <p className="mt-1 text-sm text-slate-800">{user.location || "Not specified"}</p>
             </div>
-            <div className="md:col-span-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Bio</p>
-              <p className="mt-1 text-sm text-slate-800">{user.bio || "Not specified"}</p>
-            </div>
+            {user.role === "volunteer" && (
+              <div className="md:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Bio</p>
+                <p className="mt-1 text-sm text-slate-800">{user.bio || "Not specified"}</p>
+              </div>
+            )}
           </div>
         </section>
 

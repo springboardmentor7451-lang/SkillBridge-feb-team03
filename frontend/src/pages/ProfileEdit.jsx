@@ -27,11 +27,11 @@ export default function ProfileEdit() {
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || "",
+        name: user.role === "ngo" ? (user.organization_name || user.name || "") : (user.name || ""),
         location: user.location || "",
         bio: user.bio || "",
         skills: user.skills || [],
-        organization_name: user.organization_name || "",
+        organization_name: user.organization_name || user.name || "",
         organization_description: user.organization_description || "",
         website_url: user.website_url || "",
       });
@@ -64,15 +64,15 @@ export default function ProfileEdit() {
       const dataToSend = {
         name: formData.name,
         location: formData.location,
-        bio: formData.bio,
       };
 
       if (user?.role === "volunteer") {
         dataToSend.skills = formData.skills;
+        dataToSend.bio = formData.bio;
       }
 
       if (user?.role === "ngo") {
-        dataToSend.organization_name = formData.organization_name;
+        dataToSend.organization_name = formData.name;
         dataToSend.organization_description = formData.organization_description;
         dataToSend.website_url = formData.website_url;
       }
@@ -115,7 +115,9 @@ export default function ProfileEdit() {
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Name *</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              {user.role === "ngo" ? "Organization Name *" : "Full Name *"}
+            </label>
             <Input type="text" name="name" value={formData.name} onChange={handleChange} required />
           </div>
 
@@ -124,37 +126,34 @@ export default function ProfileEdit() {
             <Input type="text" name="location" value={formData.location} onChange={handleChange} required />
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Bio</label>
-            <textarea
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              rows="4"
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-            ></textarea>
-          </div>
-
           {user.role === "volunteer" && (
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Skills (comma-separated)</label>
-              <Input
-                type="text"
-                name="skills"
-                value={formData.skills.join(", ")}
-                onChange={handleSkillsChange}
-                placeholder="e.g., React, Design, Teaching"
-              />
-            </div>
+            <>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Skills (comma-separated)</label>
+                <Input
+                  type="text"
+                  name="skills"
+                  value={formData.skills.join(", ")}
+                  onChange={handleSkillsChange}
+                  placeholder="e.g., React, Design, Teaching"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Bio</label>
+                <textarea
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  rows="4"
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                ></textarea>
+              </div>
+            </>
           )}
 
           {user.role === "ngo" && (
             <>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Organization Name *</label>
-                <Input type="text" name="organization_name" value={formData.organization_name} onChange={handleChange} required />
-              </div>
-
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">Organization Description</label>
                 <textarea

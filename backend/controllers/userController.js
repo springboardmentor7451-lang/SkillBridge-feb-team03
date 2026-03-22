@@ -35,24 +35,27 @@ exports.updateMe = async (req, res) => {
     // Update allowed fields. Use undefined checks so users can clear values.
     if (name !== undefined) user.name = name;
     if (location !== undefined) user.location = location;
-    if (bio !== undefined) user.bio = bio;
 
     // Volunteer fields
-    if (user.role === "volunteer" && skills !== undefined) {
-      const normalizedSkills = Array.isArray(skills)
-        ? skills
-        : String(skills)
-            .split(",")
-            .map((skill) => skill.trim());
+    if (user.role === "volunteer") {
+      if (bio !== undefined) user.bio = bio;
 
-      user.skills = normalizedSkills.filter((skill) => skill.length > 0);
+      if (skills !== undefined) {
+        const normalizedSkills = Array.isArray(skills)
+          ? skills
+          : String(skills)
+              .split(",")
+              .map((skill) => skill.trim());
+
+        user.skills = normalizedSkills.filter((skill) => skill.length > 0);
+      }
     }
 
     // NGO fields
     if (user.role === "ngo") {
-      if (organization_name) user.organization_name = organization_name;
-      if (organization_description) user.organization_description = organization_description;
-      if (website_url) user.website_url = website_url;
+      if (organization_name !== undefined) user.organization_name = organization_name;
+      if (organization_description !== undefined) user.organization_description = organization_description;
+      if (website_url !== undefined) user.website_url = website_url;
     }
 
     await user.save();

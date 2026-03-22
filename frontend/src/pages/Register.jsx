@@ -15,16 +15,19 @@ import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 const registerSchema = z
   .object({
     role: z.enum(["volunteer", "ngo"]),
-    name: z.string().min(2, "Name is required"),
+    // Common fields
     email: z.email("Enter a valid email"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(8, "Please confirm your password"),
     location: z.string().min(2, "Location is required"),
+    // Volunteer fields
+    fullName: z.string().optional(),
     skills: z.string().optional(),
-    bio: z.string().min(10, "Bio should be at least 10 characters"),
-    organization_name: z.string().optional(),
-    organization_description: z.string().optional(),
-    website_url: z.string().optional(),
+    bio: z.string().optional(),
+    // NGO fields
+    organizationName: z.string().optional(),
+    organizationDescription: z.string().optional(),
+    website: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {
@@ -35,27 +38,43 @@ const registerSchema = z
       });
     }
 
-    if (data.role === "volunteer" && (!data.skills || !data.skills.trim())) {
-      ctx.addIssue({
-        path: ["skills"],
-        code: "custom",
-        message: "Please add at least one skill",
-      });
+    if (data.role === "volunteer") {
+      if (!data.fullName || !data.fullName.trim()) {
+        ctx.addIssue({
+          path: ["fullName"],
+          code: "custom",
+          message: "Full Name is required",
+        });
+      }
+      if (!data.skills || !data.skills.trim()) {
+        ctx.addIssue({
+          path: ["skills"],
+          code: "custom",
+          message: "Please add at least one skill",
+        });
+      }
+      if (!data.bio || data.bio.trim().length < 10) {
+        ctx.addIssue({
+          path: ["bio"],
+          code: "custom",
+          message: "Bio should be at least 10 characters",
+        });
+      }
     }
 
     if (data.role === "ngo") {
-      if (!data.organization_name || !data.organization_name.trim()) {
+      if (!data.organizationName || !data.organizationName.trim()) {
         ctx.addIssue({
-          path: ["organization_name"],
+          path: ["organizationName"],
           code: "custom",
-          message: "Organization name is required for NGO accounts",
+          message: "Organization Name is required",
         });
       }
-      if (!data.organization_description || data.organization_description.trim().length < 20) {
+      if (!data.organizationDescription || data.organizationDescription.trim().length < 10) {
         ctx.addIssue({
-          path: ["organization_description"],
+          path: ["organizationDescription"],
           code: "custom",
-          message: "Description should be at least 20 characters",
+          message: "Organization Description should be at least 10 characters",
         });
       }
     }
@@ -74,16 +93,16 @@ export default function Register() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       role: "volunteer",
-      name: "",
+      fullName: "",
       email: "",
       password: "",
       confirmPassword: "",
       location: "",
       skills: "",
       bio: "",
-      organization_name: "",
-      organization_description: "",
-      website_url: "",
+      organizationName: "",
+      organizationDescription: "",
+      website: "",
     },
   });
 
@@ -91,18 +110,28 @@ export default function Register() {
 
   const onSubmit = async (formValues) => {
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
-        name: formValues.name,
+      const payload = {
         email: formValues.email,
         password: formValues.password,
         role: formValues.role,
         location: formValues.location,
-        skills: formValues.skills ? formValues.skills.split(",").map((item) => item.trim()).filter(Boolean) : [],
-        bio: formValues.bio,
-        organization_name: formValues.organization_name,
-        organization_description: formValues.organization_description,
-        website_url: formValues.website_url,
-      });
+      };
+
+      // Add role-specific fields
+      if (formValues.role === "volunteer") {
+        payload.name = formValues.fullName;
+        payload.skills = formValues.skills
+          ? formValues.skills.split(",").map((item) => item.trim()).filter(Boolean)
+          : [];
+        payload.bio = formValues.bio;
+      } else {
+        payload.name = formValues.organizationName;
+        payload.organization_name = formValues.organizationName;
+        payload.organization_description = formValues.organizationDescription;
+        payload.website_url = formValues.website;
+      }
+
+      await axios.post("http://localhost:5000/api/auth/register", payload);
 
       toast.success("Account created successfully. Please sign in.");
       navigate("/login");
@@ -153,80 +182,192 @@ export default function Register() {
                   </Tabs>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" placeholder="Jane Doe" {...register("name")} />
-                    {errors.name && <p className="text-xs text-rose-600">{errors.name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="jane@example.com" {...register("email")} />
-                    {errors.email && <p className="text-xs text-rose-600">{errors.email.message}</p>}
-                  </div>
-                </div>
+                {role === "volunteer" && (
+                  <>
+                    {/* VOLUNTEER FORM */}
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input
+                        id="fullName"
+                        placeholder="Jane Doe"
+                        {...register("fullName")}
+                      />
+                      {errors.fullName && (
+                        <p className="text-xs text-rose-600">{errors.fullName.message}</p>
+                      )}
+                    </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" placeholder="Minimum 8 characters" {...register("password")} />
-                    {errors.password && <p className="text-xs text-rose-600">{errors.password.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                    <Input id="confirmPassword" type="password" placeholder="Re-enter password" {...register("confirmPassword")} />
-                    {errors.confirmPassword && <p className="text-xs text-rose-600">{errors.confirmPassword.message}</p>}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input id="location" placeholder="e.g., Delhi or Remote" {...register("location")} />
-                  {errors.location && <p className="text-xs text-rose-600">{errors.location.message}</p>}
-                </div>
-
-                {role === "volunteer" ? (
-                  <div className="space-y-2">
-                    <Label htmlFor="skills">Skills</Label>
-                    <Input id="skills" placeholder="React, UI Design, Content Writing" {...register("skills")} />
-                    {errors.skills && <p className="text-xs text-rose-600">{errors.skills.message}</p>}
-                  </div>
-                ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <div className="grid gap-4">
+                    <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor="organization_name">Organization Name</Label>
-                        <Input id="organization_name" placeholder="Your organization" {...register("organization_name")} />
-                        {errors.organization_name && <p className="text-xs text-rose-600">{errors.organization_name.message}</p>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="organization_description">Organization Description</Label>
-                        <textarea
-                          id="organization_description"
-                          className="min-h-24 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                          placeholder="What impact does your organization create?"
-                          {...register("organization_description")}
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="jane@example.com"
+                          {...register("email")}
                         />
-                        {errors.organization_description && <p className="text-xs text-rose-600">{errors.organization_description.message}</p>}
+                        {errors.email && (
+                          <p className="text-xs text-rose-600">{errors.email.message}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="website_url">Website</Label>
-                        <Input id="website_url" placeholder="https://example.org" {...register("website_url")} />
+                        <Label htmlFor="location">Location</Label>
+                        <Input
+                          id="location"
+                          placeholder="e.g., Delhi or Remote"
+                          {...register("location")}
+                        />
+                        {errors.location && (
+                          <p className="text-xs text-rose-600">{errors.location.message}</p>
+                        )}
                       </div>
                     </div>
-                  </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Minimum 8 characters"
+                          {...register("password")}
+                        />
+                        {errors.password && (
+                          <p className="text-xs text-rose-600">{errors.password.message}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="Re-enter password"
+                          {...register("confirmPassword")}
+                        />
+                        {errors.confirmPassword && (
+                          <p className="text-xs text-rose-600">{errors.confirmPassword.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="skills">Skills</Label>
+                      <Input
+                        id="skills"
+                        placeholder="React, UI Design, Content Writing"
+                        {...register("skills")}
+                      />
+                      {errors.skills && (
+                        <p className="text-xs text-rose-600">{errors.skills.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="bio">Bio</Label>
+                      <textarea
+                        id="bio"
+                        className="min-h-24 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                        placeholder="Tell us a little about yourself"
+                        {...register("bio")}
+                      />
+                      {errors.bio && (
+                        <p className="text-xs text-rose-600">{errors.bio.message}</p>
+                      )}
+                    </div>
+                  </>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <textarea
-                    id="bio"
-                    className="min-h-24 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                    placeholder="Tell us a little about yourself or your mission"
-                    {...register("bio")}
-                  />
-                  {errors.bio && <p className="text-xs text-rose-600">{errors.bio.message}</p>}
-                </div>
+                {role === "ngo" && (
+                  <>
+                    {/* NGO FORM */}
+                    <div className="space-y-2">
+                      <Label htmlFor="organizationName">Organization Name</Label>
+                      <Input
+                        id="organizationName"
+                        placeholder="Your organization"
+                        {...register("organizationName")}
+                      />
+                      {errors.organizationName && (
+                        <p className="text-xs text-rose-600">{errors.organizationName.message}</p>
+                      )}
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="contact@org.com"
+                          {...register("email")}
+                        />
+                        {errors.email && (
+                          <p className="text-xs text-rose-600">{errors.email.message}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="location">Location</Label>
+                        <Input
+                          id="location"
+                          placeholder="e.g., Delhi or Remote"
+                          {...register("location")}
+                        />
+                        {errors.location && (
+                          <p className="text-xs text-rose-600">{errors.location.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Minimum 8 characters"
+                          {...register("password")}
+                        />
+                        {errors.password && (
+                          <p className="text-xs text-rose-600">{errors.password.message}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="Re-enter password"
+                          {...register("confirmPassword")}
+                        />
+                        {errors.confirmPassword && (
+                          <p className="text-xs text-rose-600">{errors.confirmPassword.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="organizationDescription">Organization Description</Label>
+                      <textarea
+                        id="organizationDescription"
+                        className="min-h-24 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                        placeholder="What impact does your organization create?"
+                        {...register("organizationDescription")}
+                      />
+                      {errors.organizationDescription && (
+                        <p className="text-xs text-rose-600">{errors.organizationDescription.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="website">Website</Label>
+                      <Input
+                        id="website"
+                        placeholder="https://example.org"
+                        {...register("website")}
+                      />
+                    </div>
+                  </>
+                )}
 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                   <UserPlus className="h-4 w-4" />
