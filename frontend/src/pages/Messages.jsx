@@ -277,14 +277,14 @@ export default function Messages() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-6">
+      <main className="mx-auto flex h-[calc(100vh-84px)] max-w-7xl flex-col overflow-hidden px-4 py-6 md:px-6 md:py-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-4 shrink-0">
           <h1 className="text-3xl font-bold text-slate-900">Messages</h1>
           <p className="mt-1 text-slate-600">Connect with volunteers and NGOs in real time.</p>
         </motion.div>
 
-        <section className="grid min-h-[70vh] gap-4 lg:grid-cols-12">
-          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-4">
+        <section className="grid min-h-0 flex-1 gap-4 lg:grid-cols-12">
+          <aside className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-4">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-slate-900">Conversations ({conversations.length})</h3>
               <Button size="icon" variant="ghost" onClick={fetchConversations} title="Refresh conversations">
@@ -299,7 +299,7 @@ export default function Messages() {
                 No conversations yet. Accepted applications will appear here.
               </div>
             ) : (
-              <div className="space-y-2 overflow-y-auto pr-1">
+              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                 {conversations.map((conv) => {
                   const otherUser = getOtherUser(conv);
                   const isSelected = selectedConversation?._id === conv._id;
@@ -344,10 +344,10 @@ export default function Messages() {
             )}
           </aside>
 
-          <section className="flex min-h-[70vh] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-8">
+          <section className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-8">
             {selectedConversation ? (
               <>
-                <div className="border-b border-slate-200 px-5 py-4">
+                <div className="shrink-0 border-b border-slate-200 px-5 py-4">
                   <button className="text-left" onClick={handleOpenParticipantDetails}>
                     <h3 className="text-lg font-semibold text-slate-900 hover:text-orange-700">
                       {user.role === "ngo"
@@ -358,7 +358,7 @@ export default function Messages() {
                   <p className="text-sm text-slate-600">Opportunity: {selectedConversation.opportunity_id?.title || "Not specified"}</p>
                 </div>
 
-                <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 px-5 py-4">
+                <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-slate-50 px-5 py-4">
                   {loadingMessages ? (
                     <p className="text-sm text-slate-500">Loading messages...</p>
                   ) : messages.length === 0 ? (
@@ -409,7 +409,7 @@ export default function Messages() {
                   )}
                 </div>
 
-                <form className="flex gap-2 border-t border-slate-200 p-4" onSubmit={handleSendMessage}>
+                <form className="shrink-0 flex gap-2 border-t border-slate-200 p-4" onSubmit={handleSendMessage}>
                   <input ref={fileInputRef} type="file" className="hidden" onChange={handleAttachmentChange} />
                   <Button type="button" size="icon" variant="secondary" onClick={handlePickAttachment} title="Add attachment">
                     <Paperclip className="h-4 w-4" />
@@ -426,7 +426,7 @@ export default function Messages() {
                   </Button>
                 </form>
                 {attachment && (
-                  <div className="mx-4 mb-4 mt-2 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+                  <div className="mx-4 mb-4 mt-2 shrink-0 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
                     <span className="truncate">Attached: {attachment.name}</span>
                     <button type="button" className="rounded p-1 hover:bg-slate-200" onClick={() => setAttachment(null)}>
                       <X className="h-3.5 w-3.5" />

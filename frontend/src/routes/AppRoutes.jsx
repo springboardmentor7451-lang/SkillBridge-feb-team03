@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotificationSystem from "../components/NotificationSystem";
+import Footer from "../components/Footer";
 
 const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/Login"));
@@ -29,6 +30,14 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <NotificationSystem />
+      <AppContent />
+    </BrowserRouter>
+  );
+}
+
+function AppContent() {
+  return (
+    <>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -46,6 +55,7 @@ export default function AppRoutes() {
           <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+      <Footer />
+    </>
   );
 }
