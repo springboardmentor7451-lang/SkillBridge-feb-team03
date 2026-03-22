@@ -20,6 +20,10 @@ const applicationSchema = new mongoose.Schema(
     applicant_name: String,
     applicant_email: String,
     cover_letter: String,
+    rejection_reason: {
+      type: String,
+      default: "",
+    },
     applied_date: {
       type: Date,
       default: Date.now,

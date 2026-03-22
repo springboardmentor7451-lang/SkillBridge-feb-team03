@@ -1,6 +1,8 @@
 const Opportunity = require("../models/opportunity");
 const Application = require("../models/application");
 
+const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 // Create Opportunity (NGO only)
 exports.createOpportunity = async (req, res) => {
   try {
@@ -86,7 +88,10 @@ exports.getAllOpportunities = async (req, res) => {
 
     // Filter by location (case-insensitive partial match)
     if (location && location.trim()) {
-      filter.location = { $regex: location.trim(), $options: 'i' };
+      filter.location = {
+        $regex: `^\\s*${escapeRegex(location.trim())}\\s*$`,
+        $options: "i",
+      };
     }
 
     // Filter by duration (accepts both singular/plural wording)
@@ -109,7 +114,9 @@ exports.getAllOpportunities = async (req, res) => {
     if (skills && skills.trim()) {
       const skillArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill);
       if (skillArray.length > 0) {
-        filter.required_skills = { $in: skillArray };
+        filter.required_skills = {
+          $in: skillArray.map((skill) => new RegExp(`^\\s*${escapeRegex(skill)}\\s*$`, "i")),
+        };
       }
     }
 
@@ -117,7 +124,7 @@ exports.getAllOpportunities = async (req, res) => {
 
     const opportunities = await Opportunity.find(filter).populate(
       "ngo_id",
-      "organization_name location"
+      "name email location organization_name organization_description website_url"
     );
 
     res.json({

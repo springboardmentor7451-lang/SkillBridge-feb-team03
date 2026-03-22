@@ -2,10 +2,11 @@ import api from "./api";
 
 const messageService = {
   // Send a message
-  sendMessage: async (conversationId, content) => {
+  sendMessage: async (conversationId, content, attachment = null) => {
     return api.post("/messages", {
       conversation_id: conversationId,
       content,
+      attachment,
     });
   },
 

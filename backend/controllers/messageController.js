@@ -8,7 +8,7 @@ const User = require("../models/user");
 // Send a message
 exports.sendMessage = async (req, res) => {
   try {
-    const { conversation_id, content } = req.body;
+    const { conversation_id, content, attachment } = req.body;
     const sender_id = req.user;
 
     console.log("Sending message from sender:", sender_id, "to conversation:", conversation_id);
@@ -38,12 +38,23 @@ exports.sendMessage = async (req, res) => {
     
     const receiver_id = ngoIdStr === senderIdStr ? conversation.volunteer_id : conversation.ngo_id;
 
+    const trimmedContent = (content || "").trim();
+    const hasAttachment = !!(attachment && attachment.name && attachment.dataUrl);
+
+    if (!trimmedContent && !hasAttachment) {
+      return res.status(400).json({ message: "Message content or attachment is required" });
+    }
+
     // Create message
     const message = new Message({
       conversation_id,
       sender_id: userObjectId,
       receiver_id,
-      content,
+      content: trimmedContent,
+      message_type: hasAttachment ? "file" : "text",
+      attachment_name: hasAttachment ? attachment.name : "",
+      attachment_type: hasAttachment ? attachment.type || "" : "",
+      attachment_data_url: hasAttachment ? attachment.dataUrl : "",
     });
 
     await message.save();
@@ -51,7 +62,7 @@ exports.sendMessage = async (req, res) => {
 
     // Update conversation's last message
     conversation.last_message = {
-      content,
+      content: trimmedContent || (hasAttachment ? `Attachment: ${attachment.name}` : ""),
       sender_id: userObjectId,
       timestamp: new Date(),
     };
@@ -60,27 +71,32 @@ exports.sendMessage = async (req, res) => {
     // Populate sender info for response
     await message.populate("sender_id", "name");
 
-    // Emit real-time message to receiver
-    io.to(receiver_id.toString()).emit('newMessage', {
-      conversationId: conversation_id,
-      message: {
-        _id: message._id,
-        content,
-        sender_id: userObjectId,
-        receiver_id,
-        createdAt: message.createdAt,
-        status: "sent"
-      }
-    });
-
-    // Also emit to sender for multi-device support
-    io.to(senderIdStr).emit('messageSent', {
-      conversationId: conversation_id,
-      message: message
-    });
-
-    // Create notification for receiver
+    // Run real-time and notification side effects without failing API response
     try {
+      // Emit real-time message to receiver
+      io.to(receiver_id.toString()).emit('newMessage', {
+        conversationId: conversation_id,
+        message: {
+          _id: message._id,
+          content: trimmedContent,
+          sender_id: userObjectId,
+          receiver_id,
+          message_type: message.message_type,
+          attachment_name: message.attachment_name,
+          attachment_type: message.attachment_type,
+          attachment_data_url: message.attachment_data_url,
+          createdAt: message.createdAt,
+          status: "sent"
+        }
+      });
+
+      // Also emit to sender for multi-device support
+      io.to(senderIdStr).emit('messageSent', {
+        conversationId: conversation_id,
+        message: message
+      });
+
+      // Create notification for receiver
       const sender = await User.findById(userObjectId);
       const senderName = sender?.name || "Someone";
       
@@ -102,8 +118,8 @@ exports.sendMessage = async (req, res) => {
         sender: senderName,
         timestamp: new Date()
       });
-    } catch (notifError) {
-      console.error("Failed to create notification:", notifError);
+    } catch (sideEffectError) {
+      console.error("Message side-effect error:", sideEffectError);
     }
 
     res.status(201).json({

@@ -8,6 +8,13 @@ import ApplicationForm from "../components/ApplicationForm";
 import { motion } from "framer-motion";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
 import { toast } from "sonner";
 
 export default function BrowseOpportunities() {
@@ -25,6 +32,9 @@ export default function BrowseOpportunities() {
   });
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [selectedNgo, setSelectedNgo] = useState(null);
+  const [selectedOpportunityDetails, setSelectedOpportunityDetails] = useState(null);
+  const [showNgoDetails, setShowNgoDetails] = useState(false);
 
   useEffect(() => {
     if (!loading && user?.role === "volunteer") {
@@ -86,6 +96,58 @@ export default function BrowseOpportunities() {
   const handleApplicationSuccess = () => {
     fetchUserApplications();
     toast.success("Application submitted successfully");
+  };
+
+  const normalizeText = (value) => (value || "").toString().trim().toLowerCase();
+
+  const getMatchSummary = (opp) => {
+    const volunteerSkills = user?.skills || [];
+    const requiredSkills = opp?.required_skills || [];
+
+    const matchedSkills = requiredSkills.filter((requiredSkill) =>
+      volunteerSkills.some((volSkill) => normalizeText(volSkill) === normalizeText(requiredSkill))
+    );
+
+    const missingSkills = requiredSkills.filter(
+      (requiredSkill) => !matchedSkills.some((matchedSkill) => normalizeText(matchedSkill) === normalizeText(requiredSkill))
+    );
+
+    const matchPercentage = requiredSkills.length
+      ? Math.round((matchedSkills.length / requiredSkills.length) * 100)
+      : 0;
+
+    let matchStrength = "Low Match";
+    if (matchPercentage >= 80) {
+      matchStrength = "Strong Match";
+    } else if (matchPercentage >= 50) {
+      matchStrength = "Moderate Match";
+    }
+
+    return { matchedSkills, missingSkills, matchPercentage, matchStrength };
+  };
+
+  const toReadableStatus = (status) => {
+    if (!status) return "Not Applied";
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
+  const handleViewNgoDetails = (opportunity) => {
+    const ngoData = opportunity?.ngo_id;
+    if (!ngoData || typeof ngoData === "string") {
+      toast.error("NGO details are not available for this opportunity");
+      return;
+    }
+
+    const matchSummary = getMatchSummary(opportunity);
+    const applicationStatus = getApplicationStatus(opportunity._id);
+
+    setSelectedNgo(ngoData);
+    setSelectedOpportunityDetails({
+      ...opportunity,
+      ...matchSummary,
+      applicationStatus: toReadableStatus(applicationStatus),
+    });
+    setShowNgoDetails(true);
   };
 
   const isAlreadyApplied = (oppId) => {
@@ -161,7 +223,7 @@ export default function BrowseOpportunities() {
               <label className="mb-1 block text-sm font-medium text-slate-700">Skills</label>
               <Input
                 type="text"
-                placeholder="Teaching, Programming"
+                placeholder="English"
                 value={filters.skills}
                 onChange={(e) => handleFilterChange("skills", e.target.value)}
               />
@@ -170,7 +232,7 @@ export default function BrowseOpportunities() {
               <label className="mb-1 block text-sm font-medium text-slate-700">Location</label>
               <Input
                 type="text"
-                placeholder="Mumbai, Remote"
+                placeholder="Mumbai"
                 value={filters.location}
                 onChange={(e) => handleFilterChange("location", e.target.value)}
               />
@@ -218,13 +280,14 @@ export default function BrowseOpportunities() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full text-left">
+              <table className="min-w-full table-fixed text-left">
                 <thead>
                   <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
-                    <th className="px-3 py-3">Opportunity</th>
-                    <th className="px-3 py-3">Skills</th>
-                    <th className="px-3 py-3">Status</th>
-                    <th className="px-3 py-3">Actions</th>
+                    <th className="w-[24%] px-3 py-3">Opportunity</th>
+                    <th className="w-[26%] px-3 py-3">Skills</th>
+                    <th className="w-[12%] px-3 py-3">Status</th>
+                    <th className="w-[18%] px-3 py-3">Actions</th>
+                    <th className="w-[20%] px-3 py-3">View Details</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -232,7 +295,7 @@ export default function BrowseOpportunities() {
                     const isApplied = isAlreadyApplied(opp._id);
                     const appStatus = getApplicationStatus(opp._id);
                     return (
-                      <tr key={opp._id} className="border-b border-slate-100 align-top text-sm">
+                      <tr key={opp._id} className="border-b border-slate-100 align-middle text-sm">
                         <td className="px-3 py-4">
                           <p className="font-semibold text-slate-900">{opp.title}</p>
                           <p className="text-xs text-slate-500">{opp.location} • {opp.duration}</p>
@@ -254,14 +317,19 @@ export default function BrowseOpportunities() {
                         </td>
                         <td className="px-3 py-4">
                           {isApplied ? (
-                            <Button size="sm" variant="secondary" disabled>
-                              {appStatus === "pending" ? "Pending" : appStatus === "accepted" ? "Accepted" : "Applied"}
-                            </Button>
-                          ) : (
-                            <Button size="sm" onClick={() => handleApply(opp)} disabled={opp.status !== "open"}>
-                              {opp.status === "open" ? "Apply" : "Closed"}
-                            </Button>
-                          )}
+                              <Button size="sm" variant="secondary" className="h-8 min-w-[112px] text-sm" disabled>
+                                {appStatus === "pending" ? "Pending" : appStatus === "accepted" ? "Accepted" : "Applied"}
+                              </Button>
+                            ) : (
+                              <Button size="sm" className="h-8 min-w-[112px] text-sm" onClick={() => handleApply(opp)} disabled={opp.status !== "open"}>
+                                {opp.status === "open" ? "Apply" : "Closed"}
+                              </Button>
+                            )}
+                        </td>
+                        <td className="px-3 py-4">
+                          <Button size="sm" variant="secondary" className="h-8 min-w-[112px] text-sm" onClick={() => handleViewNgoDetails(opp)}>
+                            View Details
+                          </Button>
                         </td>
                       </tr>
                     );
@@ -283,6 +351,107 @@ export default function BrowseOpportunities() {
           onSuccess={handleApplicationSuccess}
         />
       )}
+
+      <Dialog
+        open={showNgoDetails}
+        onOpenChange={(open) => {
+          setShowNgoDetails(open);
+          if (!open) {
+            setSelectedNgo(null);
+            setSelectedOpportunityDetails(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{selectedNgo?.organization_name || selectedNgo?.name || "NGO Details"}</DialogTitle>
+            <DialogDescription>Information about the NGO and this opportunity.</DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-base font-semibold text-slate-900">NGO Info</p>
+              <div>
+                <p className="font-medium text-slate-900">Name</p>
+                <p className="text-slate-600">{selectedNgo?.organization_name || selectedNgo?.name || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Location</p>
+                <p className="text-slate-600">{selectedNgo?.location || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Email</p>
+                <p className="text-slate-600">{selectedNgo?.email || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Description</p>
+                <p className="text-slate-600">{selectedNgo?.organization_description || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Website</p>
+                {selectedNgo?.website_url ? (
+                  <a
+                    href={selectedNgo.website_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-orange-700 hover:text-orange-800 hover:underline"
+                  >
+                    {selectedNgo.website_url}
+                  </a>
+                ) : (
+                  <p className="text-slate-600">Not provided</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-base font-semibold text-slate-900">Opportunity Details</p>
+              <div>
+                <p className="font-medium text-slate-900">Full Description</p>
+                <p className="text-slate-600">{selectedOpportunityDetails?.description || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Required Skills</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.required_skills?.length
+                    ? selectedOpportunityDetails.required_skills.join(", ")
+                    : "Not provided"}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Duration</p>
+                <p className="text-slate-600">{selectedOpportunityDetails?.duration || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Status</p>
+                <p className="text-slate-600">{selectedOpportunityDetails?.applicationStatus || "Not Applied"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Match</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.matchPercentage ?? 0}% ({selectedOpportunityDetails?.matchStrength || "Low Match"})
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Skills Matched</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.matchedSkills?.length
+                    ? selectedOpportunityDetails.matchedSkills.join(", ")
+                    : "None"}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Missing Skills</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.missingSkills?.length
+                    ? selectedOpportunityDetails.missingSkills.join(", ")
+                    : "None"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

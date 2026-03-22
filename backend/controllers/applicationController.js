@@ -174,21 +174,53 @@ exports.getNGOApplications = async (req, res) => {
   }
 };
 
+// Withdraw application (Volunteer only)
+exports.withdrawApplication = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    const volunteer_id = req.user;
+
+    const application = await Application.findOne({ _id: applicationId, volunteer_id });
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    if (application.status !== "pending") {
+      return res.status(400).json({ message: "Only pending applications can be withdrawn" });
+    }
+
+    await Opportunity.findByIdAndUpdate(application.opportunity_id, {
+      $pull: { applicants: { application_id: application._id } }
+    });
+
+    await Application.findByIdAndDelete(application._id);
+
+    res.json({ message: "Application withdrawn successfully" });
+  } catch (error) {
+    console.error("Withdraw application error:", error);
+    res.status(500).json({ message: "Error withdrawing application", error });
+  }
+};
+
 // Update application status (NGO only)
 exports.updateApplicationStatus = async (req, res) => {
   try {
     const { applicationId } = req.params;
-    const { status } = req.body;
+    const { status, rejection_reason } = req.body;
 
     if (!["pending", "accepted", "rejected"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 
-    const application = await Application.findByIdAndUpdate(
-      applicationId,
-      { status },
-      { new: true }
-    ).populate("opportunity_id");
+    const updatePayload = { status };
+    if (status === "rejected") {
+      updatePayload.rejection_reason = (rejection_reason || "No reason provided by NGO").trim();
+    }
+    if (status === "accepted") {
+      updatePayload.rejection_reason = "";
+    }
+
+    const application = await Application.findByIdAndUpdate(applicationId, updatePayload, { new: true }).populate("opportunity_id");
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });

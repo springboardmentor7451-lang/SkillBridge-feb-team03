@@ -6,12 +6,14 @@ const {
   getOpportunityApplications,
   getNGOApplications,
   updateApplicationStatus,
+  withdrawApplication,
 } = require("../controllers/applicationController");
 const { protect, authorizeRole } = require("../middleware/authMiddleware");
 
 // Volunteer routes
 router.post("/", protect, authorizeRole("volunteer"), applyToOpportunity);
 router.get("/my", protect, getMyApplications);
+router.delete("/:applicationId/withdraw", protect, authorizeRole("volunteer"), withdrawApplication);
 
 // NGO routes
 router.get(

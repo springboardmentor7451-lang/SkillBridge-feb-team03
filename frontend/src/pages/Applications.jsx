@@ -5,6 +5,13 @@ import applicationService from "../services/applicationService";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 import { Button } from "../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
 import { toast } from "sonner";
 
 export default function Applications() {
@@ -13,6 +20,11 @@ export default function Applications() {
   const location = useLocation();
   const [applications, setApplications] = useState([]);
   const [loadingApps, setLoadingApps] = useState(false);
+  const [reasonModalOpen, setReasonModalOpen] = useState(false);
+  const [selectedReason, setSelectedReason] = useState("");
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectApplicationId, setRejectApplicationId] = useState(null);
+  const [rejectReasonInput, setRejectReasonInput] = useState("");
 
   useEffect(() => {
     if (!loading && user) {
@@ -48,9 +60,9 @@ export default function Applications() {
     }
   };
 
-  const handleStatusUpdate = async (applicationId, newStatus) => {
+  const handleStatusUpdate = async (applicationId, newStatus, rejectionReason = "") => {
     try {
-      await applicationService.updateApplicationStatus(applicationId, newStatus);
+      await applicationService.updateApplicationStatus(applicationId, newStatus, rejectionReason);
       
       if (newStatus === "accepted") {
         toast.success("Application accepted. You can now chat in Messages.");
@@ -66,6 +78,43 @@ export default function Applications() {
       console.error("Failed to update status:", error);
       toast.error("Failed to update application status");
     }
+  };
+
+  const openRejectModal = (applicationId) => {
+    setRejectApplicationId(applicationId);
+    setRejectReasonInput("");
+    setRejectModalOpen(true);
+  };
+
+  const submitRejectReason = async () => {
+    if (!rejectApplicationId) return;
+
+    const reason = rejectReasonInput.trim();
+    if (!reason) {
+      toast.error("Please enter a rejection reason");
+      return;
+    }
+
+    await handleStatusUpdate(rejectApplicationId, "rejected", reason);
+    setRejectModalOpen(false);
+    setRejectApplicationId(null);
+    setRejectReasonInput("");
+  };
+
+  const handleWithdrawApplication = async (applicationId) => {
+    try {
+      await applicationService.withdrawApplication(applicationId);
+      toast.success("Application withdrawn");
+      fetchVolunteerApplications();
+    } catch (error) {
+      console.error("Failed to withdraw application:", error);
+      toast.error(error?.response?.data?.message || "Failed to withdraw application");
+    }
+  };
+
+  const openReasonModal = (reason) => {
+    setSelectedReason(reason || "No reason provided by NGO");
+    setReasonModalOpen(true);
   };
 
   if (loading) {
@@ -131,23 +180,23 @@ export default function Applications() {
           ) : null}
           {!loadingApps && applications.length > 0 && (
             <div className="overflow-x-auto">
-              <table className="min-w-full text-left">
+              <table className="min-w-full table-fixed text-left">
                 <thead>
                   <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
                     {user.role === "volunteer" ? (
                       <>
-                        <th className="px-3 py-3">Opportunity</th>
-                        <th className="px-3 py-3">Applied</th>
-                        <th className="px-3 py-3">Status</th>
-                        <th className="px-3 py-3">Actions</th>
+                        <th className="w-1/4 px-3 py-3">Opportunity</th>
+                        <th className="w-1/4 px-3 py-3">Applied</th>
+                        <th className="w-1/4 px-3 py-3">Status</th>
+                        <th className="w-1/4 px-3 py-3">Actions</th>
                       </>
                     ) : (
                       <>
-                        <th className="px-3 py-3">Volunteer</th>
-                        <th className="px-3 py-3">Opportunity</th>
-                        <th className="px-3 py-3">Applied</th>
-                        <th className="px-3 py-3">Status</th>
-                        <th className="px-3 py-3">Actions</th>
+                        <th className="w-1/5 px-3 py-3">Volunteer</th>
+                        <th className="w-1/5 px-3 py-3">Opportunity</th>
+                        <th className="w-1/5 px-3 py-3">Applied</th>
+                        <th className="w-1/5 px-3 py-3">Status</th>
+                        <th className="w-1/5 px-3 py-3">Actions</th>
                       </>
                     )}
                   </tr>
@@ -166,7 +215,21 @@ export default function Applications() {
                             <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(app.status)}`}>{app.status}</span>
                           </td>
                           <td className="px-3 py-4">
-                            <Button size="sm" variant="secondary" onClick={() => navigate("/browse-opportunities")}>View</Button>
+                            {app.status === "pending" && (
+                              <Button size="sm" variant="secondary" className="h-8 px-3 text-sm" onClick={() => handleWithdrawApplication(app._id)}>
+                                Withdraw Application
+                              </Button>
+                            )}
+                            {app.status === "accepted" && (
+                              <Button size="sm" className="h-8 px-3 text-sm" onClick={() => navigate("/messages")}>
+                                Message NGO
+                              </Button>
+                            )}
+                            {app.status === "rejected" && (
+                              <Button size="sm" variant="secondary" className="h-8 px-3 text-sm" onClick={() => openReasonModal(app.rejection_reason)}>
+                                Rejected - Reason
+                              </Button>
+                            )}
                           </td>
                         </>
                       ) : (
@@ -187,18 +250,18 @@ export default function Applications() {
                             <div className="flex flex-wrap gap-2">
                               {app.status === "pending" && (
                                 <>
-                                  <Button size="sm" onClick={() => handleStatusUpdate(app._id, "accepted")}>Accept</Button>
-                                  <Button size="sm" variant="secondary" onClick={() => handleStatusUpdate(app._id, "rejected")}>Reject</Button>
+                                  <Button size="sm" className="h-8 px-3 text-sm" onClick={() => handleStatusUpdate(app._id, "accepted")}>Accept</Button>
+                                  <Button size="sm" variant="secondary" className="h-8 px-3 text-sm" onClick={() => openRejectModal(app._id)}>Reject</Button>
                                 </>
                               )}
                               {app.status === "accepted" && (
                                 <>
-                                  <Button size="sm" onClick={() => navigate("/messages")}>Message</Button>
-                                  <Button size="sm" variant="secondary" onClick={() => handleStatusUpdate(app._id, "rejected")}>Reject</Button>
+                                  <Button size="sm" className="h-8 px-3 text-sm" onClick={() => navigate("/messages")}>Message</Button>
+                                  <Button size="sm" variant="secondary" className="h-8 px-3 text-sm" onClick={() => openRejectModal(app._id)}>Reject</Button>
                                 </>
                               )}
                               {app.status === "rejected" && (
-                                <Button size="sm" onClick={() => handleStatusUpdate(app._id, "accepted")}>Accept</Button>
+                                <Button size="sm" className="h-8 px-3 text-sm" onClick={() => handleStatusUpdate(app._id, "accepted")}>Accept</Button>
                               )}
                             </div>
                           </td>
@@ -212,6 +275,50 @@ export default function Applications() {
           )}
         </section>
       </main>
+
+      <Dialog open={reasonModalOpen} onOpenChange={setReasonModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rejection Reason</DialogTitle>
+            <DialogDescription>Feedback shared by the NGO for this application.</DialogDescription>
+          </DialogHeader>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+            {selectedReason}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={rejectModalOpen}
+        onOpenChange={(open) => {
+          setRejectModalOpen(open);
+          if (!open) {
+            setRejectApplicationId(null);
+            setRejectReasonInput("");
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reject Application</DialogTitle>
+            <DialogDescription>Please provide a reason for rejection.</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <textarea
+              value={rejectReasonInput}
+              onChange={(e) => setRejectReasonInput(e.target.value)}
+              rows={4}
+              placeholder="Enter rejection reason"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="secondary" onClick={() => setRejectModalOpen(false)}>Cancel</Button>
+              <Button onClick={submitRejectReason}>Submit Reason</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

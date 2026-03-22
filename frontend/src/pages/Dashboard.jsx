@@ -132,11 +132,11 @@ export default function Dashboard() {
 
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <h3 className="mb-4 text-lg font-semibold text-slate-900">Quick Actions</h3>
-              <div className="space-y-2">
-                <Button className="w-full justify-start" onClick={() => navigate("/opportunities/create")}>
+              <div className="space-y-3">
+                <Button className="h-14 w-full justify-start text-base" onClick={() => navigate("/opportunities/create")}>
                   Create New Opportunity
                 </Button>
-                <Button className="w-full justify-start" variant="secondary" onClick={() => navigate("/messages")}>
+                <Button className="h-14 w-full justify-start text-base" variant="secondary" onClick={() => navigate("/messages")}>
                   View Messages
                 </Button>
               </div>
@@ -211,11 +211,11 @@ export default function Dashboard() {
 
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <h3 className="mb-4 text-lg font-semibold text-slate-900">Quick Actions</h3>
-              <div className="space-y-2">
-                <Button className="w-full justify-start" onClick={() => navigate("/browse-opportunities")}>
+              <div className="space-y-3">
+                <Button className="h-14 w-full justify-start text-base" onClick={() => navigate("/browse-opportunities")}>
                   Browse Opportunities
                 </Button>
-                <Button className="w-full justify-start" variant="secondary" onClick={() => navigate("/messages")}>
+                <Button className="h-14 w-full justify-start text-base" variant="secondary" onClick={() => navigate("/messages")}>
                   View Messages
                 </Button>
               </div>

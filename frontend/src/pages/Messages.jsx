@@ -8,7 +8,14 @@ import Navbar from "../components/Navbar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { motion } from "framer-motion";
-import { RefreshCw, SendHorizontal } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import { Paperclip, RefreshCw, SendHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Messages() {
@@ -24,7 +31,13 @@ export default function Messages() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
+  const [participantDetailsOpen, setParticipantDetailsOpen] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState(null);
+  const [attachment, setAttachment] = useState(null);
+  const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  const getOtherUser = (conversation) => (user.role === "ngo" ? conversation?.volunteer_id : conversation?.ngo_id);
 
   const resolveSenderId = (message) => {
     if (!message?.sender_id) return null;
@@ -122,21 +135,27 @@ export default function Messages() {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedConversation) return;
+    if ((!newMessage.trim() && !attachment) || !selectedConversation) return;
 
     try {
       setSendingMessage(true);
+      const messageText = newMessage.trim();
 
       // Send via API
-      const response = await messageService.sendMessage(selectedConversation._id, newMessage.trim());
+      const response = await messageService.sendMessage(selectedConversation._id, messageText, attachment);
+      const savedMessage = response?.data?.data;
 
       // Add message to local state immediately for better UX
       const newMsg = {
-        _id: response.data.data._id,
-        content: newMessage.trim(),
+        _id: savedMessage?._id || `local-${Date.now()}`,
+        content: messageText,
         sender_id: { _id: user._id, name: user.name },
-        createdAt: new Date(),
-        status: "sent"
+        message_type: savedMessage?.message_type || (attachment ? "file" : "text"),
+        attachment_name: savedMessage?.attachment_name || attachment?.name || "",
+        attachment_type: savedMessage?.attachment_type || attachment?.type || "",
+        attachment_data_url: savedMessage?.attachment_data_url || attachment?.dataUrl || "",
+        createdAt: savedMessage?.createdAt || new Date(),
+        status: savedMessage?.status || "sent"
       };
       setMessages(prev => [...prev, newMsg]);
 
@@ -145,23 +164,60 @@ export default function Messages() {
         ? selectedConversation.volunteer_id._id
         : selectedConversation.ngo_id._id;
 
-      socketService.sendMessage({
-        conversationId: selectedConversation._id,
-        content: newMessage.trim(),
-        senderId: user._id,
-        receiverId: receiverId
-      });
+      try {
+        socketService.sendMessage({
+          conversationId: selectedConversation._id,
+          content: messageText || (attachment ? `Attachment: ${attachment.name}` : ""),
+          senderId: user._id,
+          receiverId: receiverId
+        });
+      } catch (socketError) {
+        console.error("Socket emit failed:", socketError);
+      }
 
       setNewMessage("");
+      setAttachment(null);
 
       // Refresh conversations to update last message
       await fetchConversations();
     } catch (error) {
       console.error("Failed to send message:", error);
-      toast.error("Failed to send message");
+      toast.error(error?.response?.data?.message || "Failed to send message");
     } finally {
       setSendingMessage(false);
     }
+  };
+
+  const handlePickAttachment = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAttachmentChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Attachment must be under 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAttachment({
+        name: file.name,
+        type: file.type,
+        dataUrl: reader.result,
+      });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleOpenParticipantDetails = () => {
+    const otherUser = getOtherUser(selectedConversation);
+    if (!otherUser) return;
+    setSelectedParticipant(otherUser);
+    setParticipantDetailsOpen(true);
   };
 
   const formatTime = (dateString) => {
@@ -245,7 +301,7 @@ export default function Messages() {
             ) : (
               <div className="space-y-2 overflow-y-auto pr-1">
                 {conversations.map((conv) => {
-                  const otherUser = user.role === "ngo" ? conv.volunteer_id : conv.ngo_id;
+                  const otherUser = getOtherUser(conv);
                   const isSelected = selectedConversation?._id === conv._id;
 
                   return (
@@ -292,15 +348,14 @@ export default function Messages() {
             {selectedConversation ? (
               <>
                 <div className="border-b border-slate-200 px-5 py-4">
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <button className="text-left" onClick={handleOpenParticipantDetails}>
+                    <h3 className="text-lg font-semibold text-slate-900 hover:text-orange-700">
                       {user.role === "ngo"
-                        ? selectedConversation.volunteer_id?.name
-                        : selectedConversation.ngo_id?.name}
-                      {user.role === "ngo" && selectedConversation.ngo_id?.organization_name && (
-                        <span> ({selectedConversation.ngo_id.organization_name})</span>
-                      )}
+                        ? `${selectedConversation.volunteer_id?.name || "Volunteer"} (Volunteer)`
+                        : `${selectedConversation.ngo_id?.organization_name || selectedConversation.ngo_id?.name || "NGO"} (NGO)`}
                     </h3>
-                  <p className="text-sm text-slate-600">{selectedConversation.opportunity_id?.title}</p>
+                  </button>
+                  <p className="text-sm text-slate-600">Opportunity: {selectedConversation.opportunity_id?.title || "Not specified"}</p>
                 </div>
 
                 <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 px-5 py-4">
@@ -327,6 +382,15 @@ export default function Messages() {
                               }`}
                             >
                               <p className="text-sm leading-relaxed">{msg.content}</p>
+                              {msg.attachment_data_url && (
+                                <a
+                                  href={msg.attachment_data_url}
+                                  download={msg.attachment_name || "attachment"}
+                                  className={`mt-2 block text-xs underline ${isOwnMessage ? "text-slate-200" : "text-orange-700"}`}
+                                >
+                                  Attachment: {msg.attachment_name || "Download"}
+                                </a>
+                              )}
                               <span className={`mt-1 block text-[11px] ${isOwnMessage ? "text-slate-300" : "text-slate-500"}`}>
                                 {formatTime(msg.createdAt)}
                               </span>
@@ -346,18 +410,29 @@ export default function Messages() {
                 </div>
 
                 <form className="flex gap-2 border-t border-slate-200 p-4" onSubmit={handleSendMessage}>
+                  <input ref={fileInputRef} type="file" className="hidden" onChange={handleAttachmentChange} />
+                  <Button type="button" size="icon" variant="secondary" onClick={handlePickAttachment} title="Add attachment">
+                    <Paperclip className="h-4 w-4" />
+                  </Button>
                   <Input
                     value={newMessage}
                     onChange={handleInputChange}
                     placeholder="Type your message..."
                     disabled={sendingMessage}
-                    required
                   />
-                  <Button type="submit" disabled={sendingMessage || !newMessage.trim()}>
+                  <Button type="submit" disabled={sendingMessage || (!newMessage.trim() && !attachment)}>
                     <SendHorizontal className="h-4 w-4" />
                     {sendingMessage ? "Sending..." : "Send"}
                   </Button>
                 </form>
+                {attachment && (
+                  <div className="mx-4 mb-4 mt-2 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+                    <span className="truncate">Attached: {attachment.name}</span>
+                    <button type="button" className="rounded p-1 hover:bg-slate-200" onClick={() => setAttachment(null)}>
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
               </>
             ) : (
               <div className="flex flex-1 items-center justify-center p-6">
@@ -369,6 +444,59 @@ export default function Messages() {
           </section>
         </section>
       </main>
+
+      <Dialog open={participantDetailsOpen} onOpenChange={setParticipantDetailsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {user.role === "ngo"
+                ? `${selectedParticipant?.name || "Volunteer"} (Volunteer)`
+                : `${selectedParticipant?.organization_name || selectedParticipant?.name || "NGO"} (NGO)`}
+            </DialogTitle>
+            <DialogDescription>Participant details</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>
+              <p className="font-medium text-slate-900">Email</p>
+              <p className="text-slate-600">{selectedParticipant?.email || "Not provided"}</p>
+            </div>
+            <div>
+              <p className="font-medium text-slate-900">Location</p>
+              <p className="text-slate-600">{selectedParticipant?.location || "Not provided"}</p>
+            </div>
+            {user.role === "volunteer" && (
+              <>
+                <div>
+                  <p className="font-medium text-slate-900">Organization Description</p>
+                  <p className="text-slate-600">{selectedParticipant?.organization_description || "Not provided"}</p>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">Website</p>
+                  {selectedParticipant?.website_url ? (
+                    <a href={selectedParticipant.website_url} target="_blank" rel="noreferrer" className="text-orange-700 hover:text-orange-800 hover:underline">
+                      {selectedParticipant.website_url}
+                    </a>
+                  ) : (
+                    <p className="text-slate-600">Not provided</p>
+                  )}
+                </div>
+              </>
+            )}
+            {user.role === "ngo" && (
+              <>
+                <div>
+                  <p className="font-medium text-slate-900">Bio</p>
+                  <p className="text-slate-600">{selectedParticipant?.bio || "Not provided"}</p>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">Skills</p>
+                  <p className="text-slate-600">{selectedParticipant?.skills?.length ? selectedParticipant.skills.join(", ") : "Not provided"}</p>
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

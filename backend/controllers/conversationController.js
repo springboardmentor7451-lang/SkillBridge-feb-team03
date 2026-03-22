@@ -71,9 +71,9 @@ exports.getUserConversations = async (req, res) => {
       ],
       status: "active"
     })
-    .populate("opportunity_id", "title")
-    .populate("ngo_id", "name organization_name")
-    .populate("volunteer_id", "name")
+    .populate("opportunity_id", "title description location duration required_skills")
+    .populate("ngo_id", "name email location organization_name organization_description website_url")
+    .populate("volunteer_id", "name email location skills bio")
     .populate("last_message.sender_id", "name")
     .sort({ updatedAt: -1 });
 
@@ -106,9 +106,9 @@ exports.getConversation = async (req, res) => {
         { volunteer_id: userObjectId }
       ]
     })
-    .populate("opportunity_id", "title description")
-    .populate("ngo_id", "name organization_name")
-    .populate("volunteer_id", "name");
+    .populate("opportunity_id", "title description location duration required_skills")
+    .populate("ngo_id", "name email location organization_name organization_description website_url")
+    .populate("volunteer_id", "name email location skills bio");
 
     if (!conversation) {
       return res.status(404).json({ message: "Conversation not found" });

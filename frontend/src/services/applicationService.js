@@ -22,14 +22,19 @@ const applicationService = {
     return api.get("/applications/ngo");
   },
 
+  // Withdraw volunteer application
+  withdrawApplication: async (applicationId) => {
+    return api.delete(`/applications/${applicationId}/withdraw`);
+  },
+
   // Get opportunity's applications (NGO only)
   getOpportunityApplications: async (opportunityId) => {
     return api.get(`/applications/opportunity/${opportunityId}`);
   },
 
   // Update application status (NGO only)
-  updateApplicationStatus: async (applicationId, status) => {
-    return api.put(`/applications/${applicationId}`, { status });
+  updateApplicationStatus: async (applicationId, status, rejection_reason = "") => {
+    return api.put(`/applications/${applicationId}`, { status, rejection_reason });
   },
 };
 
