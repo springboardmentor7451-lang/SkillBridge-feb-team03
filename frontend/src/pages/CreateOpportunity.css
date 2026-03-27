@@ -1,0 +1,77 @@
+.create-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f9fafb;
+  padding: 40px 20px;
+}
+
+.create-card {
+  width: 100%;
+  max-width: 550px;
+  padding: 40px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.create-card h2 {
+  margin-bottom: 25px;
+  color: #16a34a;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.create-card input,
+.create-card textarea {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  outline: none;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.create-card textarea {
+  min-height: 120px;
+  resize: none;
+}
+
+.create-card input:focus,
+.create-card textarea:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+.create-card button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.create-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(22, 163, 74, 0.3);
+}
+
+.create-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.error {
+  color: #dc2626;
+  margin-bottom: 10px;
+  font-size: 13px;
+}

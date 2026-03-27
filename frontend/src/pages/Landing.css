@@ -1,0 +1,96 @@
+
+.landing {
+  min-height: 100vh;
+  background: #ffffff;   
+  font-family: Arial, sans-serif;
+  color: #1f2937;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 80px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #16a34a;   
+}
+
+.nav-links a {
+  margin-left: 30px;
+  text-decoration: none;
+  color: #1f2937;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #16a34a;
+}
+
+
+.hero {
+  text-align: center;
+  margin-top: 150px;
+  padding: 0 20px;
+}
+
+.hero h1 {
+  font-size: 64px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #111827;
+}
+
+.hero p {
+  font-size: 18px;
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.primary-btn {
+  background: #16a34a;
+  color: white;
+  padding: 14px 32px;
+  border-radius: 30px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.primary-btn:hover {
+  background: #15803d;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
+}
+
+
+.outline-btn {
+  background: white;
+  color: #16a34a;
+  padding: 14px 32px;
+  border-radius: 30px;
+  border: 2px solid #16a34a;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.outline-btn:hover {
+  background: #16a34a;
+  color: white;
+}
