@@ -25,6 +25,27 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path;
 
+  const handleGuestNavigation = (href) => {
+    if (href === "/") {
+      if (location.pathname !== "/") {
+        navigate("/");
+        return;
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    if (location.pathname !== "/") {
+      navigate(`/${href}`);
+      return;
+    }
+
+    const target = document.querySelector(href);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   const guestLinks = [
     { label: "Home", href: "/" },
     { label: "How it Works", href: "#how" },
@@ -40,14 +61,20 @@ export default function Navbar() {
       to: user?.role === "ngo" ? "/opportunities" : "/browse-opportunities",
       active: isActive("/opportunities") || isActive("/browse-opportunities"),
     },
+    ...(user?.role === "volunteer"
+      ? [{ label: "Matches", to: "/matches", active: isActive("/matches") }]
+      : []),
     { label: "Applications", to: "/applications", active: isActive("/applications") },
-    { label: "Messages", to: "/messages", active: isActive("/messages") },
+    { label: "Chat", to: "/chat", active: isActive("/chat") || isActive("/messages") },
   ];
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-        <Link to="" className="flex items-center gap-3">
+    <nav className="sticky top-0 z-40 overflow-hidden border-b border-slate-200/80 bg-gradient-to-r from-white/95 via-orange-50/70 to-sky-50/70 backdrop-blur">
+      <div className="pointer-events-none absolute -left-10 top-0 h-16 w-24 rounded-full bg-orange-200/35 blur-2xl" />
+      <div className="pointer-events-none absolute right-8 top-0 h-16 w-24 rounded-full bg-cyan-200/35 blur-2xl" />
+
+      <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:px-6">
+        <Link to="/" className="flex items-center gap-3">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-white">
             SB
           </span>
@@ -69,13 +96,14 @@ export default function Navbar() {
                 </Link>
               ))
             : guestLinks.map((link) => (
-                <a
+                <button
                   key={link.label}
-                  href={link.href}
+                  type="button"
+                  onClick={() => handleGuestNavigation(link.href)}
                   className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                 >
                   {link.label}
-                </a>
+                </button>
               ))}
         </div>
 

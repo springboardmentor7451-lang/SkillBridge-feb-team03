@@ -18,6 +18,7 @@
 // export default App;
 import AppRoutes from "./routes/AppRoutes";
 import { AuthProvider } from "./context/AuthContext";
+import { SocketProvider } from "./context/SocketContext";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "./components/ui/sonner";
 
@@ -25,8 +26,10 @@ export default function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="skillbridge-theme">
       <AuthProvider>
-        <AppRoutes />
-        <Toaster position="top-right" richColors />
+        <SocketProvider>
+          <AppRoutes />
+          <Toaster position="top-right" richColors />
+        </SocketProvider>
       </AuthProvider>
     </ThemeProvider>
   );

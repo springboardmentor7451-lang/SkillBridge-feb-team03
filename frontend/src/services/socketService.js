@@ -4,15 +4,25 @@ class SocketService {
   constructor() {
     this.socket = null;
     this.isConnected = false;
+    this.currentUserId = null;
   }
 
-  connect(userId) {
+  connect(userId, token) {
     if (this.socket?.connected) {
       return;
     }
 
-    this.socket = io('http://localhost:5000', {
-      transports: ['websocket', 'polling']
+    this.currentUserId = userId;
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+
+    this.socket = io(socketUrl, {
+      transports: ['websocket', 'polling'],
+      auth: {
+        token,
+      },
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
     });
 
     this.socket.on('connect', () => {
@@ -26,6 +36,13 @@ class SocketService {
     this.socket.on('disconnect', () => {
       console.log('Disconnected from socket server');
       this.isConnected = false;
+    });
+
+    this.socket.on('reconnect', () => {
+      this.isConnected = true;
+      if (this.currentUserId) {
+        this.socket.emit('join', this.currentUserId);
+      }
     });
 
     this.socket.on('connect_error', (error) => {
@@ -44,6 +61,7 @@ class SocketService {
   // Send message
   sendMessage(data) {
     if (this.socket && this.isConnected) {
+      this.socket.emit('send_message', data);
       this.socket.emit('sendMessage', data);
     }
   }
@@ -51,7 +69,7 @@ class SocketService {
   // Listen for new messages
   onNewMessage(callback) {
     if (this.socket) {
-      this.socket.on('newMessage', callback);
+      this.socket.on('receive_message', callback);
     }
   }
 
@@ -78,7 +96,7 @@ class SocketService {
   // Listen for notifications
   onNotification(callback) {
     if (this.socket) {
-      this.socket.on('notification', callback);
+      this.socket.on('new_notification', callback);
     }
   }
 

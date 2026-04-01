@@ -32,4 +32,7 @@ const applicationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+applicationSchema.index({ opportunity_id: 1, volunteer_id: 1 }, { unique: true });
+applicationSchema.index({ volunteer_id: 1, applied_date: -1 });
+
 module.exports = mongoose.model("Application", applicationSchema);

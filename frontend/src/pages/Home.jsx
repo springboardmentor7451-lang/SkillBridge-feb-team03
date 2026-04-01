@@ -3,14 +3,15 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
+import CounterCard from "../components/CounterCard";
 
 export default function Home() {
   const { isAuthenticated, logout } = useAuth();
 
   const impactStats = [
-    { label: "Active Volunteers", value: "1,200+" },
-    { label: "NGO Partners", value: "180+" },
-    { label: "Projects Completed", value: "540+" },
+    { label: "Active Volunteers", value: 200, bgClass: "from-sky-50 to-cyan-100/60" },
+    { label: "NGO Partners", value: 100, bgClass: "from-emerald-50 to-lime-100/60" },
+    { label: "Opportunities Created", value: 40, bgClass: "from-orange-50 to-amber-100/60" },
   ];
 
   const featureCards = [
@@ -18,21 +19,25 @@ export default function Home() {
       title: "Role-Based Dashboards",
       body: "Volunteers and NGOs get personalized experiences with actions relevant to their goals.",
       accent: "from-orange-200 to-amber-100",
+      bg: "from-orange-50 to-amber-50",
     },
     {
       title: "Smart Opportunity Discovery",
       body: "Filter by skills, mission type, and commitment level to quickly find a great fit.",
       accent: "from-sky-200 to-cyan-100",
+      bg: "from-sky-50 to-cyan-50",
     },
     {
       title: "Application Tracking",
       body: "Follow your applications from submitted to accepted without losing context.",
       accent: "from-emerald-200 to-lime-100",
+      bg: "from-emerald-50 to-lime-50",
     },
     {
       title: "In-App Messaging",
       body: "Coordinate with NGOs and volunteers instantly through integrated conversations.",
       accent: "from-rose-200 to-pink-100",
+      bg: "from-rose-50 to-pink-50",
     },
   ];
 
@@ -115,19 +120,17 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative z-10 rounded-3xl border border-white/60 bg-white/85 p-6 shadow-2xl shadow-slate-200 backdrop-blur">
-            <p className="mb-4 text-sm font-medium uppercase tracking-wide text-slate-500">Live Community Snapshot</p>
-            <div className="space-y-4">
-              {impactStats.map((item, index) => (
-                <div
+          <div className="relative z-10 min-h-[520px] rounded-3xl border border-white/60 bg-white/85 p-8 shadow-2xl shadow-slate-200 backdrop-blur md:p-10">
+            <p className="mb-6 text-sm font-medium uppercase tracking-wide text-slate-500">Live Community Snapshot</p>
+            <div className="space-y-6">
+              {impactStats.map((item) => (
+                <CounterCard
                   key={item.label}
-                  data-reveal
-                  className="translate-y-8 rounded-2xl border border-slate-200 bg-slate-50 p-4 opacity-0 transition-all duration-700"
-                  style={{ transitionDelay: `${index * 120}ms` }}
-                >
-                  <p className="text-2xl font-bold text-slate-900">{item.value}</p>
-                  <p className="text-sm text-slate-600">{item.label}</p>
-                </div>
+                  label={item.label}
+                  endValue={item.value}
+                  duration={2000}
+                  bgClass={item.bgClass}
+                />
               ))}
             </div>
           </div>
@@ -136,51 +139,59 @@ export default function Home() {
 
       <motion.section
         id="how"
-        className="mx-auto max-w-6xl px-6 py-16 md:py-24"
+        className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-orange-50/40 py-16 md:py-24"
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.25 }}
         variants={sectionAnim}
         transition={{ duration: 0.45 }}
       >
-        <div className="mb-10 text-center">
-          <h2 className="text-3xl font-bold md:text-4xl">How It Works</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-slate-600">
-            A clear flow for volunteers and NGOs to discover each other, collaborate faster, and deliver stronger outcomes.
-          </p>
-        </div>
+        <div className="absolute -left-12 top-8 h-44 w-44 rounded-full bg-orange-200/40 blur-3xl" />
+        <div className="absolute right-0 top-16 h-56 w-56 rounded-full bg-rose-200/35 blur-3xl" />
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-white p-6 opacity-0 shadow-sm transition-all duration-700 hover:-translate-y-1 hover:shadow-xl">
-            <p className="mb-3 text-3xl">1</p>
-            <h3 className="mb-2 text-xl font-semibold">Create Your Profile</h3>
-            <p className="text-slate-600">Sign up as a volunteer or NGO, define your focus areas, and showcase your strengths.</p>
+        <div className="relative z-10 mx-auto max-w-6xl px-6">
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-bold md:text-4xl">How It Works</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-slate-600">
+              A clear flow for volunteers and NGOs to discover each other, collaborate faster, and deliver stronger outcomes.
+            </p>
           </div>
 
-          <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-white p-6 opacity-0 shadow-sm transition-all duration-700 delay-100 hover:-translate-y-1 hover:shadow-xl">
-            <p className="mb-3 text-3xl">2</p>
-            <h3 className="mb-2 text-xl font-semibold">Find The Right Match</h3>
-            <p className="text-slate-600">Use smart filters to discover projects aligned with your skills, interests, and availability.</p>
-          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-gradient-to-br from-orange-50 to-amber-50 p-6 opacity-0 shadow-sm backdrop-blur transition-all duration-700 hover:-translate-y-1 hover:shadow-xl">
+              <p className="mb-3 text-3xl">1</p>
+              <h3 className="mb-2 text-xl font-semibold">Create Your Profile</h3>
+              <p className="text-slate-600">Sign up as a volunteer or NGO, define your focus areas, and showcase your strengths.</p>
+            </div>
 
-          <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-white p-6 opacity-0 shadow-sm transition-all duration-700 delay-200 hover:-translate-y-1 hover:shadow-xl">
-            <p className="mb-3 text-3xl">3</p>
-            <h3 className="mb-2 text-xl font-semibold">Collaborate And Deliver</h3>
-            <p className="text-slate-600">Apply, chat with teams, and track outcomes in one place from first message to final delivery.</p>
+            <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-gradient-to-br from-sky-50 to-cyan-50 p-6 opacity-0 shadow-sm backdrop-blur transition-all duration-700 delay-100 hover:-translate-y-1 hover:shadow-xl">
+              <p className="mb-3 text-3xl">2</p>
+              <h3 className="mb-2 text-xl font-semibold">Find The Right Match</h3>
+              <p className="text-slate-600">Use smart filters to discover projects aligned with your skills, interests, and availability.</p>
+            </div>
+
+            <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-gradient-to-br from-rose-50 to-pink-50 p-6 opacity-0 shadow-sm backdrop-blur transition-all duration-700 delay-200 hover:-translate-y-1 hover:shadow-xl">
+              <p className="mb-3 text-3xl">3</p>
+              <h3 className="mb-2 text-xl font-semibold">Collaborate And Deliver</h3>
+              <p className="text-slate-600">Apply, chat with teams, and track outcomes in one place from first message to final delivery.</p>
+            </div>
           </div>
         </div>
       </motion.section>
 
       <motion.section
         id="features"
-        className="bg-white py-16 md:py-24"
+        className="relative overflow-hidden bg-gradient-to-b from-white via-sky-50/30 to-rose-50/30 py-16 md:py-24"
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
         variants={sectionAnim}
         transition={{ duration: 0.45 }}
       >
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="absolute left-1/3 top-0 h-48 w-48 rounded-full bg-cyan-200/35 blur-3xl" />
+        <div className="absolute bottom-0 right-10 h-56 w-56 rounded-full bg-pink-200/35 blur-3xl" />
+
+        <div className="relative z-10 mx-auto max-w-6xl px-6">
           <div className="mb-10 text-center">
             <h2 className="text-3xl font-bold md:text-4xl">Platform Features</h2>
             <p className="mx-auto mt-3 max-w-2xl text-slate-600">
@@ -193,7 +204,7 @@ export default function Home() {
               <article
                 key={feature.title}
                 data-reveal
-                className="group translate-y-8 overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 opacity-0 shadow-sm transition-all duration-700 hover:-translate-y-1 hover:shadow-xl"
+                className={`group translate-y-8 overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br ${feature.bg} opacity-0 shadow-sm transition-all duration-700 hover:-translate-y-1 hover:shadow-xl`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
                 <div className={`h-2 w-full bg-gradient-to-r ${feature.accent}`} />
@@ -207,27 +218,32 @@ export default function Home() {
         </div>
       </motion.section>
 
-      <section id="impact" className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-        <div className="grid gap-8 rounded-3xl bg-slate-900 p-8 text-white md:grid-cols-2 md:p-12">
-          <div data-reveal className="translate-y-8 opacity-0 transition-all duration-700">
-            <h2 className="text-3xl font-bold md:text-4xl">Real Impact, Not Just Metrics</h2>
-            <p className="mt-4 max-w-xl text-slate-200">
-              Every match on SkillBridge helps NGOs move faster and lets volunteers apply their expertise to missions that matter.
-            </p>
-          </div>
-          <div data-reveal className="translate-y-8 space-y-4 opacity-0 transition-all duration-700 delay-150">
-            <blockquote className="rounded-2xl border border-white/20 bg-white/10 p-5 text-sm leading-relaxed text-slate-100">
-              "We filled two critical project roles in less than a week and delivered our campaign ahead of schedule."
-            </blockquote>
-            <blockquote className="rounded-2xl border border-white/20 bg-white/10 p-5 text-sm leading-relaxed text-slate-100">
-              "As a volunteer, SkillBridge helped me contribute my data skills to a cause I genuinely care about."
-            </blockquote>
+      <section id="impact" className="relative overflow-hidden bg-gradient-to-b from-rose-50/20 via-slate-50 to-white py-16 md:py-24">
+        <div className="absolute -left-10 top-16 h-48 w-48 rounded-full bg-orange-200/30 blur-3xl" />
+        <div className="absolute bottom-10 right-8 h-56 w-56 rounded-full bg-sky-200/30 blur-3xl" />
+
+        <div className="relative z-10 mx-auto max-w-6xl px-6">
+          <div className="grid gap-8 rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-100 via-green-100 to-lime-100 p-8 text-slate-900 md:grid-cols-2 md:p-12">
+            <div data-reveal className="translate-y-8 opacity-0 transition-all duration-700">
+              <h2 className="text-3xl font-bold md:text-4xl">Real Impact, Not Just Metrics</h2>
+              <p className="mt-4 max-w-xl text-slate-700">
+                Every match on SkillBridge helps NGOs move faster and lets volunteers apply their expertise to missions that matter.
+              </p>
+            </div>
+            <div data-reveal className="translate-y-8 space-y-4 opacity-0 transition-all duration-700 delay-150">
+              <blockquote className="rounded-2xl border border-emerald-200 bg-white/70 p-5 text-sm leading-relaxed text-slate-700">
+                "We filled two critical project roles in less than a week and delivered our campaign ahead of schedule."
+              </blockquote>
+              <blockquote className="rounded-2xl border border-emerald-200 bg-white/70 p-5 text-sm leading-relaxed text-slate-700">
+                "As a volunteer, SkillBridge helped me contribute my data skills to a cause I genuinely care about."
+              </blockquote>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="for-ngos" className="mx-auto max-w-6xl px-6 pb-20 md:pb-24">
-        <div className="rounded-3xl border border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-rose-50 p-8 md:p-12">
+        <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 p-8 md:p-12">
           <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">For NGOs: Build Your Dream Volunteer Team</h2>
           <p className="mt-4 max-w-3xl text-slate-700">
             Publish opportunities, define required skills, and connect with vetted volunteers ready to contribute immediately.

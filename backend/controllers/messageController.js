@@ -45,6 +45,18 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ message: "Message content or attachment is required" });
     }
 
+    // Basic duplicate guard for accidental double-submit bursts
+    const recentDuplicate = await Message.findOne({
+      conversation_id,
+      sender_id: userObjectId,
+      content: trimmedContent,
+      createdAt: { $gte: new Date(Date.now() - 3000) },
+    });
+
+    if (recentDuplicate && !hasAttachment) {
+      return res.status(409).json({ message: "Duplicate message ignored" });
+    }
+
     // Create message
     const message = new Message({
       conversation_id,
@@ -74,7 +86,7 @@ exports.sendMessage = async (req, res) => {
     // Run real-time and notification side effects without failing API response
     try {
       // Emit real-time message to receiver
-      io.to(receiver_id.toString()).emit('newMessage', {
+      const messagePayload = {
         conversationId: conversation_id,
         message: {
           _id: message._id,
@@ -88,7 +100,10 @@ exports.sendMessage = async (req, res) => {
           createdAt: message.createdAt,
           status: "sent"
         }
-      });
+      };
+
+      io.to(receiver_id.toString()).emit('receive_message', messagePayload);
+      io.to(receiver_id.toString()).emit('newMessage', messagePayload);
 
       // Also emit to sender for multi-device support
       io.to(senderIdStr).emit('messageSent', {
@@ -111,13 +126,16 @@ exports.sendMessage = async (req, res) => {
       });
 
       // Emit notification via socket
-      io.to(receiver_id.toString()).emit('notification', {
+      const notificationPayload = {
         type: 'message',
         title: 'New Message',
         message: `${senderName} sent you a message`,
         sender: senderName,
         timestamp: new Date()
-      });
+      };
+
+      io.to(receiver_id.toString()).emit('new_notification', notificationPayload);
+      io.to(receiver_id.toString()).emit('notification', notificationPayload);
     } catch (sideEffectError) {
       console.error("Message side-effect error:", sideEffectError);
     }
@@ -211,5 +229,48 @@ exports.markMessagesAsRead = async (req, res) => {
   } catch (error) {
     console.error("Mark as read error:", error);
     res.status(500).json({ message: "Error marking messages as read", error: error.message });
+  }
+};
+
+// Contract endpoint: GET /api/messages/:userId
+exports.getMessagesByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const requesterId = req.user;
+
+    const requesterObjectId = mongoose.Types.ObjectId.isValid(requesterId)
+      ? new mongoose.Types.ObjectId(requesterId)
+      : requesterId;
+    const targetUserObjectId = mongoose.Types.ObjectId.isValid(userId)
+      ? new mongoose.Types.ObjectId(userId)
+      : null;
+
+    if (!targetUserObjectId) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+
+    const conversation = await Conversation.findOne({
+      status: "active",
+      $or: [
+        { ngo_id: requesterObjectId, volunteer_id: targetUserObjectId },
+        { ngo_id: targetUserObjectId, volunteer_id: requesterObjectId },
+      ],
+    });
+
+    if (!conversation) {
+      return res.json({ messages: [], conversationId: null });
+    }
+
+    const messages = await Message.find({ conversation_id: conversation._id })
+      .populate("sender_id", "name")
+      .sort({ createdAt: 1 });
+
+    res.json({
+      conversationId: conversation._id,
+      messages,
+    });
+  } catch (error) {
+    console.error("Get messages by user id error:", error);
+    res.status(500).json({ message: "Error fetching message history", error: error.message });
   }
 };

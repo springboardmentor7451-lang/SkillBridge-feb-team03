@@ -41,7 +41,7 @@ export default function Sidebar() {
         <Link to="/dashboard" className={navItemClass(isActive("/dashboard"))}>Dashboard</Link>
         <Link to={oppPath} className={navItemClass(isActive(oppPath))}>Opportunities</Link>
         <Link to="/applications" className={navItemClass(isActive("/applications"))}>Applications</Link>
-        <Link to="/messages" className={navItemClass(isActive("/messages"))}>Messages</Link>
+        <Link to="/chat" className={navItemClass(isActive("/chat") || isActive("/messages"))}>Messages</Link>
       </nav>
 
       <div className="mt-6 border-t border-slate-200 pt-4">

@@ -191,3 +191,65 @@ exports.getVolunteerMatches = async (req, res) => {
     res.status(500).json({ message: "Error getting volunteer matches", error: error.message });
   }
 };
+
+// Contract alias for volunteers: GET /api/match/opportunities
+exports.getMatchedOpportunities = exports.getMatchSuggestions;
+
+// Optional advanced endpoint: NGO -> volunteer matches for a specific opportunity
+exports.getVolunteersForOpportunity = async (req, res) => {
+  try {
+    const ngo_id = req.user;
+    const { opportunityId } = req.params;
+
+    const opportunity = await Opportunity.findOne({
+      _id: opportunityId,
+      ngo_id,
+      status: "open",
+    });
+
+    if (!opportunity) {
+      return res.status(404).json({ message: "Opportunity not found" });
+    }
+
+    const requiredSkills = opportunity.required_skills || [];
+    const volunteers = await User.find({
+      role: "volunteer",
+      ...(requiredSkills.length > 0 ? { skills: { $in: requiredSkills } } : {}),
+    }).select("name email skills location bio");
+
+    const matches = volunteers
+      .map((volunteer) => {
+        const volunteerSkills = volunteer.skills || [];
+        const overlap = volunteerSkills.filter((skill) =>
+          requiredSkills.some(
+            (requiredSkill) =>
+              requiredSkill.toLowerCase().includes(skill.toLowerCase()) ||
+              skill.toLowerCase().includes(requiredSkill.toLowerCase())
+          )
+        );
+
+        const matchScore = requiredSkills.length
+          ? Math.round((overlap.length / requiredSkills.length) * 100)
+          : 0;
+
+        return {
+          volunteer: volunteer.toObject(),
+          matchScore,
+          matchedSkills: overlap,
+        };
+      })
+      .sort((a, b) => b.matchScore - a.matchScore);
+
+    res.json({
+      message: "Volunteer matches retrieved",
+      opportunity: {
+        _id: opportunity._id,
+        title: opportunity.title,
+      },
+      matches,
+    });
+  } catch (error) {
+    console.error("Get volunteers for opportunity error:", error);
+    res.status(500).json({ message: "Error getting volunteer matches", error: error.message });
+  }
+};

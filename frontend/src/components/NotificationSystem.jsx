@@ -9,11 +9,9 @@ export default function NotificationSystem() {
   useEffect(() => {
     if (!user) return;
 
-    socketService.connect(user._id);
-
     const handleMessage = (data) => {
       toast.info("New message", {
-        description: data?.content || "You received a new message.",
+        description: data?.message?.content || data?.content || "You received a new message.",
       });
     };
 
@@ -27,9 +25,8 @@ export default function NotificationSystem() {
     socketService.onNotification(handleNotification);
 
     return () => {
-      socketService.off("newMessage", handleMessage);
-      socketService.off("notification", handleNotification);
-      socketService.disconnect();
+      socketService.off("receive_message", handleMessage);
+      socketService.off("new_notification", handleNotification);
     };
   }, [user]);
 

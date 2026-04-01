@@ -34,7 +34,7 @@ export default function NotificationBell() {
       socketService.onNotification(handleNotification);
 
       return () => {
-        socketService.off("notification", handleNotification);
+        socketService.off("new_notification", handleNotification);
       };
     }
   }, [user]);

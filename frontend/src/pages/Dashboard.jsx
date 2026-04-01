@@ -136,7 +136,7 @@ export default function Dashboard() {
                 <Button className="h-14 w-full justify-start text-base" onClick={() => navigate("/opportunities/create")}>
                   Create New Opportunity
                 </Button>
-                <Button className="h-14 w-full justify-start text-base" variant="secondary" onClick={() => navigate("/messages")}>
+                <Button className="h-14 w-full justify-start text-base" variant="secondary" onClick={() => navigate("/chat")}>
                   View Messages
                 </Button>
               </div>
@@ -215,7 +215,7 @@ export default function Dashboard() {
                 <Button className="h-14 w-full justify-start text-base" onClick={() => navigate("/browse-opportunities")}>
                   Browse Opportunities
                 </Button>
-                <Button className="h-14 w-full justify-start text-base" variant="secondary" onClick={() => navigate("/messages")}>
+                <Button className="h-14 w-full justify-start text-base" variant="secondary" onClick={() => navigate("/chat")}>
                   View Messages
                 </Button>
               </div>

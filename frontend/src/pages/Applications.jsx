@@ -221,7 +221,7 @@ export default function Applications() {
                               </Button>
                             )}
                             {app.status === "accepted" && (
-                              <Button size="sm" className="h-8 px-3 text-sm" onClick={() => navigate("/messages")}>
+                              <Button size="sm" className="h-8 px-3 text-sm" onClick={() => navigate("/chat")}>
                                 Message NGO
                               </Button>
                             )}
@@ -256,7 +256,7 @@ export default function Applications() {
                               )}
                               {app.status === "accepted" && (
                                 <>
-                                  <Button size="sm" className="h-8 px-3 text-sm" onClick={() => navigate("/messages")}>Message</Button>
+                                  <Button size="sm" className="h-8 px-3 text-sm" onClick={() => navigate("/chat")}>Message</Button>
                                   <Button size="sm" variant="secondary" className="h-8 px-3 text-sm" onClick={() => openRejectModal(app._id)}>Reject</Button>
                                 </>
                               )}

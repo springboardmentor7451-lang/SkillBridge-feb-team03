@@ -23,7 +23,7 @@ export default function Notifications() {
     }
 
     return () => {
-      socketService.off("notification", handleNewNotification);
+      socketService.off("new_notification", handleNewNotification);
     };
   }, [user, loading]);
 

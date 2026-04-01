@@ -91,12 +91,15 @@ exports.applyToOpportunity = async (req, res) => {
 
       // Emit notification via socket
       const { io } = require("../server");
-      io.to(ngoId.toString()).emit('notification', {
+      const notificationPayload = {
         type: 'application_received',
         title: 'New Application Received 📋',
         message: `${volunteer.name} applied for "${opportunity.title}"`,
         timestamp: new Date()
-      });
+      };
+
+      io.to(ngoId.toString()).emit('new_notification', notificationPayload);
+      io.to(ngoId.toString()).emit('notification', notificationPayload);
     } catch (notifError) {
       console.error("Failed to create notification:", notifError);
     }
@@ -258,12 +261,15 @@ exports.updateApplicationStatus = async (req, res) => {
 
         // Emit notification via socket
         const { io } = require("../server");
-        io.to(application.volunteer_id.toString()).emit('notification', {
+        const statusPayload = {
           type: status === "accepted" ? "application_accepted" : "application_rejected",
           title: notificationTitle,
           message: notificationMessage,
           timestamp: new Date()
-        });
+        };
+
+        io.to(application.volunteer_id.toString()).emit('new_notification', statusPayload);
+        io.to(application.volunteer_id.toString()).emit('notification', statusPayload);
       }
     } catch (notifError) {
       console.error("Failed to create notification:", notifError);

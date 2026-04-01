@@ -48,19 +48,15 @@ export default function Messages() {
     if (!loading && user) {
       fetchConversations();
 
-      // Connect to socket
-      socketService.connect(user._id);
-
       // Listen for real-time messages
       socketService.onNewMessage(handleNewMessage);
       socketService.onMessageSent(handleMessageSent);
       socketService.onUserTyping(handleUserTyping);
 
       return () => {
-        socketService.off("newMessage", handleNewMessage);
+        socketService.off("receive_message", handleNewMessage);
         socketService.off("messageSent", handleMessageSent);
         socketService.off("userTyping", handleUserTyping);
-        socketService.disconnect();
       };
     }
   }, [user, loading, location]);

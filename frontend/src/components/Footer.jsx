@@ -27,8 +27,11 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="mt-8 border-t border-slate-200 bg-white">
-      <div className="mx-auto grid w-full max-w-7xl gap-2 px-4 py-5 text-sm text-slate-600 md:grid-cols-3 md:items-center md:px-6">
+    <footer className="relative mt-8 overflow-hidden border-t border-slate-200 bg-gradient-to-r from-white via-amber-50/70 to-rose-50/70">
+      <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-orange-200/35 blur-2xl" />
+      <div className="pointer-events-none absolute right-10 bottom-0 h-24 w-24 rounded-full bg-pink-200/35 blur-2xl" />
+
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-2 px-4 py-5 text-sm text-slate-600 md:grid-cols-3 md:items-center md:px-6">
         <p className="text-center md:text-left">SkillBridge - Connecting volunteers and NGOs.</p>
         <p className="text-center font-medium text-slate-700">{currentDateTime}</p>
         <p className="text-center md:text-right">Copyright © {new Date().getFullYear()} | Build by Aman Kumar</p>

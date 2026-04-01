@@ -1,7 +1,8 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import NotificationSystem from "../components/NotificationSystem";
 import Footer from "../components/Footer";
+import { useAuth } from "../context/AuthContext";
 
 const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/Login"));
@@ -14,13 +15,20 @@ const MyOpportunities = lazy(() => import("../pages/MyOpportunities"));
 const BrowseOpportunities = lazy(() => import("../pages/BrowseOpportunities"));
 const Applications = lazy(() => import("../pages/Applications"));
 const Messages = lazy(() => import("../pages/Messages"));
+const Matches = lazy(() => import("../pages/Matches"));
 const Notifications = lazy(() => import("../pages/Notifications"));
 
 function RouteFallback() {
   return (
-    <div className="flex min-h-[50vh] items-center justify-center">
-      <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm">
-        Loading page...
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="flex flex-col items-center gap-6">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"></div>
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-slate-900">SB SkillBridge</h2>
+            <p className="text-sm text-slate-500">Loading...</p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -36,26 +44,43 @@ export default function AppRoutes() {
 }
 
 function AppContent() {
+  const { user, loading } = useAuth();
+
+  const requireAuth = (element) => {
+    if (loading) return <RouteFallback />;
+    return user ? element : <Navigate to="/login" replace />;
+  };
+
+  const requireRole = (roles, element) => {
+    if (loading) return <RouteFallback />;
+    if (!user) return <Navigate to="/login" replace />;
+    return roles.includes(user.role) ? element : <Navigate to="/dashboard" replace />;
+  };
+
   return (
-    <>
-      <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/edit" element={<ProfileEdit />} />
-          <Route path="/opportunities/create" element={<OpportunityCreate />} />
-          <Route path="/opportunities" element={<MyOpportunities />} />
-          <Route path="/opportunities/edit/:id" element={<OpportunityCreate />} />
-          <Route path="/browse-opportunities" element={<BrowseOpportunities />} />
-          <Route path="/applications" element={<Applications />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/notifications" element={<Notifications />} />
-        </Routes>
-      </Suspense>
-      <Footer />
-    </>
+    <div className="flex min-h-screen flex-col">
+      <main className="flex-1">
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={requireAuth(<Dashboard />)} />
+            <Route path="/profile" element={requireAuth(<Profile />)} />
+            <Route path="/profile/edit" element={requireAuth(<ProfileEdit />)} />
+            <Route path="/opportunities/create" element={requireRole(["ngo"], <OpportunityCreate />)} />
+            <Route path="/opportunities" element={requireRole(["ngo"], <MyOpportunities />)} />
+            <Route path="/opportunities/edit/:id" element={requireRole(["ngo"], <OpportunityCreate />)} />
+            <Route path="/browse-opportunities" element={requireRole(["volunteer"], <BrowseOpportunities />)} />
+            <Route path="/matches" element={requireRole(["volunteer"], <Matches />)} />
+            <Route path="/applications" element={requireAuth(<Applications />)} />
+            <Route path="/chat" element={requireRole(["volunteer", "ngo"], <Messages />)} />
+            <Route path="/messages" element={<Navigate to="/chat" replace />} />
+            <Route path="/notifications" element={requireRole(["volunteer", "ngo"], <Notifications />)} />
+          </Routes>
+        </Suspense>
+      </main>
+      {!loading && <Footer />}
+    </div>
   );
 }
