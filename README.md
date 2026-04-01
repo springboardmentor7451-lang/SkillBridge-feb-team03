@@ -1,205 +1,488 @@
 # SkillBridge – Volunteer & NGO Collaboration Platform
 
-SkillBridge is a full-stack web application that connects volunteers with NGOs based on skills, interests, and opportunities. The platform enables volunteers to discover meaningful opportunities and allows NGOs to post and manage volunteer requirements efficiently.
+<div align="center">
+
+**SkillBridge** is a comprehensive full-stack web application that connects volunteers with NGOs based on skills, interests, and opportunities. The platform enables seamless collaboration between volunteers seeking meaningful work and organizations looking for skilled volunteers.
+
+[Live Demo](#) • [Documentation](#api-documentation) • [Report Bug](#) • [Request Feature](#)
+
+</div>
 
 ---
 
-## 🚀 Quick Start
+## 📋 Table of Contents
 
-Want to get the application running in 5 minutes? Follow these quick steps:
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Installation & Setup](#-installation--setup)
+- [Running the Application](#-running-the-application)
+- [Project Structure](#-project-structure)
+- [API Documentation](#-api-documentation)
+- [Environment Variables](#-environment-variables)
+- [Command Reference](#-command-reference)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+
+---
+
+## 🎯 Overview
+
+SkillBridge bridges the gap between skilled volunteers and NGOs by providing a centralized platform for meaningful collaboration.
+
+### For Volunteers:
+- ✅ Create comprehensive profiles with skills, experience, and profile pictures
+- ✅ Browse available opportunities from various NGOs  
+- ✅ Apply for opportunities that match your interests
+- ✅ Rate and review NGOs after completing opportunities
+- ✅ Receive real-time notifications about opportunities and applications
+- ✅ Direct messaging with NGOs for inquiries
+- ✅ View personalized skill match recommendations
+
+### For NGOs:
+- ✅ Create and manage volunteer opportunities
+- ✅ Browse volunteer profiles and find ideal candidates
+- ✅ View and manage volunteer applications (accept/reject)
+- ✅ Rate and review volunteers after project completion
+- ✅ Real-time messaging with interested volunteers
+- ✅ Track volunteer-opportunity matches and recommendations
+- ✅ Manage organization profile and contact information
+
+**Development Context:**
+This project was developed as part of the **Infosys Springboard Full Stack Milestone** by a team of 3 developers, demonstrating full-stack capabilities including user authentication, real-time communication, database design, and responsive UI/UX.
+
+---
+
+## ✨ Features
+
+### Authentication & Security
+- User registration (Volunteer / NGO roles)
+- Secure JWT-based authentication
+- Password hashing with bcryptjs
+- Role-based access control
+- Protected routes and endpoints
+
+### User Management
+- Comprehensive profile creation for both roles
+- Profile picture upload support
+- Bio and skills management
+- Organization details for NGOs
+- Editable user profiles
+- User dashboard with statistics
+
+### Opportunity Management
+- Create and manage volunteer opportunities
+- Detailed opportunity descriptions with requirements
+- Search and filter opportunities
+- Opportunity status tracking (open/closed)
+- Application management interface
+- Opportunity browsing with ratings
+
+### Real-Time Features
+- Socket.IO powered live messaging
+- Real-time notifications
+- Instant conversation creation
+- Live application updates
+- Real-time matching suggestions
+
+### Ratings & Reviews
+- Rate volunteers and NGOs
+- Review system with comments
+- Average rating calculations
+- Rating history tracking
+- Ratings prominently displayed in profiles
+
+### Theming System
+- 5 beautiful color themes (Light, Blue Gray, Sunset, Rainforest, Ocean)
+- CSS variable-based theme switching
+- Persistent theme selection using next-themes
+- Smooth theme transitions
+
+### Additional Features
+- Personalized skill-based matching
+- Real-time notifications system
+- Responsive design (mobile, tablet, desktop)
+- Contact section with creator information
+- Loading states and error handling
+- Toast notifications for user feedback
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- **React.js 18** - UI framework
+- **Vite** - Fast build tool and dev server
+- **React Router DOM** - Client-side routing
+- **Axios** - HTTP client for API calls
+- **Socket.IO Client** - Real-time communication
+- **Tailwind CSS** - Utility-first CSS framework
+- **Next.js Themes** - Theme management and persistence
+- **Radix UI** - Accessible UI components
+- **Lucide React** - Icon library
+- **Sonner** - Toast notifications
+- **Framer Motion** - Animation library
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB object modeling
+- **JWT (jsonwebtoken)** - Authentication tokens
+- **bcryptjs** - Password hashing
+- **Socket.IO** - Real-time server communication
+- **Express Validator** - Input validation
+- **CORS** - Cross-origin resource sharing
+- **Dotenv** - Environment configuration
+- **Nodemon** - Auto-restart during development
+
+### Development Tools
+- **Git** - Version control
+- **npm** - Package manager
+- **Postman** - API testing (optional)
+
+---
+
+## 📋 Prerequisites
+
+Before starting, ensure you have the following installed on your system:
+
+| Software | Version | Purpose | Download |
+|----------|---------|---------|----------|
+| **Node.js** | 14+ | JavaScript runtime | [nodejs.org](https://nodejs.org/) |
+| **npm** | 6+ | Package manager (included with Node.js) | Included with Node.js |
+| **MongoDB** | 4+ | Database | [Local](https://www.mongodb.com/try/download/community) or [Atlas Cloud](https://www.mongodb.com/cloud/atlas) |
+| **Git** | Any | Version control (optional) | [git-scm.com](https://git-scm.com/) |
+
+**Verify Installation:**
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/springboardmentor7451-lang/SkillBridge-feb-team03.git
-cd SkillBridge-feb-team03
-
-# 2. Install Backend Dependencies
-cd backend
-npm install
-
-# 3. Create .env file in backend folder (see Setup section below)
-
-# 4. Start Backend (Terminal 1)
-npm run dev
-
-# 5. In a new terminal, Install Frontend Dependencies
-cd frontend
-npm install
-
-# 6. Start Frontend (Terminal 2)
-npm run dev
-
-# 7. Open http://localhost:5173 in your browser
+node --version          # Should show v14 or higher
+npm --version           # Should show 6 or higher
+mongod --version        # Should show MongoDB version (if installed locally)
+git --version           # Optional, for cloning
 ```
 
 ---
 
-## Project Overview
+## 🚀 Installation & Setup
 
-SkillBridge bridges the gap between skilled volunteers and NGOs by providing a centralized platform for collaboration. Volunteers can create profiles, showcase skills, and apply for opportunities, while NGOs can create opportunities, review applications, and communicate with volunteers.
+### Step 1: Clone the Repository
 
-This project was developed as part of the Infosys Springboard Full Stack Milestone.
+**Using Git:**
+```bash
+git clone https://github.com/springboardmentor7451-lang/SkillBridge-feb-team03.git
+cd SkillBridge-feb-team03
+```
 
----
-
-## ⚡ Command Reference Cheat Sheet
-
-**For copying and pasting commands quickly:**
-
-| Task | Command |
-|------|---------|
-| **Install backend packages** | `cd backend && npm install` |
-| **Install frontend packages** | `cd frontend && npm install` |
-| **Start MongoDB** | `mongod` (Mac/Linux) or `net start MongoDB` (Windows) |
-| **Start backend (auto-restart)** | `cd backend && npm run dev` |
-| **Start frontend (hot-reload)** | `cd frontend && npm run dev` |
-| **Build frontend for production** | `cd frontend && npm run build` |
-| **Check Node version** | `node --version` |
-| **Check npm version** | `npm --version` |
-| **Clear npm cache** | `npm cache clean --force` |
-| **Reinstall dependencies** | `rm -rf node_modules package-lock.json && npm install` |
+**Or Download as ZIP:**
+1. Visit: https://github.com/springboardmentor7451-lang/SkillBridge-feb-team03
+2. Click green "Code" button → "Download ZIP"
+3. Extract the ZIP file
+4. Open terminal and navigate to the extracted folder
 
 ---
 
-## Features
+### Step 2: Backend Setup
 
-### Authentication
-- User registration (Volunteer / NGO)
-- Secure login using JWT authentication
-- Role-based user profiles
+Navigate to the backend directory and install dependencies:
 
-### Volunteer Features
-- Create and manage profile
-- Add skills and bio
-- Browse opportunities
-- Apply for NGO opportunities
-- View application status
-- Real-time messaging with NGOs
+```bash
+cd backend
+npm install
+```
 
-### NGO Features
-- Create organization profile
-- Post volunteer opportunities
-- Manage applications (accept/reject)
-- View volunteer profiles
-- Real-time messaging with volunteers
+**Packages Installed:**
 
-### Dashboard
-- Personalized dashboard (role-specific)
-- Application statistics
-- Opportunity management
-- Skills overview
-- Real-time notifications
+| Package | Purpose |
+|---------|---------|
+| express | Web server framework |
+| mongoose | MongoDB database ORM |
+| jsonwebtoken | JWT authentication |
+| bcryptjs | Password encryption |
+| socket.io | Real-time communication |
+| dotenv | Environment variables |
+| cors | Cross-origin requests |
+| express-validator | Input validation |
+| nodemon (dev) | Auto-restart server |
 
-### Additional Features
-- Real-time messaging (Socket.IO)
-- Real-time notifications
-- Browse & filter opportunities
-- Match suggestions based on skills
+**Create `.env` file in `backend` folder:**
 
----
+```env
+# SERVER CONFIGURATION
+PORT=5000
+NODE_ENV=development
 
-## Tech Stack
+# DATABASE CONNECTION
+# Option A: Local MongoDB
+MONGO_URI=mongodb://localhost:27017/skillbridge
 
-### Frontend
-- React.js (Vite)
-- JavaScript
-- CSS
-- React Router DOM
-- Axios
-- Socket.IO Client
+# Option B: MongoDB Atlas (Cloud - recommended)
+# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/skillbridge
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
-- bcryptjs
-- Socket.IO
-- Express Validator
+# JWT CONFIGURATION  
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+JWT_EXPIRE=7d
 
----
+# FRONTEND URL (for CORS)
+FRONTEND_URL=http://localhost:5173
 
-## Prerequisites
+# SOCKET CONFIGURATION
+SOCKET_PORT=3001
+```
 
-Before you begin, ensure you have the following installed:
+**Notes:**
+- Replace `username` and `password` in MONGO_URI with your actual MongoDB Atlas credentials
+- Keep JWT_SECRET secret - use a strong random string
+- For production, never commit `.env` files to GitHub
 
-| Software | Version | Required |
-|----------|---------|----------|
-| Node.js | 14+ | ✅ Yes |
-| npm | 6+ | ✅ Yes |
-| MongoDB | 4+ | ✅ Yes (local or Atlas) |
-| Git | Any | Optional |
+**Start the backend:**
+
+```bash
+npm run dev
+```
+
+Expected output:
+```
+listening on port 5000
+MongoDB connected successfully
+```
+
+✅ Backend running at **http://localhost:5000**
 
 ---
 
-## Project Structure
+### Step 3: MongoDB Setup
+
+#### Option A: Local MongoDB (Windows/Mac/Linux)
+
+**Windows:**
+```bash
+# Command Prompt (as Administrator)
+net start MongoDB
+
+# OR start manually:
+"C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe"
+```
+
+**Mac:**
+```bash
+# Using Homebrew (if installed)
+brew services start mongodb-community
+
+# OR manually:
+mongod
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo systemctl start mongod
+```
+
+MongoDB will run on: `mongodb://localhost:27017`
+
+#### Option B: MongoDB Atlas (Cloud) - Recommended
+
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free account
+3. Create a new cluster (free tier available)
+4. Get your connection string from "Connect" button
+5. Replace `MONGO_URI` in `.env` file with your connection string
+
+Example: `mongodb+srv://yourUsername:yourPassword@cluster0.xyz.mongodb.net/skillbridge`
+
+---
+
+### Step 4: Frontend Setup
+
+Open a **new terminal** (keep backend running), then:
+
+```bash
+cd frontend
+npm install
+```
+
+**Packages Installed:**
+
+| Package | Purpose |
+|---------|---------|
+| react | UI library |
+| react-router-dom | Routing |
+| axios | HTTP requests |
+| socket.io-client | Real-time client |
+| tailwindcss | CSS framework |
+| next-themes | Theme management |
+| @radix-ui/* | UI components |
+| lucide-react | Icons |
+| sonner | Notifications |
+| framer-motion | Animations |
+| vite | Build tool |
+
+**Start the frontend:**
+
+```bash
+npm run dev
+```
+
+Expected output:
+```
+VITE v4.x.x  ready in xxx ms
+
+➜  Local:   http://localhost:5173/
+➜  press h to show help
+```
+
+✅ Frontend running at **http://localhost:5173**
+
+---
+
+## 📱 Running the Application
+
+### Complete First-Time Setup Guide
+
+**Open 3 Terminals:**
+
+#### Terminal 1: Start MongoDB
+```bash
+# Windows
+net start MongoDB
+
+# Mac
+mongod
+
+# Linux
+sudo systemctl start mongod
+```
+
+Wait for message: `MongoDB listening on port 27017`
+
+#### Terminal 2: Start Backend
+```bash
+cd SkillBridge-feb-team03/backend
+npm install   # First time only
+npm run dev
+```
+
+Wait for message: `listening on port 5000`
+
+#### Terminal 3: Start Frontend
+```bash
+cd SkillBridge-feb-team03/frontend
+npm install   # First time only
+npm run dev
+```
+
+Wait for message: `Local: http://localhost:5173/`
+
+### Open in Browser
+- Navigate to **http://localhost:5173**
+- You should see the SkillBridge homepage
+
+### Test the Application
+1. **Register** as a Volunteer or NGO
+2. **Complete** your profile
+3. **Browse** opportunities (volunteers) or volunteers (NGOs)
+4. **Message** other users
+5. **Apply** for opportunities or rate volunteers
+
+---
+
+## 📁 Project Structure
 
 ```
 SkillBridge-feb-team03/
 │
-├── frontend/                    # React Frontend
+├── frontend/                         # React Frontend (Vite)
 │   ├── src/
-│   │   ├── pages/              # Page components
-│   │   │   ├── Home.jsx
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Profile.jsx
-│   │   │   ├── ProfileEdit.jsx
-│   │   │   ├── BrowseOpportunities.jsx
-│   │   │   ├── OpportunityCreate.jsx
-│   │   │   ├── Applications.jsx
-│   │   │   ├── MyOpportunities.jsx
-│   │   │   ├── Messages.jsx
-│   │   │   └── Notifications.jsx
-│   │   ├── components/         # Reusable components
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Sidebar.jsx
-│   │   │   ├── ApplicationForm.jsx
-│   │   │   ├── MatchSuggestions.jsx
-│   │   │   ├── NotificationBell.jsx
-│   │   │   └── NotificationSystem.jsx
-│   │   ├── services/           # API services
-│   │   │   ├── api.js
-│   │   │   ├── authService.js
-│   │   │   ├── userService.js
+│   │   ├── pages/                   # Page components (routes)
+│   │   │   ├── Home.jsx             # Landing page
+│   │   │   ├── Login.jsx            # Login form
+│   │   │   ├── Register.jsx         # Signup form (volunteer/NGO)
+│   │   │   ├── Dashboard.jsx        # Main dashboard
+│   │   │   ├── Profile.jsx          # User profile view
+│   │   │   ├── ProfileEdit.jsx      # Edit user profile
+│   │   │   ├── BrowseOpportunities.jsx  # Browse opportunities
+│   │   │   ├── OpportunityCreate.jsx    # Create opportunity
+│   │   │   ├── Applications.jsx     # View applications
+│   │   │   ├── MyOpportunities.jsx  # Manage opportunities
+│   │   │   ├── Messages.jsx         # Real-time messaging
+│   │   │   ├── Notifications.jsx    # Notification center
+│   │   │   └── Matches.jsx          # Skill-based matches
+│   │   │
+│   │   ├── components/              # Reusable React components
+│   │   │   ├── Navbar.jsx           # Navigation bar
+│   │   │   ├── Sidebar.jsx          # Sidebar navigation
+│   │   │   ├── Footer.jsx           # Footer with contact
+│   │   │   ├── ApplicationForm.jsx  # Reusable form
+│   │   │   ├── MatchSuggestions.jsx # Match suggestions
+│   │   │   ├── NotificationBell.jsx # Notification icon
+│   │   │   ├── NotificationSystem.jsx
+│   │   │   ├── ThemeSelector.jsx    # Theme switcher
+│   │   │   └── ui/                  # Radix UI components
+│   │   │       ├── button.jsx
+│   │   │       ├── card.jsx
+│   │   │       ├── dialog.jsx
+│   │   │       ├── dropdown-menu.jsx
+│   │   │       ├── input.jsx
+│   │   │       ├── tabs.jsx
+│   │   │       └── tooltip.jsx
+│   │   │
+│   │   ├── services/                # API service layer
+│   │   │   ├── api.js              # Axios instance
+│   │   │   ├── authService.js      # Auth API calls
+│   │   │   ├── userService.js      # User API calls
 │   │   │   ├── opportunityService.js
 │   │   │   ├── applicationService.js
-│   │   │   ├── conversationService.js
+│   │   │   ├── conversationService.js  # Messaging
 │   │   │   ├── messageService.js
 │   │   │   ├── matchingService.js
 │   │   │   ├── notificationService.js
-│   │   │   └── socketService.js
-│   │   ├── context/            # React Context
-│   │   │   └── AuthContext.jsx
-│   │   ├── routes/             # Routing
-│   │   │   └── AppRoutes.jsx
-│   │   ├── styles/             # CSS files
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── package.json
-│   └── vite.config.js
+│   │   │   └── socketService.js    # Socket.io client
+│   │   │
+│   │   ├── context/                 # React Context
+│   │   │   ├── AuthContext.jsx      # Auth state
+│   │   │   └── SocketContext.jsx    # Socket.io state
+│   │   │
+│   │   ├── routes/
+│   │   │   └── AppRoutes.jsx        # Route definitions
+│   │   │
+│   │   ├── styles/                  # CSS files
+│   │   │   ├── home.css
+│   │   │   ├── login.css
+│   │   │   ├── navbar.css
+│   │   │   └── register.css
+│   │   │
+│   │   ├── App.jsx                  # Root component
+│   │   ├── index.css                # Global styles & themes
+│   │   └── main.jsx                 # Entry point
+│   │
+│   ├── package.json                 # Frontend dependencies
+│   ├── vite.config.js              # Vite configuration
+│   └── index.html                   # HTML entry
 │
-├── backend/                    # Express Backend
-│   ├── controllers/            # Route controllers
-│   │   ├── authController.js
-│   │   ├── userController.js
+│
+├── backend/                         # Express Backend
+│   ├── controllers/                # Business logic
+│   │   ├── authController.js      # Auth logic
+│   │   ├── userController.js      # User management
 │   │   ├── opportunityController.js
 │   │   ├── applicationController.js
-│   │   ├── conversationController.js
+│   │   ├── conversationController.js  # Messaging logic
 │   │   ├── messageController.js
-│   │   ├── matchingController.js
+│   │   ├── matchingController.js  # Skill matching
 │   │   └── notificationController.js
-│   ├── models/                # Mongoose models
-│   │   ├── user.js
-│   │   ├── opportunity.js
-│   │   ├── application.js
-│   │   ├── conversation.js
-│   │   ├── message.js
-│   │   ├── notification.js
-│   │   └── user.js
-│   ├── routes/                 # Express routes
+│   │
+│   ├── models/                    # Mongoose schemas
+│   │   ├── user.js               # User schema
+│   │   ├── opportunity.js        # Opportunity schema
+│   │   ├── application.js        # Application schema
+│   │   ├── conversation.js       # Conversation schema
+│   │   ├── message.js            # Message schema
+│   │   ├── notification.js       # Notification schema
+│   │   └── rating.js             # Rating schema
+│   │
+│   ├── routes/                    # Express routes
 │   │   ├── authRoutes.js
 │   │   ├── userRoutes.js
 │   │   ├── opportunityRoutes.js
@@ -208,198 +491,337 @@ SkillBridge-feb-team03/
 │   │   ├── messageRoutes.js
 │   │   ├── matchingRoutes.js
 │   │   └── notificationRoutes.js
-│   ├── middleware/             # Custom middleware
-│   │   └── authMiddleware.js
-│   ├── config/                 # Configuration
-│   │   └── db.js
-│   ├── server.js               # Entry point
-│   └── package.json
+│   │
+│   ├── middleware/                # Custom middleware
+│   │   └── authMiddleware.js     # JWT verification
+│   │
+│   ├── config/                    # Configuration
+│   │   └── db.js                 # MongoDB connection
+│   │
+│   ├── server.js                  # Express app setup
+│   ├── package.json              # Backend dependencies
+│   └── .env                       # Environment variables
 │
-└── README.md
+├── README.md                        # This file
+└── .gitignore
 ```
 
 ---
 
-## Installation and Setup
+## 🔌 API Documentation
 
-### Prerequisites
+### Authentication Endpoints
 
-Before starting, ensure you have these installed on your machine:
-
-| Software | Version | Purpose | Download |
-|----------|---------|---------|----------|
-| **Node.js** | 14+ | JavaScript runtime for both frontend & backend | https://nodejs.org/ |
-| **npm** | 6+ | Package manager (comes with Node.js) | Included with Node.js |
-| **MongoDB** | 4+ | Database for the application | https://www.mongodb.com/try/download/community OR https://www.mongodb.com/cloud/atlas (cloud) |
-| **Git** | Any | Version control (optional) | https://git-scm.com/ |
-
-**Verify Installation:**
+#### Register
 ```bash
-node --version          # Should show v14 or higher
-npm --version           # Should show 6 or higher
-mongod --version        # Should show MongoDB version
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "hashedpassword",
+  "role": "volunteer",    // or "ngo"
+  "profilePictureUrl": "https://example.com/image.jpg"
+}
+```
+
+#### Login  
+```bash
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "hashedpassword"
+}
+```
+
+### User Endpoints
+
+#### Get Current User
+```bash
+GET /api/users/me
+Authorization: Bearer <jwt_token>
+```
+
+#### Update Profile
+```bash
+PUT /api/users/me
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "profilePictureUrl": "new-url",
+  "skills": ["skill1", "skill2"],
+  "bio": "Updated bio"
+}
+```
+
+### Opportunity Endpoints
+
+#### Create Opportunity (NGO only)
+```bash
+POST /api/opportunities
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "title": "Community Service",
+  "description": "Help with community development",
+  "requirements": ["leadership", "communication"],
+  "startDate": "2024-05-01",
+  "endDate": "2024-06-01"
+}
+```
+
+#### Get All Opportunities
+```bash
+GET /api/opportunities
+```
+
+#### Get Single Opportunity
+```bash
+GET /api/opportunities/:id
+```
+
+### Application Endpoints
+
+#### Create Application
+```bash
+POST /api/applications
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "opportunityId": "opp_id_123",
+  "message": "I'm interested in this opportunity"
+}
+```
+
+### Messaging Endpoints
+
+#### Create/Get Direct Conversation
+```bash
+POST /api/conversations/direct
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "participantId": "user_id_123"
+}
+```
+
+#### Send Message
+```bash
+POST /api/messages
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "conversationId": "conv_id_123",
+  "text": "Hello, I'm interested in your opportunity"
+}
+```
+
+#### Get Conversation Messages
+```bash
+GET /api/conversations/:conversationId/messages
+Authorization: Bearer <jwt_token>
+```
+
+### Matching Endpoints
+
+#### Get Matches (Volunteers get matching NGOs)
+```bash
+GET /api/matches
+Authorization: Bearer <jwt_token>
+```
+
+#### Get Volunteer Matches for Opportunity (NGO)
+```bash
+GET /api/opportunities/:opportunityId/matches
+Authorization: Bearer <jwt_token>
 ```
 
 ---
 
-### 1. Clone the Repository
+## ⚙️ Environment Variables
 
-```bash
-git clone https://github.com/springboardmentor7451-lang/SkillBridge-feb-team03.git
-cd SkillBridge-feb-team03
-```
-
-Or download as ZIP and extract it.
-
----
-
-### 2. Backend Setup
-
-Navigate to the backend directory and install all required packages:
-
-```bash
-cd backend
-npm install
-```
-
-This will install the following packages:
-
-| Package | Purpose | Version |
-|---------|---------|---------|
-| **express** | Web framework | ^4.x |
-| **mongoose** | MongoDB object modeling | ^7.x |
-| **jsonwebtoken** | JWT authentication | ^9.x |
-| **bcryptjs** | Password hashing | ^2.x |
-| **dotenv** | Environment variables | ^16.x |
-| **cors** | Cross-origin resource sharing | ^2.x |
-| **socket.io** | Real-time communication | ^4.x |
-| **express-validator** | Input validation | ^7.x |
-| **nodemon** | Auto-restart on file changes (dev) | ^2.x |
-
-**Create `.env` file in the `backend` folder:**
+### Backend `.env` file
 
 ```env
+# =======================
 # Server Configuration
+# =======================
 PORT=5000
+NODE_ENV=development
 
-# MongoDB Connection
-# Option A: Local MongoDB (make sure MongoDB is running)
+# =======================
+# Database Configuration
+# =======================
+# Local MongoDB:
 MONGO_URI=mongodb://localhost:27017/skillbridge
 
-# Option B: MongoDB Atlas (Cloud - recommended for production)
-# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/skillbridge
+# MongoDB Atlas (Cloud):
+# MONGO_URI=mongodb+srv://username:password@cluster0.abc123.mongodb.net/skillbridge?retryWrites=true&w=majority
 
+# =======================
 # JWT Configuration
-JWT_SECRET=your_super_secret_jwt_key_here_change_this
+# =======================
+JWT_SECRET=your_very_secure_secret_key_change_this_in_production
 JWT_EXPIRE=7d
 
-# Frontend URL (for CORS)
+# =======================
+# CORS Configuration
+# =======================
 FRONTEND_URL=http://localhost:5173
+
+# =======================
+# Socket.IO Configuration
+# =======================
+SOCKET_PORT=3001
 ```
 
-**Install MongoDB (if using local database):**
-
-- **Windows**: Download from https://www.mongodb.com/try/download/community
-- **Mac**: `brew install mongodb-community`
-- **Linux**: `sudo apt-get install mongodb`
-
-**Start the backend server:**
-
-```bash
-# Development mode (with auto-restart using nodemon)
-npm run dev
-
-# OR Production mode (without auto-restart)
-npm start
-```
-
-✅ Backend will run on: **http://localhost:5000**
+**Important Security Notes:**
+- Never commit `.env` file to Git
+- Add `.env` to `.gitignore`
+- Use strong JWT secret (min 32 characters)
+- Use environment-specific values (dev/prod)
+- Rotate secrets regularly in production
 
 ---
 
-### 3. Frontend Setup
+## ⚡ Command Reference
 
-Open a **new terminal** (keep backend running in first terminal), then:
+### Quick Commands
+
+| Task | Command |
+|------|---------|
+| Install backend deps | `cd backend && npm install` |
+| Install frontend deps | `cd frontend && npm install` |
+| Start MongoDB (Windows) | `net start MongoDB` |
+| Start MongoDB (Mac) | `mongod` |
+| Start backend dev | `cd backend && npm run dev` |
+| Start frontend dev | `cd frontend && npm run dev` |
+| Build frontend | `cd frontend && npm run build` |
+| Preview build | `cd frontend && npm run preview` |
+| Clear npm cache | `npm cache clean --force` |
+| Reinstall all deps | `rm -rf node_modules && npm install` |
+
+### Development Workflow
 
 ```bash
+# Terminal 1: Start MongoDB
+mongod
+
+# Terminal 2: Start Backend
+cd backend
+npm run dev
+
+# Terminal 3: Start Frontend  
 cd frontend
-npm install
-```
-
-This will install the following packages:
-
-| Package | Purpose | Version |
-|---------|---------|---------|
-| **react** | UI library | ^18.x |
-| **react-dom** | React DOM rendering | ^18.x |
-| **react-router-dom** | Client-side routing | ^6.x |
-| **axios** | HTTP client | ^1.x |
-| **socket.io-client** | Real-time client communication | ^4.x |
-| **vite** | Frontend build tool | ^4.x |
-| **@radix-ui/\*** | UI component library | Latest |
-| **sonner** | Toast notifications | Latest |
-
-**Start the development server:**
-
-```bash
 npm run dev
-```
 
-✅ Frontend will run on: **http://localhost:5173**
+# Open browser to http://localhost:5173
+```
 
 ---
 
-### 4. Setup MongoDB
+## 🛠 Troubleshooting
 
-#### Option A: Local MongoDB (Windows/Mac/Linux)
+### Backend Issues
 
-**Start MongoDB Server:**
+**Problem:** `MongoDB connection failed`
+- **Solution:** Ensure MongoDB is running (`mongod` command)
+- Check MONGO_URI in .env is correct
+- Verify MongoDB service is started (Windows: `net start MongoDB`)
 
+**Problem:** `Port 5000 already in use`
+- **Solution:** Kill process on port 5000 or change PORT in .env
 ```bash
-# Windows (Command Prompt/PowerShell)
-net start MongoDB
+# Windows
+netstat -ano | findstr :5000
+taskkill /PID <PID> /F
 
-# OR manually start from installation folder
-"C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe"
-```
-
-```bash
 # Mac/Linux
-mongod
+lsof -i :5000
+kill -9 <PID>
 ```
 
-MongoDB will run on: **mongodb://localhost:27017**
+**Problem:** `JWT issues / Not authenticated`
+- **Solution:** Check JWT_SECRET in .env is set
+- Ensure token is being sent in Authorization header
+- Clear browser localStorage and re-login
 
-#### Option B: MongoDB Atlas (Cloud) - Recommended for Teams
+### Frontend Issues
 
-1. Create account at https://www.mongodb.com/cloud/atlas
-2. Create a free cluster
-3. Get connection string: `mongodb+srv://username:password@cluster.mongodb.net/skillbridge`
-4. Add connection string to `.env` file
+**Problem:** `Cannot GET /api/...`
+- **Solution:** Ensure backend is running on port 5000
+- Check API base URL in frontend services
+
+**Problem:** `Module not found`
+- **Solution:** Run `npm install` in frontend folder
+- Delete node_modules and reinstall: `rm -rf node_modules && npm install`
+
+**Problem:** `Vite port 5173 already in use`
+- **Solution:** Kill process or use different port
+- Or wait for previous process to fully terminate (up to 30 seconds)
+
+### Common Issues
+
+**Blank page on localhost:5173**
+- Hard refresh browser (Ctrl+Shift+R)
+- Clear browser cache
+- Check browser console for errors (F12)
+- Verify backend is running
+
+**Messages not appearing**
+- Check Socket.IO connection in browser console
+- Verify both users are logged in
+- Ensure backend is running
+
+**Database not persisting data**
+- Check MongoDB is actually running
+- Verify MONGO_URI in .env
+- Check browser console and backend logs for errors
 
 ---
 
-## Running the Application
+## 🤝 Contributing
 
-### Complete Step-by-Step Guide for First-Time Users
+Contributions are welcome! To contribute:
 
-#### **Step 1: Start MongoDB** ⚙️
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
 
-This is the database for your application.
+---
 
-```bash
-# Windows (Command Prompt as Administrator)
-net start MongoDB
+## 📄 License
 
-# Mac/Linux
-mongod
-```
+This project is part of the Infosys Springboard Program.
 
-You should see: `MongoDB listening on 27017` or similar message.
+---
 
-#### **Step 2: Start Backend** 🔧
+## 👥 Team
 
-Open a **Terminal 1**:
+Developed by Team 03 as part of Infosys Springboard Full Stack Milestone
+
+---
+
+## 📧 Support
+
+For issues, questions, or suggestions:
+- Open an issue on GitHub
+- Contact: [Your Contact Info]
+
+---
+
+**Happy Coding! 🚀**
 
 ```bash
 cd backend

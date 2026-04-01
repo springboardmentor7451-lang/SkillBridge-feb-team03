@@ -25,7 +25,7 @@ import MovingCloudBackground from "./components/MovingCloudBackground";
 
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="skillbridge-theme">
+    <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} disableTransitionOnChange storageKey="skillbridge-theme">
       <AuthProvider>
         <SocketProvider>
           <div className="relative min-h-screen">
