@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { ArrowLeft, LogIn } from "lucide-react";
+import { ArrowLeft, LogIn, RefreshCw } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Input } from "../components/ui/input";
@@ -20,6 +21,8 @@ const loginSchema = z.object({
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
 
   const {
     register,
@@ -39,12 +42,34 @@ export default function Login() {
 
       const { token, user } = res.data;
       login(token, user);
+      setUnverifiedEmail("");
       toast.success(`Welcome back, ${user?.name || "there"}!`);
       navigate("/dashboard");
     } catch (err) {
       console.error("Login error", err.response || err);
+      if (err.response?.data?.code === "EMAIL_NOT_VERIFIED") {
+        setUnverifiedEmail(err.response?.data?.email || values.email);
+      }
       const msg = err.response?.data?.message || "Login failed";
       toast.error(msg);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!unverifiedEmail) return;
+
+    try {
+      setIsResending(true);
+      const response = await axios.post("http://localhost:5000/api/auth/resend-verification", {
+        email: unverifiedEmail,
+      });
+      toast.success(response.data?.message || "Verification email sent.");
+      navigate(`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Could not resend verification email";
+      toast.error(msg);
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -95,6 +120,22 @@ export default function Login() {
                   {isSubmitting ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
+
+              {unverifiedEmail && (
+                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <p className="text-sm text-amber-800">Your email is not verified yet.</p>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-3 w-full"
+                    onClick={handleResendVerification}
+                    disabled={isResending}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    {isResending ? "Sending..." : "Resend Verification Email"}
+                  </Button>
+                </div>
+              )}
 
               <p className="mt-5 text-center text-sm text-slate-600">
                 New here?{" "}

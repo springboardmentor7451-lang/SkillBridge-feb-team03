@@ -51,7 +51,7 @@ export default function Navbar() {
     { label: "How it Works", href: "#how" },
     { label: "Features", href: "#features" },
     { label: "Impact", href: "#impact" },
-    { label: "For NGOs", href: "#for-ngos" },
+    // { label: "For NGOs", href: "#for-ngos" },
   ];
 
   const authLinks = [

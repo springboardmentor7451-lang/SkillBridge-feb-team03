@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import NotificationSystem from "../components/NotificationSystem";
 import Footer from "../components/Footer";
@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
+const VerifyEmail = lazy(() => import("../pages/VerifyEmail"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const Profile = lazy(() => import("../pages/Profile"));
 const ProfileEdit = lazy(() => import("../pages/ProfileEdit"));
@@ -18,14 +19,21 @@ const Messages = lazy(() => import("../pages/Messages"));
 const Matches = lazy(() => import("../pages/Matches"));
 const Notifications = lazy(() => import("../pages/Notifications"));
 
-function RouteFallback() {
+function RouteFallback({ overlay = false }) {
+  const containerClass = overlay
+    ? "fixed inset-0 z-[120] flex items-center justify-center bg-slate-50/80 backdrop-blur-sm"
+    : "flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100";
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className={containerClass}>
       <div className="flex flex-col items-center gap-6">
-        <div className="flex items-center gap-3">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"></div>
+        <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white/85 px-6 py-4 shadow-lg">
+          <div className="relative h-14 w-14">
+            <div className="absolute inset-0 animate-spin rounded-full border-2 border-orange-200 border-t-orange-400" />
+            <img src="/sb-favicon.svg" alt="SB" className="absolute inset-2 h-10 w-10 rounded-lg" />
+          </div>
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-slate-900">SB SkillBridge</h2>
+            <h2 className="text-2xl font-bold text-slate-900">SkillBridge</h2>
             <p className="text-sm text-slate-500">Loading...</p>
           </div>
         </div>
@@ -45,6 +53,38 @@ export default function AppRoutes() {
 
 function AppContent() {
   const { user, loading } = useAuth();
+  const [showClickLoader, setShowClickLoader] = useState(false);
+  const loaderTimerRef = useRef(null);
+
+  useEffect(() => {
+    const handleGlobalClick = (event) => {
+      if (!(event.target instanceof Element)) return;
+
+      const trigger = event.target.closest("button, a, [role='button']");
+      if (!trigger) return;
+
+      if (trigger.getAttribute("aria-disabled") === "true") return;
+      if ("disabled" in trigger && trigger.disabled) return;
+
+      if (loaderTimerRef.current) {
+        clearTimeout(loaderTimerRef.current);
+      }
+
+      setShowClickLoader(true);
+      loaderTimerRef.current = setTimeout(() => {
+        setShowClickLoader(false);
+      }, 550);
+    };
+
+    document.addEventListener("click", handleGlobalClick, true);
+
+    return () => {
+      document.removeEventListener("click", handleGlobalClick, true);
+      if (loaderTimerRef.current) {
+        clearTimeout(loaderTimerRef.current);
+      }
+    };
+  }, []);
 
   const requireAuth = (element) => {
     if (loading) return <RouteFallback />;
@@ -59,12 +99,14 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {!loading && showClickLoader && <RouteFallback overlay />}
       <main className="flex-1">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/dashboard" element={requireAuth(<Dashboard />)} />
             <Route path="/profile" element={requireAuth(<Profile />)} />
             <Route path="/profile/edit" element={requireAuth(<ProfileEdit />)} />

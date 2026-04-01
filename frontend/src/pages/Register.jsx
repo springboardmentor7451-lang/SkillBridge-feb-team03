@@ -131,10 +131,10 @@ export default function Register() {
         payload.website_url = formValues.website;
       }
 
-      await axios.post("http://localhost:5000/api/auth/register", payload);
+      const response = await axios.post("http://localhost:5000/api/auth/register", payload);
 
-      toast.success("Account created successfully. Please sign in.");
-      navigate("/login");
+      toast.success(response.data?.message || "Account created. Please verify your email.");
+      navigate(`/verify-email?email=${encodeURIComponent(formValues.email)}&sent=1`);
     } catch (err) {
       const msg = err.response?.data?.message || "Registration failed";
       toast.error(msg);

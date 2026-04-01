@@ -9,9 +9,24 @@ export default function Home() {
   const { isAuthenticated, logout } = useAuth();
 
   const impactStats = [
-    { label: "Active Volunteers", value: 200, bgClass: "from-sky-50 to-cyan-100/60" },
-    { label: "NGO Partners", value: 100, bgClass: "from-emerald-50 to-lime-100/60" },
-    { label: "Opportunities Created", value: 40, bgClass: "from-orange-50 to-amber-100/60" },
+    {
+      label: "Active Volunteers",
+      value: 200,
+      bgClass: "from-sky-50 to-cyan-100/60",
+      accentClass: "from-sky-200 to-cyan-100",
+    },
+    {
+      label: "NGO Partners",
+      value: 100,
+      bgClass: "from-emerald-50 to-lime-100/60",
+      accentClass: "from-emerald-200 to-lime-100",
+    },
+    {
+      label: "Opportunities Created",
+      value: 40,
+      bgClass: "from-orange-50 to-amber-100/60",
+      accentClass: "from-orange-200 to-amber-100",
+    },
   ];
 
   const featureCards = [
@@ -38,6 +53,37 @@ export default function Home() {
       body: "Coordinate with NGOs and volunteers instantly through integrated conversations.",
       accent: "from-rose-200 to-pink-100",
       bg: "from-rose-50 to-pink-50",
+    },
+  ];
+
+  const howItWorksCards = [
+    {
+      step: "1",
+      title: "Create Your Profile",
+      body: "Sign up as a volunteer or NGO, define your focus areas, and showcase your strengths.",
+      accent: "from-orange-200 to-amber-100",
+      bg: "from-orange-50 to-amber-50",
+    },
+    {
+      step: "2",
+      title: "Find The Right Match",
+      body: "Use smart filters to discover projects aligned with your skills, interests, and availability.",
+      accent: "from-sky-200 to-cyan-100",
+      bg: "from-sky-50 to-cyan-50",
+    },
+    {
+      step: "3",
+      title: "Collaborate And Deliver",
+      body: "Apply, chat with teams, and track outcomes in one place from first message to final delivery.",
+      accent: "from-rose-200 to-pink-100",
+      bg: "from-rose-50 to-pink-50",
+    },
+    {
+      step: "4",
+      title: "Get Shortlisted Faster",
+      body: "Receive timely updates and improve your profile with relevant skills to increase acceptance chances.",
+      accent: "from-emerald-200 to-lime-100",
+      bg: "from-emerald-50 to-lime-50",
     },
   ];
 
@@ -113,16 +159,18 @@ export default function Home() {
               </Link>
               <Link
                 to="/login"
-                className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-orange-400 hover:text-orange-700"
+                className="rounded-xl border border-slate-600 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-orange-400 hover:text-orange-700"
               >
                 Sign In
               </Link>
             </div>
           </div>
 
-          <div className="relative z-10 min-h-[520px] rounded-3xl border border-white/60 bg-white/85 p-8 shadow-2xl shadow-slate-200 backdrop-blur md:p-10">
-            <p className="mb-6 text-sm font-medium uppercase tracking-wide text-slate-500">Live Community Snapshot</p>
-            <div className="space-y-6">
+          <div className="relative z-10 min-h-[520px] overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-orange-50/40 shadow-2xl shadow-slate-200 backdrop-blur">
+            <div className="h-2 w-full bg-gradient-to-r from-orange-200 via-sky-200 to-emerald-200" />
+            <div className="p-8 md:p-10">
+              <p className="mb-6 text-sm font-medium uppercase tracking-wide text-slate-500">Live Community Snapshot</p>
+              <div className="space-y-6">
               {impactStats.map((item) => (
                 <CounterCard
                   key={item.label}
@@ -130,8 +178,10 @@ export default function Home() {
                   endValue={item.value}
                   duration={2000}
                   bgClass={item.bgClass}
+                  accentClass={item.accentClass}
                 />
               ))}
+              </div>
             </div>
           </div>
         </div>
@@ -157,24 +207,22 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-gradient-to-br from-orange-50 to-amber-50 p-6 opacity-0 shadow-sm backdrop-blur transition-all duration-700 hover:-translate-y-1 hover:shadow-xl">
-              <p className="mb-3 text-3xl">1</p>
-              <h3 className="mb-2 text-xl font-semibold">Create Your Profile</h3>
-              <p className="text-slate-600">Sign up as a volunteer or NGO, define your focus areas, and showcase your strengths.</p>
-            </div>
-
-            <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-gradient-to-br from-sky-50 to-cyan-50 p-6 opacity-0 shadow-sm backdrop-blur transition-all duration-700 delay-100 hover:-translate-y-1 hover:shadow-xl">
-              <p className="mb-3 text-3xl">2</p>
-              <h3 className="mb-2 text-xl font-semibold">Find The Right Match</h3>
-              <p className="text-slate-600">Use smart filters to discover projects aligned with your skills, interests, and availability.</p>
-            </div>
-
-            <div data-reveal className="translate-y-8 rounded-2xl border border-slate-200 bg-gradient-to-br from-rose-50 to-pink-50 p-6 opacity-0 shadow-sm backdrop-blur transition-all duration-700 delay-200 hover:-translate-y-1 hover:shadow-xl">
-              <p className="mb-3 text-3xl">3</p>
-              <h3 className="mb-2 text-xl font-semibold">Collaborate And Deliver</h3>
-              <p className="text-slate-600">Apply, chat with teams, and track outcomes in one place from first message to final delivery.</p>
-            </div>
+          <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
+            {howItWorksCards.map((item, index) => (
+              <article
+                key={item.step}
+                data-reveal
+                className={`w-full translate-y-8 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br ${item.bg} opacity-0 shadow-sm backdrop-blur transition-all duration-700 hover:-translate-y-1 hover:shadow-xl`}
+                style={{ transitionDelay: `${index * 110}ms` }}
+              >
+                <div className={`h-1.5 w-full bg-gradient-to-r ${item.accent}`} />
+                <div className="p-6">
+                  <p className="mb-3 text-3xl">{item.step}</p>
+                  <h3 className="mb-2 text-xl font-semibold">{item.title}</h3>
+                  <p className="text-slate-600">{item.body}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </motion.section>
@@ -239,28 +287,26 @@ export default function Home() {
               </blockquote>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section id="for-ngos" className="mx-auto max-w-6xl px-6 pb-20 md:pb-24">
-        <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 p-8 md:p-12">
-          <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">For NGOs: Build Your Dream Volunteer Team</h2>
-          <p className="mt-4 max-w-3xl text-slate-700">
-            Publish opportunities, define required skills, and connect with vetted volunteers ready to contribute immediately.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-4">
-            <Link
-              to="/register"
-              className="rounded-xl bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-600/20 transition hover:-translate-y-0.5 hover:bg-orange-700"
-            >
-              Register As NGO
-            </Link>
-            <a
-              href="#features"
-              className="rounded-xl border border-orange-300 bg-white px-6 py-3 text-sm font-semibold text-orange-700 transition hover:-translate-y-0.5 hover:border-orange-500"
-            >
-              Explore Features
-            </a>
+          <div id="for-ngos" className="mt-10 rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 p-8 md:p-12">
+            <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">For NGOs: Build Your Dream Volunteer Team</h2>
+            <p className="mt-4 max-w-3xl text-slate-700">
+              Publish opportunities, define required skills, and connect with vetted volunteers ready to contribute immediately.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-4">
+              <Link
+                to="/register"
+                className="rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition hover:-translate-y-0.5 hover:bg-slate-800"
+              >
+                Register As NGO
+              </Link>
+              <a
+                href="#features"
+                className="rounded-xl border border-slate-600 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-orange-500"
+              >
+                Explore Features
+              </a>
+            </div>
           </div>
         </div>
       </section>

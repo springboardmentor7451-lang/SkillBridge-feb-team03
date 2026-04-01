@@ -1,6 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 
-export default function CounterCard({ label, endValue, duration = 2000, bgClass = "from-slate-50 to-slate-100" }) {
+export default function CounterCard({
+  label,
+  endValue,
+  duration = 2000,
+  bgClass = "from-slate-50 to-slate-100",
+  accentClass = "from-slate-200 to-slate-300",
+}) {
   const [count, setCount] = useState(0);
   const containerRef = useRef(null);
   const hasStartedRef = useRef(false);
@@ -46,13 +52,16 @@ export default function CounterCard({ label, endValue, duration = 2000, bgClass 
     <div
       ref={containerRef}
       data-reveal
-      className={`translate-y-8 rounded-2xl border border-slate-200 bg-gradient-to-br ${bgClass} p-4 opacity-0 transition-all duration-700`}
+      className={`translate-y-8 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br ${bgClass} opacity-0 transition-all duration-700`}
     >
-      <p className="text-2xl font-bold text-slate-900">
-        {count.toLocaleString()}
-        <span className="text-xl text-orange-600">+</span>
-      </p>
-      <p className="text-sm text-slate-600">{label}</p>
+      <div className={`h-1.5 w-full bg-gradient-to-r ${accentClass}`} />
+      <div className="p-4">
+        <p className="text-2xl font-bold text-slate-900">
+          {count.toLocaleString()}
+          <span className="text-xl text-orange-600">+</span>
+        </p>
+        <p className="text-sm text-slate-600">{label}</p>
+      </div>
     </div>
   );
 }
