@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Conversation = require("../models/conversation");
 const Application = require("../models/application");
 const Opportunity = require("../models/opportunity");
+const User = require("../models/user");
 
 // Create conversation when application is accepted
 exports.createConversation = async (applicationId) => {
@@ -49,6 +50,61 @@ exports.createConversation = async (applicationId) => {
   } catch (error) {
     console.error("Create conversation error:", error);
     throw error;
+  }
+};
+
+exports.createDirectConversation = async (req, res) => {
+  try {
+    const currentUserId = req.user;
+    const { participantId } = req.body;
+
+    if (!participantId) {
+      return res.status(400).json({ message: "participantId is required" });
+    }
+
+    const [currentUser, participant] = await Promise.all([
+      User.findById(currentUserId),
+      User.findById(participantId),
+    ]);
+
+    if (!currentUser || !participant) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (currentUser.role === participant.role) {
+      return res.status(400).json({ message: "Conversation requires one volunteer and one NGO" });
+    }
+
+    const ngoId = currentUser.role === "ngo" ? currentUserId : participantId;
+    const volunteerId = currentUser.role === "volunteer" ? currentUserId : participantId;
+
+    let conversation = await Conversation.findOne({
+      ngo_id: ngoId,
+      volunteer_id: volunteerId,
+      status: "active",
+    });
+
+    if (!conversation) {
+      conversation = new Conversation({
+        ngo_id: ngoId,
+        volunteer_id: volunteerId,
+        status: "active",
+      });
+      await conversation.save();
+    }
+
+    conversation = await Conversation.findById(conversation._id)
+      .populate("opportunity_id", "title description location duration required_skills")
+      .populate("ngo_id", "name email location organization_name organization_description website_url")
+      .populate("volunteer_id", "name email location skills bio");
+
+    return res.status(200).json({
+      message: "Conversation ready",
+      conversation,
+    });
+  } catch (error) {
+    console.error("Create direct conversation error:", error);
+    return res.status(500).json({ message: "Error creating conversation", error: error.message });
   }
 };
 

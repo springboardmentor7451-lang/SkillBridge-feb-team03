@@ -12,6 +12,7 @@ const messageRoutes = require("./routes/messageRoutes");
 const matchingRoutes = require("./routes/matchingRoutes");
 const matchRoutes = require("./routes/matchRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const browseRoutes = require("./routes/browseRoutes");
 
 dotenv.config();
 connectDB();
@@ -159,6 +160,9 @@ app.use("/api/match", matchRoutes);
 
 // Notification routes
 app.use("/api/notifications", notificationRoutes);
+
+// Browse routes
+app.use("/api/browse", browseRoutes);
 
 // Auth routes
 app.use("/api/auth", authRoutes);

@@ -6,14 +6,14 @@ const conversationSchema = new mongoose.Schema(
     opportunity_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Opportunity",
-      required: true,
+      default: null,
     },
 
     // The application that led to this conversation
     application_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Application",
-      required: true,
+      default: null,
     },
 
     // The two participants

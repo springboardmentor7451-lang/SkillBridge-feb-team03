@@ -61,6 +61,34 @@ export default function Messages() {
     }
   }, [user, loading, location]);
 
+  useEffect(() => {
+    const conversationId = location.state?.conversationId;
+    if (!conversationId || conversations.length === 0) return;
+
+    const openConversationById = async () => {
+      const existingConversation = conversations.find((conversation) => conversation._id === conversationId);
+
+      if (existingConversation) {
+        await handleSelectConversation(existingConversation);
+        return;
+      }
+
+      try {
+        setLoadingMessages(true);
+        const res = await conversationService.getConversation(conversationId);
+        setSelectedConversation(res.data.conversation);
+        setMessages(res.data.messages || []);
+        await messageService.markMessagesAsRead(conversationId);
+      } catch (error) {
+        console.error("Failed to open conversation from browse page:", error);
+      } finally {
+        setLoadingMessages(false);
+      }
+    };
+
+    openConversationById();
+  }, [location.state, conversations]);
+
   const fetchConversations = async () => {
     try {
       setLoadingConversations(true);

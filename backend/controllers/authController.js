@@ -159,6 +159,7 @@ exports.register = async (req, res) => {
       password,
       role,
       location,
+      profile_picture_url,
       skills,
       bio,
       organization_name,
@@ -210,6 +211,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       role,
       location: normalizedLocation,
+      profile_picture_url: profile_picture_url || "",
     };
 
     const { rawToken, hashedToken, expiresAt } = createVerificationToken();

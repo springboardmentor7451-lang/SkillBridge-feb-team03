@@ -39,6 +39,11 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    profile_picture_url: {
+      type: String,
+      default: "",
+    },
+
     // NGO-only fields
     organization_name: {
       type: String,

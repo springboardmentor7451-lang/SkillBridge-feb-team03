@@ -106,7 +106,7 @@ exports.updateMe = async (req, res) => {
     }
 
     // Fields that can be updated
-    const { name, location, bio, skills, organization_name, organization_description, website_url } = req.body;
+    const { name, location, bio, skills, organization_name, organization_description, website_url, profile_picture_url } = req.body;
 
     // Prevent role change
     if (req.body.role) {
@@ -116,6 +116,7 @@ exports.updateMe = async (req, res) => {
     // Update allowed fields. Use undefined checks so users can clear values.
     if (name !== undefined) user.name = name;
     if (location !== undefined) user.location = normalizeCommaInput(location);
+    if (profile_picture_url !== undefined) user.profile_picture_url = profile_picture_url;
 
     // Volunteer fields
     if (user.role === "volunteer") {

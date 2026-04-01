@@ -83,6 +83,7 @@ export default function Navbar() {
     { label: "How it Works", href: "#how" },
     { label: "Features", href: "#features" },
     { label: "Impact", href: "#impact" },
+    { label: "Contact", href: "#contact" },
     // { label: "For NGOs", href: "#for-ngos" },
   ];
 
@@ -94,8 +95,14 @@ export default function Navbar() {
       active: isActive("/opportunities") || isActive("/browse-opportunities"),
     },
     ...(user?.role === "volunteer"
-      ? [{ label: "Matches", to: "/matches", active: isActive("/matches") }]
-      : []),
+      ? [
+          { label: "Matches", to: "/matches", active: isActive("/matches") },
+          { label: "Browse NGOs", to: "/browse-ngos", active: isActive("/browse-ngos") },
+        ]
+      : [
+          { label: "Browse Volunteers", to: "/browse-volunteers", active: isActive("/browse-volunteers") },
+        ]
+    ),
     { label: "Applications", to: "/applications", active: isActive("/applications") },
     { label: "Message", to: "/chat", active: isActive("/chat") || isActive("/messages") },
   ];

@@ -15,6 +15,11 @@ const conversationService = {
   closeConversation: async (conversationId) => {
     return api.put(`/conversations/${conversationId}/close`);
   },
+
+  // Create or reuse a direct conversation with a participant
+  createDirectConversation: async (participantId) => {
+    return api.post("/conversations/direct", { participantId });
+  },
 };
 
 export default conversationService;

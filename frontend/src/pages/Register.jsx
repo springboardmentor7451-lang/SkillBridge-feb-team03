@@ -24,6 +24,7 @@ const registerSchema = z
     fullName: z.string().optional(),
     skills: z.string().optional(),
     bio: z.string().optional(),
+    profilePictureUrl: z.string().optional(),
     // NGO fields
     organizationName: z.string().optional(),
     organizationDescription: z.string().optional(),
@@ -107,6 +108,7 @@ export default function Register() {
       location: "",
       skills: "",
       bio: "",
+      profilePictureUrl: "",
       organizationName: "",
       organizationDescription: "",
       website: "",
@@ -122,6 +124,7 @@ export default function Register() {
         password: formValues.password,
         role: formValues.role,
         location: normalizeCommaInput(formValues.location),
+        profile_picture_url: formValues.profilePictureUrl,
       };
 
       // Add role-specific fields
@@ -259,6 +262,17 @@ export default function Register() {
                     </div>
 
                     <div className="space-y-2">
+                      <Label htmlFor="profilePictureUrl">Profile Picture URL</Label>
+                      <Input
+                        id="profilePictureUrl"
+                        type="url"
+                        placeholder="https://example.com/profile.jpg"
+                        {...register("profilePictureUrl")}
+                      />
+                      <p className="text-xs text-slate-500">Optional. Add a public image URL to show your picture on your profile.</p>
+                    </div>
+
+                    <div className="space-y-2">
                       <Label htmlFor="skills">Skills</Label>
                       <Input
                         id="skills"
@@ -352,6 +366,17 @@ export default function Register() {
                           <p className="text-xs text-rose-600">{errors.confirmPassword.message}</p>
                         )}
                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="profilePictureUrl">Profile Picture URL</Label>
+                      <Input
+                        id="profilePictureUrl"
+                        type="url"
+                        placeholder="https://example.com/profile.jpg"
+                        {...register("profilePictureUrl")}
+                      />
+                      <p className="text-xs text-slate-500">Optional. Add a public image URL to show your picture on your profile.</p>
                     </div>
 
                     <div className="space-y-2">

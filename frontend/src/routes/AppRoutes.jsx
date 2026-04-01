@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
 import NotificationSystem from "../components/NotificationSystem";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
@@ -17,6 +17,8 @@ const ProfileEdit = lazy(() => import("../pages/ProfileEdit"));
 const OpportunityCreate = lazy(() => import("../pages/OpportunityCreate"));
 const MyOpportunities = lazy(() => import("../pages/MyOpportunities"));
 const BrowseOpportunities = lazy(() => import("../pages/BrowseOpportunities"));
+const BrowseNGOs = lazy(() => import("../pages/BrowseNGOs"));
+const BrowseVolunteers = lazy(() => import("../pages/BrowseVolunteers"));
 const Applications = lazy(() => import("../pages/Applications"));
 const Messages = lazy(() => import("../pages/Messages"));
 const Matches = lazy(() => import("../pages/Matches"));
@@ -56,11 +58,15 @@ export default function AppRoutes() {
 
 function AppContent() {
   const { user, loading } = useAuth();
+  const location = useLocation();
   const [showClickLoader, setShowClickLoader] = useState(false);
   const loaderTimerRef = useRef(null);
+  const isMessageRoute = location.pathname === "/chat" || location.pathname === "/messages";
 
   useEffect(() => {
     const handleGlobalClick = (event) => {
+      if (isMessageRoute) return;
+
       if (!(event.target instanceof Element)) return;
 
       const trigger = event.target.closest("button, a, [role='button']");
@@ -87,7 +93,7 @@ function AppContent() {
         clearTimeout(loaderTimerRef.current);
       }
     };
-  }, []);
+  }, [isMessageRoute]);
 
   const requireAuth = (element) => {
     if (loading) return <RouteFallback />;
@@ -102,7 +108,7 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {!loading && showClickLoader && <RouteFallback overlay />}
+      {!loading && !isMessageRoute && showClickLoader && <RouteFallback overlay />}
       <main className="flex-1">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
@@ -120,6 +126,8 @@ function AppContent() {
             <Route path="/opportunities" element={requireRole(["ngo"], <MyOpportunities />)} />
             <Route path="/opportunities/edit/:id" element={requireRole(["ngo"], <OpportunityCreate />)} />
             <Route path="/browse-opportunities" element={requireRole(["volunteer"], <BrowseOpportunities />)} />
+            <Route path="/browse-ngos" element={requireRole(["volunteer"], <BrowseNGOs />)} />
+            <Route path="/browse-volunteers" element={requireRole(["ngo"], <BrowseVolunteers />)} />
             <Route path="/matches" element={requireRole(["volunteer"], <Matches />)} />
             <Route path="/applications" element={requireAuth(<Applications />)} />
             <Route path="/chat" element={requireRole(["volunteer", "ngo"], <Messages />)} />

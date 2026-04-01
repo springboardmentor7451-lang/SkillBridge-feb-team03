@@ -92,6 +92,29 @@ export default function Home() {
     show: { opacity: 1, y: 0 },
   };
 
+  const creatorLinks = [
+    {
+      label: "Email",
+      href: "mailto:kraman4578@gmail.com",
+      colorClass: "from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600",
+    },
+    {
+      label: "GitHub",
+      href: "https://github.com/amankr4578",
+      colorClass: "from-slate-700 to-slate-900 hover:from-slate-800 hover:to-black",
+    },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/in/amankr4578",
+      colorClass: "from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600",
+    },
+    {
+      label: "Portfolio",
+      href: "https://portfolio-nine-steel-s2h9b2yyb3.vercel.app/",
+      colorClass: "from-emerald-500 to-lime-500 hover:from-emerald-600 hover:to-lime-600",
+    },
+  ];
+
   // If a token exists when landing on home, clear it so user starts logged out
   useEffect(() => {
     if (isAuthenticated) logout();
@@ -310,6 +333,45 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <motion.section
+        id="contact"
+        className="relative overflow-hidden bg-gradient-to-b from-white via-orange-50/40 to-sky-50/50 py-16 md:py-20"
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.25 }}
+        variants={sectionAnim}
+        transition={{ duration: 0.45 }}
+      >
+        <div className="absolute -left-10 top-8 h-44 w-44 rounded-full bg-orange-300/40 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-52 w-52 rounded-full bg-sky-300/40 blur-3xl" />
+        <div className="absolute left-1/3 top-1/2 h-48 w-48 -translate-y-1/2 rounded-full bg-rose-200/30 blur-3xl" />
+
+        <div className="relative z-10 mx-auto max-w-6xl px-6">
+          <div className="rounded-3xl border border-orange-200/80 bg-gradient-to-br from-white via-orange-50/70 to-sky-50/70 p-8 shadow-xl shadow-orange-100/40 md:p-10">
+            <p className="inline-flex rounded-full border border-orange-300/80 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">Contact</p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl">Built By Aman Kumar</h2>
+            <p className="mt-4 max-w-3xl text-slate-600">
+              I created this website to connect talented volunteers with NGOs and make social impact collaboration easier.
+              If you want a similar website or would like to work together, connect with me using the links below.
+            </p>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {creatorLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith("mailto:") ? "_self" : "_blank"}
+                  rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                  className={`inline-flex items-center justify-center rounded-xl bg-gradient-to-r px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 ${link.colorClass}`}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.section>
 
       
     </div>

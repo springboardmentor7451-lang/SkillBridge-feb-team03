@@ -18,6 +18,7 @@ export default function ProfileEdit() {
     name: "",
     location: "",
     bio: "",
+    profile_picture_url: "",
     skills: [],
     organization_name: "",
     organization_description: "",
@@ -40,6 +41,7 @@ export default function ProfileEdit() {
         name: user.role === "ngo" ? (user.organization_name || user.name || "") : (user.name || ""),
         location: user.location || "",
         bio: user.bio || "",
+        profile_picture_url: user.profile_picture_url || "",
         skills: user.skills || [],
         organization_name: user.organization_name || user.name || "",
         organization_description: user.organization_description || "",
@@ -91,6 +93,15 @@ export default function ProfileEdit() {
     }));
   };
 
+  const getInitials = (value = "") =>
+    String(value)
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "SB";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -111,6 +122,7 @@ export default function ProfileEdit() {
       const dataToSend = {
         name: formData.name,
         location: normalizedLocation,
+        profile_picture_url: formData.profile_picture_url,
       };
 
       if (user?.role === "volunteer") {
@@ -220,11 +232,41 @@ export default function ProfileEdit() {
         {success && <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{success}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-center">
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-amber-400 text-xl font-bold text-white shadow-sm">
+              {formData.profile_picture_url ? (
+                <img
+                  src={formData.profile_picture_url}
+                  alt="Profile preview"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                getInitials(formData.name || user.name)
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-slate-900">Profile Picture</p>
+              <p className="text-xs text-slate-600">Add a public image URL for your profile picture.</p>
+            </div>
+          </div>
+
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
               {user.role === "ngo" ? "Organization Name *" : "Full Name *"}
             </label>
             <Input type="text" name="name" value={formData.name} onChange={handleChange} required />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Profile Picture URL</label>
+            <Input
+              type="url"
+              name="profile_picture_url"
+              value={formData.profile_picture_url}
+              onChange={handleChange}
+              placeholder="https://example.com/profile.jpg"
+            />
+            <p className="mt-1 text-xs text-slate-500">This picture will appear on your profile and browse cards.</p>
           </div>
 
           <div>
