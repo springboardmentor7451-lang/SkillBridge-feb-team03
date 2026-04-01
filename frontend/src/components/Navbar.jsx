@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import NotificationBell from "./NotificationBell";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import userService from "../services/userService";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,16 +15,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { ChevronDown } from "lucide-react";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
 
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmationText !== "DELETE") {
+      toast.error('Type DELETE to confirm account deletion');
+      return;
+    }
+
+    try {
+      await userService.deleteAccount();
+      toast.success("Account deleted successfully");
+      setDeleteDialogOpen(false);
+      setDeleteConfirmationText("");
+      logout();
+      navigate("/");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not delete account");
+    }
   };
 
   const isActive = (path) => location.pathname === path;
@@ -65,7 +97,7 @@ export default function Navbar() {
       ? [{ label: "Matches", to: "/matches", active: isActive("/matches") }]
       : []),
     { label: "Applications", to: "/applications", active: isActive("/applications") },
-    { label: "Chat", to: "/chat", active: isActive("/chat") || isActive("/messages") },
+    { label: "Message", to: "/chat", active: isActive("/chat") || isActive("/messages") },
   ];
 
   return (
@@ -140,6 +172,9 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/notifications")}>Notifications</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setDeleteDialogOpen(true)} className="text-rose-600 focus:bg-rose-50 focus:text-rose-700">
+                    Delete Account
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-rose-600 focus:bg-rose-50 focus:text-rose-700">
                     Sign Out
@@ -150,6 +185,48 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      <Dialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setDeleteConfirmationText("");
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Account</DialogTitle>
+            <DialogDescription>
+              This action is permanent. All of your profile data, conversations, and activity will be removed.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 space-y-2">
+            <p className="text-sm font-medium text-slate-700">
+              Type <span className="font-semibold text-slate-900">DELETE</span> to confirm.
+            </p>
+            <Input
+              value={deleteConfirmationText}
+              onChange={(e) => setDeleteConfirmationText(e.target.value)}
+              placeholder="DELETE"
+              autoComplete="off"
+            />
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button variant="secondary" type="button" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleDeleteAccount}
+              className="bg-rose-600 text-white hover:bg-rose-700"
+            >
+              Delete Account
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </nav>
   );
 }

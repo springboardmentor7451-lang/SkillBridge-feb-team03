@@ -35,6 +35,7 @@ export default function BrowseOpportunities() {
   const [selectedNgo, setSelectedNgo] = useState(null);
   const [selectedOpportunityDetails, setSelectedOpportunityDetails] = useState(null);
   const [showNgoDetails, setShowNgoDetails] = useState(false);
+  const [lastAutoOpenedOpportunityId, setLastAutoOpenedOpportunityId] = useState("");
 
   useEffect(() => {
     if (!loading && user?.role === "volunteer") {
@@ -159,6 +160,23 @@ export default function BrowseOpportunities() {
     return app?.status || null;
   };
 
+  useEffect(() => {
+    if (loading || user?.role !== "volunteer" || loadingOpps) return;
+
+    const params = new URLSearchParams(location.search);
+    const highlightId = params.get("highlight");
+    const openNgo = params.get("openNgo");
+
+    if (!highlightId || openNgo !== "1") return;
+    if (lastAutoOpenedOpportunityId === highlightId) return;
+
+    const targetOpportunity = opportunities.find((opp) => opp._id === highlightId);
+    if (!targetOpportunity) return;
+
+    handleViewNgoDetails(targetOpportunity);
+    setLastAutoOpenedOpportunityId(highlightId);
+  }, [loading, user, loadingOpps, location.search, opportunities, userApplications, lastAutoOpenedOpportunityId]);
+
   const getNgoKey = (ngo) => {
     if (!ngo) return null;
     if (typeof ngo === "string") return ngo;
@@ -223,7 +241,7 @@ export default function BrowseOpportunities() {
               <label className="mb-1 block text-sm font-medium text-slate-700">Skills</label>
               <Input
                 type="text"
-                placeholder="English"
+                placeholder="e.g- English,blogger"
                 value={filters.skills}
                 onChange={(e) => handleFilterChange("skills", e.target.value)}
               />
@@ -232,10 +250,11 @@ export default function BrowseOpportunities() {
               <label className="mb-1 block text-sm font-medium text-slate-700">Location</label>
               <Input
                 type="text"
-                placeholder="Mumbai"
+                placeholder="e.g- Mumbai, Maharashtra"
                 value={filters.location}
                 onChange={(e) => handleFilterChange("location", e.target.value)}
               />
+              {/* <p className="mt-1 text-xs text-slate-500">Use commas to filter by city/state terms.</p> */}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Duration</label>

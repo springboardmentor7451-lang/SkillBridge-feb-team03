@@ -8,6 +8,9 @@ const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const VerifyEmail = lazy(() => import("../pages/VerifyEmail"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/ResetPassword"));
+const VerifyEmailChange = lazy(() => import("../pages/VerifyEmailChange"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const Profile = lazy(() => import("../pages/Profile"));
 const ProfileEdit = lazy(() => import("../pages/ProfileEdit"));
@@ -107,6 +110,9 @@ function AppContent() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/verify-email-change" element={<VerifyEmailChange />} />
             <Route path="/dashboard" element={requireAuth(<Dashboard />)} />
             <Route path="/profile" element={requireAuth(<Profile />)} />
             <Route path="/profile/edit" element={requireAuth(<ProfileEdit />)} />

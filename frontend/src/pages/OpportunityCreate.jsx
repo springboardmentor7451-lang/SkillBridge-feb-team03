@@ -15,6 +15,8 @@ export default function OpportunityCreate() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [skillsInput, setSkillsInput] = useState("");
+  const [locationInput, setLocationInput] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -33,10 +35,35 @@ export default function OpportunityCreate() {
   };
 
   const handleSkillsChange = (e) => {
-    const skills = e.target.value.split(",").map((skill) => skill.trim());
+    setSkillsInput(e.target.value);
+  };
+
+  const processSkills = () => {
+    const skills = skillsInput
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter((skill) => skill.length > 0);
     setFormData((prev) => ({
       ...prev,
       required_skills: skills,
+    }));
+  };
+
+  const handleLocationChange = (e) => {
+    setLocationInput(e.target.value);
+  };
+
+  const processLocation = () => {
+    const normalizedLocation = locationInput
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0)
+      .join(", ");
+
+    setLocationInput(normalizedLocation);
+    setFormData((prev) => ({
+      ...prev,
+      location: normalizedLocation,
     }));
   };
 
@@ -46,17 +73,33 @@ export default function OpportunityCreate() {
     setError("");
 
     try {
-      if (!formData.title || !formData.description || !formData.duration || !formData.location) {
+      const normalizedSkills = skillsInput
+        .split(",")
+        .map((skill) => skill.trim())
+        .filter((skill) => skill.length > 0);
+      const normalizedLocation = locationInput
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0)
+        .join(", ");
+
+      const payload = {
+        ...formData,
+        required_skills: normalizedSkills,
+        location: normalizedLocation,
+      };
+
+      if (!payload.title || !payload.description || !payload.duration || !payload.location) {
         setError("Please fill all required fields");
         setLoading(false);
         return;
       }
 
       if (id) {
-        await opportunityService.updateOpportunity(id, formData);
+        await opportunityService.updateOpportunity(id, payload);
         toast.success("Opportunity updated");
       } else {
-        await opportunityService.createOpportunity(formData);
+        await opportunityService.createOpportunity(payload);
         toast.success("Opportunity created");
       }
 
@@ -100,6 +143,8 @@ export default function OpportunityCreate() {
             location: opp.location || "",
             status: opp.status || "open",
           });
+          setSkillsInput((opp.required_skills || []).join(", "));
+          setLocationInput(opp.location || "");
         } catch (err) {
           console.error("Failed to load opportunity", err);
         }
@@ -145,14 +190,16 @@ export default function OpportunityCreate() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Required Skills (comma-separated)</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Required Skills (separate with commas)</label>
             <Input
               type="text"
               name="required_skills"
-              value={formData.required_skills.join(", ")}
+              value={skillsInput}
               onChange={handleSkillsChange}
-              placeholder="e.g., Teaching, Technology, Communication"
+              onBlur={processSkills}
+              placeholder="e.g., Digital Marketing, Content Writing, SEO"
             />
+            <p className="mt-1 text-xs text-slate-500">You can add skills with multiple words like 'Digital Marketing', 'Social Media', or 'Content Writing'. Separate different skills with commas.</p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -179,11 +226,13 @@ export default function OpportunityCreate() {
               <Input
                 type="text"
                 name="location"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="e.g., New York, Remote"
+                value={locationInput}
+                onChange={handleLocationChange}
+                onBlur={processLocation}
+                placeholder="e.g., Mumbai, Maharashtra or Remote"
                 required
               />
+              <p className="mt-1 text-xs text-slate-500">Use commas to add location parts, like city and state.</p>
             </div>
           </div>
 

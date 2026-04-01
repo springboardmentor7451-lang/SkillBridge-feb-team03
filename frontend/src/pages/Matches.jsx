@@ -5,6 +5,13 @@ import matchingService from "../services/matchingService";
 import applicationService from "../services/applicationService";
 import Navbar from "../components/Navbar";
 import { Button } from "../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
 import { toast } from "sonner";
 
 export default function Matches() {
@@ -15,6 +22,9 @@ export default function Matches() {
   const [error, setError] = useState("");
   const [appliedIds, setAppliedIds] = useState(new Set());
   const [applyingId, setApplyingId] = useState("");
+  const [showNgoDetails, setShowNgoDetails] = useState(false);
+  const [selectedNgo, setSelectedNgo] = useState(null);
+  const [selectedOpportunityDetails, setSelectedOpportunityDetails] = useState(null);
 
   useEffect(() => {
     if (!loading && user?.role === "volunteer") {
@@ -61,6 +71,58 @@ export default function Matches() {
     } finally {
       setApplyingId("");
     }
+  };
+
+  const normalizeText = (value) => (value || "").toString().trim().toLowerCase();
+
+  const getMatchSummary = (opportunity) => {
+    const volunteerSkills = user?.skills || [];
+    const requiredSkills = opportunity?.required_skills || [];
+
+    const matchedSkills = requiredSkills.filter((requiredSkill) =>
+      volunteerSkills.some((volSkill) => normalizeText(volSkill) === normalizeText(requiredSkill))
+    );
+
+    const missingSkills = requiredSkills.filter(
+      (requiredSkill) => !matchedSkills.some((matchedSkill) => normalizeText(matchedSkill) === normalizeText(requiredSkill))
+    );
+
+    const matchPercentage = requiredSkills.length
+      ? Math.round((matchedSkills.length / requiredSkills.length) * 100)
+      : 0;
+
+    let matchStrength = "Low Match";
+    if (matchPercentage >= 80) {
+      matchStrength = "Strong Match";
+    } else if (matchPercentage >= 50) {
+      matchStrength = "Moderate Match";
+    }
+
+    return { matchedSkills, missingSkills, matchPercentage, matchStrength };
+  };
+
+  const getApplicationStatus = (opportunityId) => {
+    if (appliedIds.has(opportunityId)) return "Applied";
+    return "Not Applied";
+  };
+
+  const handleViewNgoDetails = (opportunity) => {
+    const ngoData = opportunity?.ngo_id;
+    if (!ngoData || typeof ngoData === "string") {
+      toast.error("NGO details are not available for this opportunity");
+      return;
+    }
+
+    const matchSummary = getMatchSummary(opportunity);
+    const applicationStatus = getApplicationStatus(opportunity._id);
+
+    setSelectedNgo(ngoData);
+    setSelectedOpportunityDetails({
+      ...opportunity,
+      ...matchSummary,
+      applicationStatus,
+    });
+    setShowNgoDetails(true);
   };
 
   if (loading) {
@@ -142,7 +204,7 @@ export default function Matches() {
                     >
                       {alreadyApplied ? "Applied" : applyingId === opportunity._id ? "Applying..." : "Apply"}
                     </Button>
-                    <Button variant="secondary" onClick={() => navigate(`/browse-opportunities?highlight=${opportunity._id}`)}>
+                    <Button variant="secondary" onClick={() => handleViewNgoDetails(opportunity)}>
                       View Details
                     </Button>
                   </div>
@@ -152,6 +214,107 @@ export default function Matches() {
           </section>
         )}
       </main>
+
+      <Dialog
+        open={showNgoDetails}
+        onOpenChange={(open) => {
+          setShowNgoDetails(open);
+          if (!open) {
+            setSelectedNgo(null);
+            setSelectedOpportunityDetails(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{selectedNgo?.organization_name || selectedNgo?.name || "NGO Details"}</DialogTitle>
+            <DialogDescription>Information about the NGO and this opportunity.</DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-base font-semibold text-slate-900">NGO Info</p>
+              <div>
+                <p className="font-medium text-slate-900">Name</p>
+                <p className="text-slate-600">{selectedNgo?.organization_name || selectedNgo?.name || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Location</p>
+                <p className="text-slate-600">{selectedNgo?.location || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Email</p>
+                <p className="text-slate-600">{selectedNgo?.email || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Description</p>
+                <p className="text-slate-600">{selectedNgo?.organization_description || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Website</p>
+                {selectedNgo?.website_url ? (
+                  <a
+                    href={selectedNgo.website_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-orange-700 hover:text-orange-800 hover:underline"
+                  >
+                    {selectedNgo.website_url}
+                  </a>
+                ) : (
+                  <p className="text-slate-600">Not provided</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-base font-semibold text-slate-900">Opportunity Details</p>
+              <div>
+                <p className="font-medium text-slate-900">Full Description</p>
+                <p className="text-slate-600">{selectedOpportunityDetails?.description || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Required Skills</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.required_skills?.length
+                    ? selectedOpportunityDetails.required_skills.join(", ")
+                    : "Not provided"}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Duration</p>
+                <p className="text-slate-600">{selectedOpportunityDetails?.duration || "Not provided"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Status</p>
+                <p className="text-slate-600">{selectedOpportunityDetails?.applicationStatus || "Not Applied"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Match</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.matchPercentage ?? 0}% ({selectedOpportunityDetails?.matchStrength || "Low Match"})
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Skills Matched</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.matchedSkills?.length
+                    ? selectedOpportunityDetails.matchedSkills.join(", ")
+                    : "None"}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">Missing Skills</p>
+                <p className="text-slate-600">
+                  {selectedOpportunityDetails?.missingSkills?.length
+                    ? selectedOpportunityDetails.missingSkills.join(", ")
+                    : "None"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

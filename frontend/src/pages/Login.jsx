@@ -113,6 +113,11 @@ export default function Login() {
                   <Label htmlFor="password">Password</Label>
                   <Input id="password" type="password" placeholder="Enter your password" {...register("password")} />
                   {errors.password && <p className="text-xs text-rose-600">{errors.password.message}</p>}
+                  <div className="pt-1 text-right">
+                    <Link to="/forgot-password" className="text-xs font-semibold text-orange-700 hover:text-orange-800">
+                      Forgot password?
+                    </Link>
+                  </div>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>

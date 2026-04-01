@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import matchingService from "../services/matchingService";
@@ -34,7 +34,12 @@ export default function MatchSuggestions() {
 
   if (loading || user?.role !== "volunteer") return null;
 
-  const previewSuggestions = suggestions.slice(0, 2);
+  // Sort by matchScore (highest first) and take top 2
+  const topMatches = useMemo(() => {
+    return [...suggestions]
+      .sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0))
+      .slice(0, 2);
+  }, [suggestions]);
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -43,6 +48,9 @@ export default function MatchSuggestions() {
           <h3 className="text-lg font-semibold text-slate-900">Match Suggestions</h3>
           <p className="text-sm text-slate-600">Opportunities that align with your skills.</p>
         </div>
+        <Button variant="secondary" size="sm" onClick={() => navigate("/matches")}>
+          View All Matches
+        </Button>
       </div>
 
       {loadingSuggestions ? (
@@ -53,7 +61,7 @@ export default function MatchSuggestions() {
         </div>
       ) : (
         <div className="space-y-4">
-          {previewSuggestions.map((suggestion) => (
+          {topMatches.map((suggestion) => (
             <article key={suggestion._id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <h4 className="text-base font-semibold text-slate-900">{suggestion.title}</h4>
@@ -76,7 +84,7 @@ export default function MatchSuggestions() {
               </div>
 
               <div className="mb-4 flex flex-wrap gap-2">
-                {suggestion.required_skills?.slice(0, 3).map((skill, i) => (
+                {suggestion.required_skills?.map((skill, i) => (
                   <span key={i} className="rounded-md bg-slate-200 px-2 py-1 text-xs text-slate-700">
                     {skill}
                   </span>
@@ -91,13 +99,6 @@ export default function MatchSuggestions() {
         </div>
       )}
 
-      {suggestions.length > 2 && (
-        <div className="mt-4">
-          <Button variant="secondary" onClick={() => navigate('/browse-opportunities?tab=matches')}>
-            View All Matches
-          </Button>
-        </div>
-      )}
     </section>
   );
 }

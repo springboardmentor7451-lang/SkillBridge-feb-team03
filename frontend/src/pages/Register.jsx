@@ -83,6 +83,13 @@ const registerSchema = z
 export default function Register() {
   const navigate = useNavigate();
 
+  const normalizeCommaInput = (value = "") =>
+    String(value)
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .join(", ");
+
   const {
     register,
     handleSubmit,
@@ -114,7 +121,7 @@ export default function Register() {
         email: formValues.email,
         password: formValues.password,
         role: formValues.role,
-        location: formValues.location,
+        location: normalizeCommaInput(formValues.location),
       };
 
       // Add role-specific fields
@@ -214,9 +221,10 @@ export default function Register() {
                         <Label htmlFor="location">Location</Label>
                         <Input
                           id="location"
-                          placeholder="e.g., Delhi or Remote"
+                          placeholder="e.g., Mumbai, Maharashtra or Remote"
                           {...register("location")}
                         />
+                        <p className="text-xs text-slate-500">Use commas to add location parts, like city and state.</p>
                         {errors.location && (
                           <p className="text-xs text-rose-600">{errors.location.message}</p>
                         )}
@@ -309,9 +317,10 @@ export default function Register() {
                         <Label htmlFor="location">Location</Label>
                         <Input
                           id="location"
-                          placeholder="e.g., Delhi or Remote"
+                          placeholder="e.g., Mumbai, Maharashtra or Remote"
                           {...register("location")}
                         />
+                        <p className="text-xs text-slate-500">Use commas to add location parts, like city and state.</p>
                         {errors.location && (
                           <p className="text-xs text-rose-600">{errors.location.message}</p>
                         )}

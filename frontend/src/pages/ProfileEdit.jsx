@@ -4,6 +4,7 @@ import userService from "../services/userService";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
 
@@ -22,6 +23,15 @@ export default function ProfileEdit() {
     organization_description: "",
     website_url: "",
   });
+  const [newEmail, setNewEmail] = useState("");
+  const [emailPassword, setEmailPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+  const [skillsInput, setSkillsInput] = useState("");
+  const [locationInput, setLocationInput] = useState("");
 
   // Pre-fill form with current user data
   useEffect(() => {
@@ -35,6 +45,8 @@ export default function ProfileEdit() {
         organization_description: user.organization_description || "",
         website_url: user.website_url || "",
       });
+      setSkillsInput((user.skills || []).join(", "));
+      setLocationInput(user.location || "");
     }
   }, [user]);
 
@@ -47,10 +59,35 @@ export default function ProfileEdit() {
   };
 
   const handleSkillsChange = (e) => {
-    const skills = e.target.value.split(",").map((skill) => skill.trim());
+    setSkillsInput(e.target.value);
+  };
+
+  const processSkills = () => {
+    const skills = skillsInput
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter((skill) => skill.length > 0);
     setFormData((prev) => ({
       ...prev,
       skills,
+    }));
+  };
+
+  const handleLocationChange = (e) => {
+    setLocationInput(e.target.value);
+  };
+
+  const processLocation = () => {
+    const normalizedLocation = locationInput
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0)
+      .join(", ");
+
+    setLocationInput(normalizedLocation);
+    setFormData((prev) => ({
+      ...prev,
+      location: normalizedLocation,
     }));
   };
 
@@ -61,13 +98,23 @@ export default function ProfileEdit() {
     setSuccess("");
 
     try {
+      const normalizedSkills = skillsInput
+        .split(",")
+        .map((skill) => skill.trim())
+        .filter((skill) => skill.length > 0);
+      const normalizedLocation = locationInput
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0)
+        .join(", ");
+
       const dataToSend = {
         name: formData.name,
-        location: formData.location,
+        location: normalizedLocation,
       };
 
       if (user?.role === "volunteer") {
-        dataToSend.skills = formData.skills;
+        dataToSend.skills = normalizedSkills;
         dataToSend.bio = formData.bio;
       }
 
@@ -90,6 +137,65 @@ export default function ProfileEdit() {
       toast.error(err.response?.data?.message || "Failed to update profile");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRequestEmailChange = async (event) => {
+    event.preventDefault();
+
+    if (!newEmail.trim() || !emailPassword) {
+      toast.error("Please enter new email and current password");
+      return;
+    }
+
+    try {
+      setEmailSubmitting(true);
+      const response = await userService.requestEmailChange({
+        newEmail,
+        currentPassword: emailPassword,
+      });
+      toast.success(response.data?.message || "Verification link sent to new email");
+      setNewEmail("");
+      setEmailPassword("");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not request email change");
+    } finally {
+      setEmailSubmitting(false);
+    }
+  };
+
+  const handleChangePassword = async (event) => {
+    event.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      toast.error("Please fill all password fields");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("New password must have at least 6 characters");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    try {
+      setPasswordSubmitting(true);
+      const response = await userService.changePassword({
+        currentPassword,
+        newPassword,
+      });
+      toast.success(response.data?.message || "Password updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not update password");
+    } finally {
+      setPasswordSubmitting(false);
     }
   };
 
@@ -123,20 +229,31 @@ export default function ProfileEdit() {
 
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">Location *</label>
-            <Input type="text" name="location" value={formData.location} onChange={handleChange} required />
+            <Input
+              type="text"
+              name="location"
+              value={locationInput}
+              onChange={handleLocationChange}
+              onBlur={processLocation}
+              placeholder="e.g., Mumbai, Maharashtra or Remote"
+              required
+            />
+            <p className="mt-1 text-xs text-slate-500">Use commas to add location parts, like city and state.</p>
           </div>
 
           {user.role === "volunteer" && (
             <>
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Skills (comma-separated)</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Skills (separate with commas)</label>
                 <Input
                   type="text"
                   name="skills"
-                  value={formData.skills.join(", ")}
+                  value={skillsInput}
                   onChange={handleSkillsChange}
-                  placeholder="e.g., React, Design, Teaching"
+                  onBlur={processSkills}
+                  placeholder="e.g., React, Digital Marketing, UI Design"
                 />
+                <p className="mt-1 text-xs text-slate-500">You can add skills with multiple words like 'Digital Marketing' or 'Content Writing'. Separate multiple skills with commas.</p>
               </div>
 
               <div>
@@ -183,6 +300,77 @@ export default function ProfileEdit() {
             <Button type="submit" disabled={loading}>{loading ? "Updating..." : "Update Profile"}</Button>
           </div>
         </form>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900">Account Security</h3>
+          <p className="mt-1 text-sm text-slate-600">Update your email with verification and change your password.</p>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <form onSubmit={handleRequestEmailChange} className="space-y-3 rounded-xl border border-slate-200 p-4">
+              <h4 className="text-sm font-semibold text-slate-900">Update Email</h4>
+              <div className="space-y-1.5">
+                <Label htmlFor="newEmail">New Email</Label>
+                <Input
+                  id="newEmail"
+                  type="email"
+                  placeholder="new-email@example.com"
+                  value={newEmail}
+                  onChange={(event) => setNewEmail(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="emailPassword">Current Password</Label>
+                <Input
+                  id="emailPassword"
+                  type="password"
+                  placeholder="Enter current password"
+                  value={emailPassword}
+                  onChange={(event) => setEmailPassword(event.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={emailSubmitting}>
+                {emailSubmitting ? "Sending verification..." : "Send Verification To New Email"}
+              </Button>
+            </form>
+
+            <form onSubmit={handleChangePassword} className="space-y-3 rounded-xl border border-slate-200 p-4">
+              <h4 className="text-sm font-semibold text-slate-900">Change Password</h4>
+              <div className="space-y-1.5">
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  placeholder="Enter current password"
+                  value={currentPassword}
+                  onChange={(event) => setCurrentPassword(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(event) => setNewPassword(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmNewPassword"
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={confirmNewPassword}
+                  onChange={(event) => setConfirmNewPassword(event.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={passwordSubmitting}>
+                {passwordSubmitting ? "Updating password..." : "Update Password"}
+              </Button>
+            </form>
+          </div>
+        </section>
       </main>
     </>
   );

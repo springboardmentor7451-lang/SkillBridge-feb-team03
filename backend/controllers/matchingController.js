@@ -1,6 +1,12 @@
 const Opportunity = require("../models/opportunity");
 const User = require("../models/user");
-const mongoose = require("mongoose");
+
+const normalizeText = (value) => String(value || "").trim().toLowerCase();
+const parseCommaValues = (value) =>
+  String(value || "")
+    .split(",")
+    .map((item) => normalizeText(item))
+    .filter(Boolean);
 
 // Get match suggestions for a volunteer
 exports.getMatchSuggestions = async (req, res) => {
@@ -13,73 +19,61 @@ exports.getMatchSuggestions = async (req, res) => {
       return res.status(404).json({ message: "Volunteer not found" });
     }
 
-    const { skills, location } = volunteer;
+    const volunteerSkills = (volunteer.skills || [])
+      .map((skill) => normalizeText(skill))
+      .filter(Boolean);
+    const volunteerLocationTokens = parseCommaValues(volunteer.location);
 
-    // Build match criteria
-    let matchCriteria = {
-      status: "open"
-    };
-
-    // Skills matching: opportunities that have at least one matching skill
-    if (skills && skills.length > 0) {
-      matchCriteria.required_skills = { $in: skills };
-    }
-
-    // Location matching: exact match or similar locations
-    if (location && location.trim()) {
-      matchCriteria.$or = [
-        { location: new RegExp(location.trim(), 'i') },
-        { location: new RegExp('remote', 'i') } // Always include remote opportunities
-      ];
-    }
-
-    console.log('Match criteria:', matchCriteria);
-
-    // Find matching opportunities
-    const opportunities = await Opportunity.find(matchCriteria)
-      .populate("ngo_id", "organization_name location contact_email")
+    // Fetch open opportunities and score in memory to avoid strict case-sensitive DB filtering.
+    const opportunities = await Opportunity.find({ status: "open" })
+      .populate("ngo_id", "name email location organization_name organization_description website_url")
       .sort({ createdAt: -1 })
-      .limit(10); // Limit to top 10 matches
+      .limit(100);
 
-    // Calculate match scores
-    const suggestions = opportunities.map(opp => {
-      let matchPercentage = 0;
-      let reasons = [];
+    const suggestions = opportunities
+      .map((opp) => {
+        const requiredSkills = (opp.required_skills || [])
+          .map((skill) => normalizeText(skill))
+          .filter(Boolean);
 
-      // Skills match percentage based on required skills
-      if (skills && skills.length > 0 && opp.required_skills && opp.required_skills.length > 0) {
-        const matchingSkills = skills.filter(skill =>
-          opp.required_skills.some(reqSkill =>
-            reqSkill.toLowerCase().includes(skill.toLowerCase()) ||
-            skill.toLowerCase().includes(reqSkill.toLowerCase())
-          )
-        );
-        if (matchingSkills.length > 0) {
-          // Calculate percentage based on required skills
-          matchPercentage = Math.round((matchingSkills.length / opp.required_skills.length) * 100);
-          reasons.push(`${matchingSkills.length}/${opp.required_skills.length} skills match`);
+        let matchPercentage = 0;
+        const reasons = [];
+
+        if (volunteerSkills.length > 0 && requiredSkills.length > 0) {
+          const matchedRequiredSkills = requiredSkills.filter((requiredSkill) =>
+            volunteerSkills.some((userSkill) => userSkill === requiredSkill)
+          );
+
+          const uniqueMatches = [...new Set(matchedRequiredSkills)];
+          if (uniqueMatches.length > 0) {
+            matchPercentage = Math.round(
+              (uniqueMatches.length / requiredSkills.length) * 100
+            );
+            reasons.push(`${uniqueMatches.length}/${requiredSkills.length} skills match`);
+          }
         }
-      }
 
-      // Location match reason (doesn't affect percentage)
-      if (location && opp.location) {
-        if (opp.location.toLowerCase().includes(location.toLowerCase()) ||
-            location.toLowerCase().includes(opp.location.toLowerCase())) {
-          reasons.push('Location match');
-        } else if (opp.location.toLowerCase().includes('remote')) {
-          reasons.push('Remote opportunity');
+        const oppLocationTokens = parseCommaValues(opp.location);
+        if (volunteerLocationTokens.length > 0 && oppLocationTokens.length > 0) {
+          const hasLocationOverlap = oppLocationTokens.some((oppToken) =>
+            volunteerLocationTokens.includes(oppToken)
+          );
+
+          if (hasLocationOverlap) {
+            reasons.push("Location match");
+          } else if (oppLocationTokens.includes("remote")) {
+            reasons.push("Remote opportunity");
+          }
         }
-      }
 
-      return {
-        ...opp.toObject(),
-        matchScore: matchPercentage,
-        matchReasons: reasons
-      };
-    });
-
-    // Sort by match score (highest first)
-    suggestions.sort((a, b) => b.matchScore - a.matchScore);
+        return {
+          ...opp.toObject(),
+          matchScore: matchPercentage,
+          matchReasons: reasons,
+        };
+      })
+      .filter((item) => item.matchScore > 0 || item.matchReasons.length > 0)
+      .sort((a, b) => b.matchScore - a.matchScore);
 
     res.json({
       message: "Match suggestions retrieved",
@@ -87,8 +81,8 @@ exports.getMatchSuggestions = async (req, res) => {
       volunteer: {
         name: volunteer.name,
         skills: volunteer.skills,
-        location: volunteer.location
-      }
+        location: volunteer.location,
+      },
     });
   } catch (error) {
     console.error("Get match suggestions error:", error);
@@ -113,7 +107,7 @@ exports.getVolunteerMatches = async (req, res) => {
 
     // Collect all required skills from NGO's opportunities
     const allRequiredSkills = [...new Set(
-      opportunities.flatMap(opp => opp.required_skills || [])
+      opportunities.flatMap((opp) => opp.required_skills || [])
     )];
 
     // Find volunteers who have matching skills
@@ -127,19 +121,21 @@ exports.getVolunteerMatches = async (req, res) => {
     }).select("name email skills location bio");
 
     // Calculate match scores for each volunteer
-    const matches = volunteers.map(volunteer => {
+    const matches = volunteers.map((volunteer) => {
       let score = 0;
       let matchingOpportunities = [];
 
-      opportunities.forEach(opp => {
+      opportunities.forEach((opp) => {
         let oppScore = 0;
         let reasons = [];
 
         // Skills match
-        if (volunteer.skills && volunteer.skills.length > 0 &&
-            opp.required_skills && opp.required_skills.length > 0) {
-          const matchingSkills = volunteer.skills.filter(skill =>
-            opp.required_skills.some(reqSkill =>
+        if (
+          volunteer.skills && volunteer.skills.length > 0 &&
+          opp.required_skills && opp.required_skills.length > 0
+        ) {
+          const matchingSkills = volunteer.skills.filter((skill) =>
+            opp.required_skills.some((reqSkill) =>
               reqSkill.toLowerCase().includes(skill.toLowerCase()) ||
               skill.toLowerCase().includes(reqSkill.toLowerCase())
             )
@@ -152,10 +148,12 @@ exports.getVolunteerMatches = async (req, res) => {
 
         // Location match
         if (volunteer.location && opp.location) {
-          if (opp.location.toLowerCase().includes(volunteer.location.toLowerCase()) ||
-              volunteer.location.toLowerCase().includes(opp.location.toLowerCase())) {
+          if (
+            opp.location.toLowerCase().includes(volunteer.location.toLowerCase()) ||
+            volunteer.location.toLowerCase().includes(opp.location.toLowerCase())
+          ) {
             oppScore += 25;
-            reasons.push('Location match');
+            reasons.push("Location match");
           }
         }
 
@@ -164,7 +162,7 @@ exports.getVolunteerMatches = async (req, res) => {
           matchingOpportunities.push({
             opportunity: opp,
             score: oppScore,
-            reasons
+            reasons,
           });
         }
       });
@@ -172,19 +170,19 @@ exports.getVolunteerMatches = async (req, res) => {
       return {
         volunteer: volunteer.toObject(),
         matchScore: score,
-        matchingOpportunities: matchingOpportunities.slice(0, 3) // Top 3 matching opportunities
+        matchingOpportunities: matchingOpportunities.slice(0, 3), // Top 3 matching opportunities
       };
     });
 
     // Sort by match score and filter out low matches
     const filteredMatches = matches
-      .filter(match => match.matchScore > 10)
+      .filter((match) => match.matchScore > 10)
       .sort((a, b) => b.matchScore - a.matchScore)
       .slice(0, 20); // Top 20 matches
 
     res.json({
       message: "Volunteer matches retrieved",
-      matches: filteredMatches
+      matches: filteredMatches,
     });
   } catch (error) {
     console.error("Get volunteer matches error:", error);

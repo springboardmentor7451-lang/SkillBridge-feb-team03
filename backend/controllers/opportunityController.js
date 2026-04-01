@@ -2,14 +2,21 @@ const Opportunity = require("../models/opportunity");
 const Application = require("../models/application");
 
 const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const normalizeCommaInput = (value = "") =>
+  String(value)
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .join(", ");
 
 // Create Opportunity (NGO only)
 exports.createOpportunity = async (req, res) => {
   try {
     const { title, description, required_skills, duration, location, status } = req.body;
+    const normalizedLocation = normalizeCommaInput(location);
 
     // Validate required fields
-    if (!title || !description || !duration || !location) {
+    if (!title || !description || !duration || !normalizedLocation) {
       return res.status(400).json({
         message: "Please provide all required fields",
       });
@@ -21,7 +28,7 @@ exports.createOpportunity = async (req, res) => {
       description,
       required_skills: required_skills || [],
       duration,
-      location,
+      location: normalizedLocation,
       status: status === "closed" ? "closed" : "open",
     });
 
@@ -88,10 +95,19 @@ exports.getAllOpportunities = async (req, res) => {
 
     // Filter by location (case-insensitive partial match)
     if (location && location.trim()) {
-      filter.location = {
-        $regex: `^\\s*${escapeRegex(location.trim())}\\s*$`,
-        $options: "i",
-      };
+      const locationTokens = location
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      if (locationTokens.length > 0) {
+        filter.$or = locationTokens.map((token) => ({
+          location: {
+            $regex: `(^|,\\s*)${escapeRegex(token)}(\\s*,|$)`,
+            $options: "i",
+          },
+        }));
+      }
     }
 
     // Filter by duration (accepts both singular/plural wording)
@@ -184,7 +200,9 @@ exports.updateOpportunity = async (req, res) => {
     if (description) opportunity.description = description;
     if (required_skills) opportunity.required_skills = required_skills;
     if (duration) opportunity.duration = duration;
-    if (location) opportunity.location = location;
+    if (location !== undefined) {
+      opportunity.location = normalizeCommaInput(location);
+    }
     if (status) opportunity.status = status;
 
     await opportunity.save();

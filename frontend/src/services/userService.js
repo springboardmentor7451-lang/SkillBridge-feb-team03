@@ -10,6 +10,18 @@ const userService = {
   updateProfile: async (userData) => {
     return api.put("/users/me", userData);
   },
+
+  changePassword: async (payload) => {
+    return api.put("/users/me/password", payload);
+  },
+
+  requestEmailChange: async (payload) => {
+    return api.post("/users/me/email-request", payload);
+  },
+
+  deleteAccount: async () => {
+    return api.delete("/users/me");
+  },
 };
 
 export default userService;

@@ -69,6 +69,31 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    pendingEmail: {
+      type: String,
+      default: null,
+    },
+
+    pendingEmailVerificationTokenHash: {
+      type: String,
+      default: null,
+    },
+
+    pendingEmailVerificationExpires: {
+      type: Date,
+      default: null,
+    },
+
+    passwordResetTokenHash: {
+      type: String,
+      default: null,
+    },
+
+    passwordResetExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

@@ -221,6 +221,26 @@ export default function Messages() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const formatDayLabel = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString([], {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const isSameDay = (firstDate, secondDate) => {
+    const first = new Date(firstDate);
+    const second = new Date(secondDate);
+    return (
+      first.getFullYear() === second.getFullYear() &&
+      first.getMonth() === second.getMonth() &&
+      first.getDate() === second.getDate()
+    );
+  };
+
   const handleInputChange = (e) => {
     setNewMessage(e.target.value);
 
@@ -363,33 +383,42 @@ export default function Messages() {
                     </div>
                   ) : (
                     <>
-                      {messages.map((msg) => {
+                      {messages.map((msg, index) => {
                         const isOwnMessage = resolveSenderId(msg) === user._id;
+                        const previousMessage = messages[index - 1];
+                        const showDaySeparator =
+                          !previousMessage || !isSameDay(previousMessage.createdAt, msg.createdAt);
                         return (
-                          <div
-                            key={msg._id}
-                            className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
-                          >
-                            <div
-                              className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm ${
-                                isOwnMessage
-                                  ? "bg-slate-900 text-white"
-                                  : "border border-slate-200 bg-white text-slate-900"
-                              }`}
-                            >
-                              <p className="text-sm leading-relaxed">{msg.content}</p>
-                              {msg.attachment_data_url && (
-                                <a
-                                  href={msg.attachment_data_url}
-                                  download={msg.attachment_name || "attachment"}
-                                  className={`mt-2 block text-xs underline ${isOwnMessage ? "text-slate-200" : "text-orange-700"}`}
-                                >
-                                  Attachment: {msg.attachment_name || "Download"}
-                                </a>
-                              )}
-                              <span className={`mt-1 block text-[11px] ${isOwnMessage ? "text-slate-300" : "text-slate-500"}`}>
-                                {formatTime(msg.createdAt)}
-                              </span>
+                          <div key={msg._id} className="space-y-2">
+                            {showDaySeparator && (
+                              <div className="flex justify-center py-2">
+                                <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-medium text-slate-500 shadow-sm">
+                                  {formatDayLabel(msg.createdAt)}
+                                </span>
+                              </div>
+                            )}
+                            <div className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}>
+                              <div
+                                className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm ${
+                                  isOwnMessage
+                                    ? "bg-slate-900 text-white"
+                                    : "border border-slate-200 bg-white text-slate-900"
+                                }`}
+                              >
+                                <p className="text-sm leading-relaxed">{msg.content}</p>
+                                {msg.attachment_data_url && (
+                                  <a
+                                    href={msg.attachment_data_url}
+                                    download={msg.attachment_name || "attachment"}
+                                    className={`mt-2 block text-xs underline ${isOwnMessage ? "text-slate-200" : "text-orange-700"}`}
+                                  >
+                                    Attachment: {msg.attachment_name || "Download"}
+                                  </a>
+                                )}
+                                <span className={`mt-1 block text-[11px] ${isOwnMessage ? "text-slate-300" : "text-slate-500"}`}>
+                                  {formatTime(msg.createdAt)}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         );
